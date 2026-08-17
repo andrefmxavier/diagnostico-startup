@@ -4,12 +4,14 @@ import {
   ChevronRight, ChevronDown, ChevronUp, RefreshCw, LogOut, ArrowRight, ChevronLeft,
   Zap, Phone, Mail, Printer, Scale, Target, Key, Trash2, Copy, Check, X,
   ListChecks, Wrench, Gauge, Package, MessageSquare, Info,
-  Link as LinkIcon, GraduationCap, Building2, AlertTriangle, Sparkles
+  Link as LinkIcon, GraduationCap, Building2, Sparkles
 } from 'lucide-react';
 import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend, Cell
 } from 'recharts';
+
+import { supabase } from './supabaseClient';
 
 // ============================================================================
 // 1. AS 8 DIMENSÕES E OS 40 INDICADORES
@@ -169,34 +171,6 @@ const ALL_MODULES_DATABASE = [
   { id: 'm28', title: 'Preparação para Rodada de Investimento Anjo e VC (Data Room)', dim: 'recursos' }
 ];
 
-// ============================================================================
-// 3. PLAYBOOK DE AÇÕES COM SUBTÓPICOS PRÁTICOS
-// ============================================================================
-const ACTION_PLAYBOOK = {
-  estrategia: [
-    {
-      frente: 'Validação da dor e da tese de valor',
-      baixo: 'Rodar 15 entrevistas de descoberta com clientes-alvo para confirmar qual é a dor prioritária e como ela é resolvida hoje.',
-      medio: 'Segmentar a base já entrevistada e priorizar os dois nichos com maior urgência e disposição a pagar.',
-      alto: 'Converter a tese validada em plano de expansão para novas praças e verticais, com hipóteses de entrada documentadas.',
-      ferramentas: 'Roteiro de entrevista no formato The Mom Test, quadro de dores no Miro e registro padronizado no Notion ou Google Forms.',
-      metricas: 'Número de entrevistas concluídas, percentual que confirma a dor como prioritária e valor declarado de disposição a pagar.',
-      entregavel: 'Relatório de descoberta de uma página com as cinco dores mais citadas e a proposta de valor revisada.'
-    }
-  ],
-  lideranca: [
-    {
-      frente: 'Governança societária',
-      baixo: 'Formalizar acordo de sócios, cap table e cláusulas de vesting antes de qualquer nova captação.',
-      medio: 'Revisar o cap table considerando diluição futura e criar pool de opções para o time-chave.',
-      alto: 'Preparar a governança para due diligence: atas organizadas, contratos assinados e societário sem passivos.',
-      ferramentas: 'Planilha de cap table, assessoria jurídica societária e modelos de acordo de sócios e de vesting.',
-      metricas: 'Percentual do capital formalizado, existência de cláusulas de saída e prazo de cliff definido.',
-      entregavel: 'Acordo de sócios assinado e cap table atualizado com cenários de diluição.'
-    }
-  ]
-};
-
 const STAGE_LIST = ['Ideação', 'Operação', 'Tração', 'Escala'];
 const STAGE_COLORS = {
   'Ideação': '#D97706',
@@ -277,55 +251,6 @@ const LogoHeader = ({ size = 'normal' }) => {
   );
 };
 
-const INITIAL_STARTUPS = [
-  {
-    id: '1',
-    startupName: 'AchaBuraco GovTech',
-    founder: 'Carlos Xavier',
-    email: 'carlos@achaburaco.com.br',
-    whatsapp: '(41) 99876-5432',
-    segment: 'GovTech / Cidades Inteligentes',
-    stage: 'Tração',
-    score: 158,
-    date: '2026-02-10',
-    dimensions: {
-      'Estratégia & Tese de Mercado': 22,
-      'Liderança & Time': 21,
-      'Tecnologia, IA & Propriedade Intelectual': 20,
-      'Cultura de Inovação': 18,
-      'Pessoas & Competências': 19,
-      'Estrutura, Produto & Validação': 20,
-      'Processos & Agilidade': 18,
-      'Recursos, Runway & B2G': 20
-    },
-    notes: {
-      estrategia: 'Atuamos fortemente em prefeituras do interior do Paraná.'
-    }
-  },
-  {
-    id: '2',
-    startupName: 'HealthSync Bio',
-    founder: 'Mariana Santos',
-    email: 'mariana@healthsync.io',
-    whatsapp: '(42) 99123-4567',
-    segment: 'Healthtech / Saúde',
-    stage: 'Operação',
-    score: 124,
-    date: '2026-02-12',
-    dimensions: {
-      'Estratégia & Tese de Mercado': 18,
-      'Liderança & Time': 16,
-      'Tecnologia, IA & Propriedade Intelectual': 17,
-      'Cultura de Inovação': 15,
-      'Pessoas & Competências': 14,
-      'Estrutura, Produto & Validação': 16,
-      'Processos & Agilidade': 15,
-      'Recursos, Runway & B2G': 13
-    },
-    notes: {}
-  }
-];
-
 const EMPTY_FORM = {
   startupName: '',
   founder: '',
@@ -350,7 +275,8 @@ export default function App() {
   const [adminAuth, setAdminAuth] = useState(false);
   const [adminPin, setAdminPin] = useState('admin123');
   const [passwordInput, setPasswordInput] = useState('');
-  const [submissions, setSubmissions] = useState(INITIAL_STARTUPS);
+  const [submissions, setSubmissions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [dashboardSelection, setDashboardSelection] = useState('todas');
   const [selectedDashboardDim, setSelectedDashboardDim] = useState('estrategia');
@@ -362,12 +288,39 @@ export default function App() {
   const [lastSubmission, setLastSubmission] = useState(null);
 
   const [activeAdminTab, setActiveAdminTab] = useState('dashboard');
-  const [selectedStartup, setSelectedStartup] = useState(null);
-  const [selectedTrackStartupId, setSelectedTrackStartupId] = useState('1');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStageFilter, setSelectedStageFilter] = useState('Todos');
+  const [selectedTrackStartupId, setSelectedTrackStartupId] = useState('');
 
-  const handleFormSubmit = (e) => {
+  // CARREGAR DADOS DO SUPABASE
+  const fetchStartups = async () => {
+    setLoading(true);
+    const { data, error } = await supabase.from('startups').select('*');
+    if (data && !error) {
+      const formatted = data.map(item => ({
+        id: item.id,
+        startupName: item.startup_name,
+        founder: item.founder,
+        email: item.email,
+        whatsapp: item.whatsapp,
+        segment: item.segment,
+        stage: item.stage,
+        score: item.score,
+        date: item.date,
+        dimensions: item.dimensions,
+        notes: item.notes
+      }));
+      setSubmissions(formatted);
+      if (formatted.length > 0 && !selectedTrackStartupId) {
+        setSelectedTrackStartupId(formatted[0].id);
+      }
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchStartups();
+  }, []);
+
+  const handleFormSubmit = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
 
     const dimScores = {};
@@ -394,7 +347,7 @@ export default function App() {
 
     const newEntry = {
       id: Date.now().toString(),
-      startupName: formData.startupName,
+      startup_name: formData.startupName,
       founder: formData.founder,
       email: formData.email,
       whatsapp: formData.whatsapp,
@@ -406,9 +359,18 @@ export default function App() {
       notes: cleanNotes
     };
 
-    setSubmissions(prev => [newEntry, ...prev]);
-    setLastSubmission(newEntry);
-    setSubmitted(true);
+    const { error } = await supabase.from('startups').insert([newEntry]);
+
+    if (!error) {
+      fetchStartups();
+      setLastSubmission({
+        ...newEntry,
+        startupName: newEntry.startup_name
+      });
+      setSubmitted(true);
+    } else {
+      alert('Erro ao enviar respostas. Tente novamente.');
+    }
   };
 
   const getStageBadge = (stage) => {
@@ -423,10 +385,6 @@ export default function App() {
 
   const safeSubmissions = Array.isArray(submissions) ? submissions : [];
 
-  const selectedDashboardStartup = dashboardSelection === 'todas'
-    ? null
-    : safeSubmissions.find(s => s?.id === dashboardSelection) || null;
-
   const avgOverallScore = safeSubmissions.length > 0
     ? (safeSubmissions.reduce((acc, curr) => acc + (curr?.score || 0), 0) / safeSubmissions.length)
     : 0;
@@ -439,35 +397,11 @@ export default function App() {
       : 0;
   });
 
-  const chartData = Object.entries(activeDimValues).map(([key, val]) => ({
-    subject: getShortLabel(key),
-    A: Number(val) || 0
-  }));
-
-  const stageDistribution = STAGE_LIST.map(stage => ({
-    name: stage,
-    Startups: safeSubmissions.filter(s => s?.stage === stage).length
-  }));
-
-  const segmentDistribution = Object.entries(
-    safeSubmissions.reduce((acc, s) => {
-      const key = s?.segment || 'Não informado';
-      acc[key] = (acc[key] || 0) + 1;
-      return acc;
-    }, {})
-  ).map(([name, value]) => ({ name, Startups: value }));
-
-  const answeredCount = ALL_QUESTIONS.filter(q => formData.responses?.[q.id] > 0).length;
-
-  // ============================================================================
-  // LÓGICA DA TRILHA DINÂMICA COM BASE NAS RESPOSTAS
-  // ============================================================================
   const currentTrackStartup = safeSubmissions.find(s => s.id === selectedTrackStartupId) || safeSubmissions[0];
 
   const getDynamicTrackForStartup = (startup) => {
     if (!startup || !startup.dimensions) return [];
 
-    // 1. Ordenar as dimensões da startup da menor pontuação para a maior
     const sortedDimensions = Object.entries(startup.dimensions)
       .map(([dimName, score]) => ({
         dimId: DIM_ID_BY_NAME[dimName],
@@ -476,12 +410,11 @@ export default function App() {
       }))
       .sort((a, b) => a.score - b.score);
 
-    // 2. Classificar módulos do banco com base na prioridade da nota da dimensão
     const dynamicModules = [];
 
     sortedDimensions.forEach((item, index) => {
       let priority = 'Baixa';
-      if (index < 3 || item.score < 15) priority = 'Alta'; // As 3 piores dimensões viram prioridade Alta
+      if (index < 3 || item.score < 15) priority = 'Alta';
       else if (index < 5) priority = 'Média';
 
       const dimModules = ALL_MODULES_DATABASE.filter(m => m.dim === item.dimId);
@@ -552,7 +485,7 @@ export default function App() {
                   </div>
                   <div>
                     <h2 className="text-lg font-bold text-white">Painel do administrador</h2>
-                    <p className="text-xs text-slate-300 mt-1">Análise do portfólio e trilhas dinâmicas recomendadas.</p>
+                    <p className="text-xs text-slate-300 mt-1">Análise em tempo real de todas as startups.</p>
                   </div>
                 </div>
                 <div className="mt-8 flex items-center text-xs font-bold text-purple-300 gap-2">
@@ -674,7 +607,7 @@ export default function App() {
               <div className="bg-slate-900 p-8 rounded-3xl space-y-4 text-center">
                 <CheckCircle2 className="h-12 w-12 text-teal-400 mx-auto" />
                 <h2 className="text-xl font-bold text-white">Diagnóstico enviado com sucesso!</h2>
-                <p className="text-xs text-slate-400">Sua pontuação foi registrada no painel de mentoria.</p>
+                <p className="text-xs text-slate-400">Sua pontuação foi salva no banco de dados e enviada ao painel de mentoria.</p>
               </div>
             )}
           </main>
@@ -715,21 +648,65 @@ export default function App() {
           <main className="flex-1 overflow-y-auto p-8 space-y-6">
             {activeAdminTab === 'dashboard' && (
               <div className="space-y-6">
-                <h1 className="text-xl font-bold text-slate-900">Visão Geral do Portfólio</h1>
-                <div className="grid grid-cols-4 gap-4">
+                <div className="flex justify-between items-center">
+                  <h1 className="text-xl font-bold text-slate-900">Visão Geral do Portfólio (Supabase)</h1>
+                  <button
+                    onClick={fetchStartups}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50"
+                  >
+                    <RefreshCw className="h-3.5 w-3.5" /> Atualizar dados
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
                   <div className="bg-white p-5 rounded-2xl border border-slate-200">
                     <span className="text-[10px] font-bold text-slate-500 uppercase">Score Médio</span>
                     <p className="text-3xl font-black text-slate-900 mt-1">{avgOverallScore.toFixed(1)}</p>
                   </div>
                   <div className="bg-white p-5 rounded-2xl border border-slate-200">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase">Startups Analisadas</span>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase">Startups Registradas</span>
                     <p className="text-3xl font-black text-purple-700 mt-1">{safeSubmissions.length}</p>
+                  </div>
+                </div>
+
+                {/* TABELA DE RESPOSTAS REAL TIME */}
+                <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+                  <div className="p-4 border-b border-slate-200 bg-slate-50 font-bold text-xs text-slate-800">
+                    Respostas Recebidas ({safeSubmissions.length})
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-slate-100 text-slate-600 font-bold">
+                        <tr>
+                          <th className="p-3">Startup</th>
+                          <th className="p-3">Fundador</th>
+                          <th className="p-3">Estágio</th>
+                          <th className="p-3">Score</th>
+                          <th className="p-3">Data</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {safeSubmissions.length === 0 ? (
+                          <tr><td colSpan={5} className="p-5 text-center text-slate-400">Nenhuma startup respondeu ainda.</td></tr>
+                        ) : (
+                          safeSubmissions.map(s => (
+                            <tr key={s.id}>
+                              <td className="p-3 font-bold text-slate-900">{s.startupName}</td>
+                              <td className="p-3 text-slate-600">{s.founder}</td>
+                              <td className="p-3"><span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${getStageBadge(s.stage)}`}>{s.stage}</span></td>
+                              <td className="p-3 font-extrabold text-teal-700">{s.score}/200</td>
+                              <td className="p-3 text-slate-500">{s.date}</td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* ABA DE TRILHA DINÂMICA PERSONALIZADA POR STARTUP */}
+            {/* ABA DE TRILHA DINÂMICA PERSONALIZADA */}
             {activeAdminTab === 'trilhas' && (
               <div className="space-y-6">
                 <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">

@@ -14,7 +14,7 @@ import {
 import { supabase } from './supabaseClient';
 
 // ============================================================================
-// 1. DIMENSÕES E INDICADORES
+// 1. ESTRUTURA COMPLETA DAS 8 DIMENSÕES E 40 INDICADORES
 // ============================================================================
 const GOVTECH_DIMENSIONS = [
   {
@@ -128,47 +128,6 @@ const DIM_ID_BY_NAME = GOVTECH_DIMENSIONS.reduce((acc, d) => { acc[d.name] = d.i
 const getShortLabel = (fullName) => SHORT_LABELS?.[fullName] || fullName || '';
 const ALL_QUESTIONS = GOVTECH_DIMENSIONS.flatMap(d => d.questions);
 
-// ============================================================================
-// 2. MÓDULOS DE CAPACITAÇÃO (TRILHA DINÂMICA)
-// ============================================================================
-const ALL_MODULES_DATABASE = [
-  { id: 'm1', title: 'Tese de valor e dor prioritária do cliente', dim: 'estrategia' },
-  { id: 'm2', title: 'Entrevistas de descoberta e validação do problema', dim: 'estrategia' },
-  { id: 'm3', title: 'Dimensionamento de Mercado (TAM/SAM/SOM) e Proposta Comercial', dim: 'estrategia' },
-  { id: 'm4', title: 'Modelos de Contratação Pública e Privada (SaaS, B2B e B2G)', dim: 'estrategia' },
-  
-  { id: 'm5', title: 'Acordo de sócios, vesting e cap table inicial', dim: 'lideranca' },
-  { id: 'm6', title: 'Ritmo de Gestão por Indicadores (OKRs e KPIs)', dim: 'lideranca' },
-  { id: 'm7', title: 'Governança Corporativa e Conselho Consultivo', dim: 'lideranca' },
-  { id: 'm8', title: 'Complementaridade do Time e Sucessão', dim: 'lideranca' },
-
-  { id: 'm9', title: 'Arquitetura de Software e Controle de Propriedade Intelectual (IP)', dim: 'tecnologia' },
-  { id: 'm10', title: 'Aplicação prática de IA Generativa e Automação de Processos', dim: 'tecnologia' },
-  { id: 'm11', title: 'APIs, Integração com Legados e Segurança da Informação', dim: 'tecnologia' },
-  { id: 'm12', title: 'Conformidade com a LGPD e Auditoria de Código', dim: 'tecnologia' },
-
-  { id: 'm13', title: 'Cultura de Experimentação e Testes Rápidos de Hipóteses', dim: 'cultura' },
-  { id: 'm14', title: 'Documentação e Circulação Sistemática de Aprendizados', dim: 'cultura' },
-  { id: 'm15', title: 'Inovação Aberta e Parcerias com ICTs e Universidades', dim: 'cultura' },
-
-  { id: 'm16', title: 'UX/UI Design: Foco na Simplicidade e Experiência do Usuário', dim: 'pessoas' },
-  { id: 'm17', title: 'Estruturação de Atendimento, Suporte e Customer Success', dim: 'pessoas' },
-  { id: 'm18', title: 'Retenção de Talentos Técnicos e Capacitação Continuada', dim: 'pessoas' },
-
-  { id: 'm19', title: 'Construção de MVP Enxuto e Validação em Campo', dim: 'estrutura' },
-  { id: 'm20', title: 'Provas de Conceito (PoC): Escopo e Critérios de Aceite', dim: 'estrutura' },
-  { id: 'm21', title: 'Métricas de Uso Ativo, Engajamento e Ativação', dim: 'estrutura' },
-
-  { id: 'm22', title: 'Metodologias Ágeis de Desenvolvimento (Scrum/Kanban)', dim: 'processos' },
-  { id: 'm23', title: 'Estruturação do Funil de Vendas e CRM na Prática', dim: 'processos' },
-  { id: 'm24', title: 'Playbook de Onboarding de Clientes e Acordos de SLA', dim: 'processos' },
-
-  { id: 'm25', title: 'DRE Gerencial, Fluxo de Caixa e Projeção de Runway', dim: 'recursos' },
-  { id: 'm26', title: 'Captação via Editais de Fomento (FINEP, Sebrae, CNPq)', dim: 'recursos' },
-  { id: 'm27', title: 'Precificação Sustentável e Análise de Unit Economics (CAC/LTV)', dim: 'recursos' },
-  { id: 'm28', title: 'Preparação para Rodada de Investimento Anjo e VC (Data Room)', dim: 'recursos' }
-];
-
 const STAGE_LIST = ['Ideação', 'Operação', 'Tração', 'Escala'];
 const SEGMENT_OPTIONS = [
   'SaaS B2B',
@@ -180,8 +139,6 @@ const SEGMENT_OPTIONS = [
   'E-commerce / Retailtech',
   'Outro'
 ];
-
-const SEGMENT_PALETTE = ['#0D9488', '#2563EB', '#7C3AED', '#D97706', '#0891B2', '#DB2777', '#65A30D', '#475569'];
 
 const wrapLabel = (text, maxChars) => {
   const words = String(text || '').split(' ');
@@ -225,7 +182,7 @@ const LogoHeader = ({ size = 'normal' }) => {
           HUB DE DIAGNÓSTICO
         </span>
         <span className="text-[9px] md:text-[10px] text-teal-300 font-bold tracking-widest uppercase block">
-          Maturidade 2026
+          MATURIDADE DE STARTUPS 2026
         </span>
       </div>
     </div>
@@ -245,16 +202,21 @@ const EMPTY_FORM = {
 export default function App() {
   const [role, setRole] = useState(null);
   const [adminAuth, setAdminAuth] = useState(false);
+  const [adminPin, setAdminPin] = useState('admin123');
   const [adminPinInput, setAdminPinInput] = useState('');
+  const [newPinInput, setNewPinInput] = useState('');
   const [submissions, setSubmissions] = useState([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showMatrixModal, setShowMatrixModal] = useState(false);
 
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState(EMPTY_FORM);
   const [submitted, setSubmitted] = useState(false);
 
   const [activeAdminTab, setActiveAdminTab] = useState('dashboard');
-  const [selectedTrackStartupId, setSelectedTrackStartupId] = useState('');
+  const [selectedPlanStartupId, setSelectedPlanStartupId] = useState('');
+  const [selectedBenchStartups, setSelectedBenchStartups] = useState([]);
+  const [selectedObsDimension, setSelectedObsDimension] = useState('estrategia');
 
   const fetchStartups = async () => {
     const { data, error } = await supabase.from('startups').select('*');
@@ -265,7 +227,7 @@ export default function App() {
         founder: item.founder,
         email: item.email,
         whatsapp: item.whatsapp,
-        segment: item.segment || 'Não informado',
+        segment: item.segment || 'SaaS B2B',
         stage: item.stage,
         score: item.score,
         date: item.date,
@@ -273,8 +235,9 @@ export default function App() {
         notes: item.notes
       }));
       setSubmissions(formatted);
-      if (formatted.length > 0 && !selectedTrackStartupId) {
-        setSelectedTrackStartupId(formatted[0].id);
+      if (formatted.length > 0 && !selectedPlanStartupId) {
+        setSelectedPlanStartupId(formatted[0].id);
+        setSelectedBenchStartups([formatted[0].id, formatted[1]?.id].filter(Boolean));
       }
     }
   };
@@ -285,10 +248,10 @@ export default function App() {
 
   const handleAdminLogin = (e) => {
     e.preventDefault();
-    if (adminPinInput === 'admin123') {
+    if (adminPinInput === adminPin) {
       setAdminAuth(true);
     } else {
-      alert('Senha incorreta!');
+      alert('Senha/PIN incorreto!');
     }
   };
 
@@ -341,6 +304,17 @@ export default function App() {
     }
   };
 
+  const handleDeleteStartup = async (id) => {
+    if (window.confirm('Tem certeza que deseja excluir esta startup do banco de dados?')) {
+      const { error } = await supabase.from('startups').delete().eq('id', id);
+      if (!error) {
+        fetchStartups();
+      } else {
+        alert('Erro ao excluir registro.');
+      }
+    }
+  };
+
   const getStageBadge = (stage) => {
     switch (stage) {
       case 'Ideação': return 'bg-amber-100 text-amber-800 border-amber-300';
@@ -365,9 +339,18 @@ export default function App() {
       : 0;
   });
 
+  const dimSorted = Object.entries(activeDimValues).sort((a, b) => b[1] - a[1]);
+  const highlightTop = dimSorted[0] ? `${dimSorted[0][0]}` : 'N/A';
+  const highlightLow = dimSorted[dimSorted.length - 1] ? `${dimSorted[dimSorted.length - 1][0]}` : 'N/A';
+
   const radarChartData = Object.entries(activeDimValues).map(([key, val]) => ({
     subject: getShortLabel(key),
     A: Number(val) || 0
+  }));
+
+  const barChartData = Object.entries(activeDimValues).map(([key, val]) => ({
+    name: getShortLabel(key),
+    Score: Number(val) || 0
   }));
 
   const stageDistribution = STAGE_LIST.map(stage => ({
@@ -383,59 +366,62 @@ export default function App() {
     }, {})
   ).map(([name, value]) => ({ name, Startups: value }));
 
-  const currentTrackStartup = safeSubmissions.find(s => s.id === selectedTrackStartupId) || safeSubmissions[0];
-
-  const getDynamicTrackForStartup = (startup) => {
-    if (!startup || !startup.dimensions) return [];
-
-    const sortedDimensions = Object.entries(startup.dimensions)
-      .map(([dimName, score]) => ({
-        dimId: DIM_ID_BY_NAME[dimName],
-        dimName,
-        score
-      }))
-      .sort((a, b) => a.score - b.score);
-
-    const dynamicModules = [];
-
-    sortedDimensions.forEach((item, index) => {
-      let priority = 'Baixa';
-      if (index < 3 || item.score < 15) priority = 'Alta';
-      else if (index < 5) priority = 'Média';
-
-      const dimModules = ALL_MODULES_DATABASE.filter(m => m.dim === item.dimId);
-      dimModules.forEach(m => {
-        dynamicModules.push({
-          ...m,
-          dimName: item.dimName,
-          score: item.score,
-          priority
-        });
-      });
-    });
-
-    return dynamicModules;
-  };
-
-  const dynamicModules = getDynamicTrackForStartup(currentTrackStartup);
+  const currentPlanStartup = safeSubmissions.find(s => s.id === selectedPlanStartupId) || safeSubmissions[0];
   const answeredCount = ALL_QUESTIONS.filter(q => formData.responses?.[q.id] > 0).length;
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+
+      {/* MODAL MATRIZ DE PERGUNTAS */}
+      {showMatrixModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white text-slate-900 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8 space-y-6 shadow-2xl relative">
+            <button
+              onClick={() => setShowMatrixModal(false)}
+              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-slate-500"
+            >
+              <X className="h-6 w-6" />
+            </button>
+            <div>
+              <h2 className="text-xl font-bold text-slate-900">Matriz de Perguntas & Dimensões</h2>
+              <p className="text-xs text-slate-500 mt-1">8 dimensões · 40 indicadores · escala de 1 (discordo totalmente) a 5 (concordo totalmente)</p>
+            </div>
+            <div className="space-y-6">
+              {GOVTECH_DIMENSIONS.map((dim, idx) => (
+                <div key={dim.id} className="border border-slate-200 rounded-2xl p-5 space-y-3 bg-slate-50">
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-bold text-sm text-slate-900">{idx + 1}. {dim.name}</h3>
+                    <span className="text-[10px] font-bold px-2.5 py-1 bg-teal-100 text-teal-800 rounded-full">até 25 pts</span>
+                  </div>
+                  <p className="text-xs text-slate-500">{dim.description}</p>
+                  <div className="bg-white rounded-xl divide-y divide-slate-100 border border-slate-200">
+                    {dim.questions.map((q, qIdx) => (
+                      <div key={q.id} className="p-3 text-xs text-slate-700 flex gap-3">
+                        <span className="font-bold text-teal-700 shrink-0">{idx + 1}.{qIdx + 1}</span>
+                        <span>{q.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* SELEÇÃO DE INÍCIO */}
       {!role && (
         <div className="min-h-screen bg-slate-900 flex flex-col justify-between p-4 md:p-6">
           <header className="max-w-6xl mx-auto w-full flex flex-col sm:flex-row justify-between items-center gap-3 py-4 border-b border-slate-800 text-center sm:text-left">
             <LogoHeader size="large" />
-            <span className="text-[11px] font-semibold px-3 py-1 bg-teal-500/10 border border-teal-500/25 rounded-full text-teal-300">
+            <span className="text-[11px] font-semibold px-3.5 py-1.5 bg-teal-500/10 border border-teal-500/25 rounded-full text-teal-300">
               Programa de Incubação e Aceleração 2026
             </span>
           </header>
 
           <main className="max-w-5xl mx-auto w-full my-auto py-8 text-center space-y-8">
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-teal-500/10 border border-teal-500/25 rounded-full text-teal-300 font-bold text-[11px] uppercase">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-teal-500/10 border border-teal-500/25 rounded-full text-teal-300 font-bold text-[11px] uppercase">
                 <Zap className="h-3.5 w-3.5" /> Hub Govtech PR
               </div>
               <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-white px-2">Diagnóstico de Maturidade</h1>
@@ -453,7 +439,7 @@ export default function App() {
                   </div>
                   <div>
                     <h2 className="text-base md:text-lg font-bold text-white">Área da startup</h2>
-                    <p className="text-xs text-slate-300 mt-1">Preencha o diagnóstico e receba seu score por dimensão.</p>
+                    <p className="text-xs text-slate-300 mt-1">Responda os 40 indicadores e receba o radar de maturidade, o score por dimensão e o link do relatório.</p>
                   </div>
                 </div>
                 <div className="mt-6 flex items-center text-xs font-bold text-teal-300 gap-2">
@@ -471,7 +457,7 @@ export default function App() {
                   </div>
                   <div>
                     <h2 className="text-base md:text-lg font-bold text-white">Painel do administrador</h2>
-                    <p className="text-xs text-slate-300 mt-1">Análise em tempo real de todas as startups.</p>
+                    <p className="text-xs text-slate-300 mt-1">Análise individual e coletiva, distribuição por estágio e setor, planos de ação e trilhas de capacitação.</p>
                   </div>
                 </div>
                 <div className="mt-6 flex items-center text-xs font-bold text-purple-300 gap-2">
@@ -480,6 +466,9 @@ export default function App() {
               </button>
             </div>
           </main>
+          <footer className="text-center text-[11px] text-slate-500 py-4">
+            Hub de Inovação & Incubação · 2026
+          </footer>
         </div>
       )}
 
@@ -488,12 +477,20 @@ export default function App() {
         <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
           <header className="bg-slate-900 border-b border-slate-800 py-3 px-4 md:px-6 flex justify-between items-center sticky top-0 z-30">
             <LogoHeader size="normal" />
-            <button
-              onClick={() => { setRole(null); setSubmitted(false); }}
-              className="text-xs font-medium text-slate-200 hover:text-white bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700"
-            >
-              Voltar
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowMatrixModal(true)}
+                className="text-xs font-medium text-slate-300 hover:text-white bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700 flex items-center gap-1.5"
+              >
+                <ListChecks className="h-3.5 w-3.5" /> Matriz de perguntas
+              </button>
+              <button
+                onClick={() => { setRole(null); setSubmitted(false); }}
+                className="text-xs font-medium text-slate-200 hover:text-white bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700 flex items-center gap-1.5"
+              >
+                <LogOut className="h-3.5 w-3.5" /> Voltar ao início
+              </button>
+            </div>
           </header>
 
           <main className="max-w-4xl mx-auto w-full py-6 md:py-10 px-3 md:px-4">
@@ -501,10 +498,13 @@ export default function App() {
               <div className="bg-slate-900 border border-slate-800 rounded-2xl md:rounded-3xl p-4 md:p-8 shadow-2xl space-y-6 md:space-y-8">
                 {currentStep === 0 ? (
                   <div className="space-y-5">
-                    <h2 className="text-lg md:text-xl font-bold text-white">Identificação da startup</h2>
+                    <div>
+                      <h2 className="text-lg md:text-xl font-bold text-white">Identificação da startup</h2>
+                      <p className="text-xs text-slate-400 mt-0.5">Dados de contato do fundador para registro no programa.</p>
+                    </div>
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-xs font-bold text-slate-300 mb-1">Nome da startup *</label>
+                        <label className="block text-[11px] font-bold uppercase text-slate-300 mb-1">Nome da startup *</label>
                         <input
                           type="text" required value={formData.startupName}
                           onChange={e => setFormData({ ...formData, startupName: e.target.value })}
@@ -513,7 +513,7 @@ export default function App() {
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-xs font-bold text-slate-300 mb-1">Fundador *</label>
+                          <label className="block text-[11px] font-bold uppercase text-slate-300 mb-1">Nome do fundador *</label>
                           <input
                             type="text" required value={formData.founder}
                             onChange={e => setFormData({ ...formData, founder: e.target.value })}
@@ -521,7 +521,7 @@ export default function App() {
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-bold text-slate-300 mb-1">WhatsApp *</label>
+                          <label className="block text-[11px] font-bold uppercase text-slate-300 mb-1">WhatsApp do fundador *</label>
                           <input
                             type="text" required value={formData.whatsapp}
                             onChange={e => setFormData({ ...formData, whatsapp: e.target.value })}
@@ -531,7 +531,7 @@ export default function App() {
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-xs font-bold text-slate-300 mb-1">E-mail *</label>
+                          <label className="block text-[11px] font-bold uppercase text-slate-300 mb-1">E-mail de contato *</label>
                           <input
                             type="email" required value={formData.email}
                             onChange={e => setFormData({ ...formData, email: e.target.value })}
@@ -539,7 +539,7 @@ export default function App() {
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-bold text-slate-300 mb-1">Segmento / Setor *</label>
+                          <label className="block text-[11px] font-bold uppercase text-slate-300 mb-1">Segmento de atuação *</label>
                           <select
                             value={formData.segment}
                             onChange={e => setFormData({ ...formData, segment: e.target.value })}
@@ -557,15 +557,15 @@ export default function App() {
                         if (formData.startupName && formData.founder) setCurrentStep(1);
                         else alert('Preencha os campos obrigatórios.');
                       }}
-                      className="w-full py-3.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs transition"
+                      className="w-full py-3.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs transition flex items-center justify-center gap-2"
                     >
-                      Iniciar questionário (40 indicadores)
+                      Iniciar questionário (40 indicadores) <ArrowRight className="h-4 w-4" />
                     </button>
                   </div>
                 ) : (
                   <div className="space-y-6 md:space-y-8">
                     <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 flex justify-between items-center sticky top-16 z-20">
-                      <span className="text-xs font-bold text-slate-300">Progresso:</span>
+                      <span className="text-xs font-bold text-slate-300">Progresso de respostas:</span>
                       <span className="text-xs font-extrabold text-teal-300 bg-teal-500/10 px-3 py-1 rounded-lg border border-teal-500/20">
                         {answeredCount} / 40 respondidas
                       </span>
@@ -573,7 +573,11 @@ export default function App() {
 
                     {GOVTECH_DIMENSIONS.map((dim, dimIdx) => (
                       <div key={dim.id} className="bg-slate-950 border border-slate-800 rounded-xl md:rounded-2xl p-4 md:p-5 space-y-4">
-                        <h3 className="font-bold text-white text-xs md:text-sm">{dimIdx + 1}. {dim.name}</h3>
+                        <div className="space-y-1">
+                          <h3 className="font-bold text-white text-xs md:text-sm">{dimIdx + 1}. {dim.name}</h3>
+                          <p className="text-[11px] text-slate-400">{dim.description}</p>
+                        </div>
+
                         <div className="divide-y divide-slate-800">
                           {dim.questions.map((q, qIdx) => (
                             <div key={q.id} className="py-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
@@ -598,6 +602,23 @@ export default function App() {
                               </div>
                             </div>
                           ))}
+                        </div>
+
+                        {/* OBSERVAÇÃO POR DIMENSÃO */}
+                        <div className="pt-2">
+                          <label className="block text-[11px] font-bold text-slate-400 mb-1">
+                            Observações ou contexto adicional para {dim.name} (opcional):
+                          </label>
+                          <textarea
+                            rows={2}
+                            value={formData.notes?.[dim.id] || ''}
+                            onChange={e => setFormData({
+                              ...formData,
+                              notes: { ...(formData.notes || {}), [dim.id]: e.target.value }
+                            })}
+                            placeholder="Descreva detalhes práticos, dados adicionais ou justificativas..."
+                            className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white outline-none focus:border-teal-500"
+                          />
                         </div>
                       </div>
                     ))}
@@ -624,7 +645,6 @@ export default function App() {
       {/* PAINEL ADMINISTRATIVO */}
       {role === 'admin' && (
         <>
-          {/* TELA DE AUTENTICAÇÃO / LOGIN DO ADMIN */}
           {!adminAuth ? (
             <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
               <form onSubmit={handleAdminLogin} className="bg-slate-950 border border-slate-800 p-6 md:p-8 rounded-3xl max-w-md w-full space-y-6 text-center">
@@ -638,7 +658,7 @@ export default function App() {
                 <div>
                   <input
                     type="password"
-                    placeholder="Senha do Admin"
+                    placeholder="Senha / PIN"
                     value={adminPinInput}
                     onChange={e => setAdminPinInput(e.target.value)}
                     className="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-sm text-center text-white outline-none focus:border-purple-500"
@@ -674,7 +694,7 @@ export default function App() {
                 </button>
               </div>
 
-              {/* BARRA LATERAL */}
+              {/* SIDEBAR COM TODOS OS MENUS ORIGINAIS */}
               <aside className={`${
                 mobileMenuOpen ? 'block' : 'hidden'
               } md:block w-full md:w-64 bg-slate-900 text-white flex flex-col justify-between p-5 border-r border-slate-800 shrink-0 z-20`}>
@@ -685,18 +705,26 @@ export default function App() {
                   <nav className="space-y-1">
                     {[
                       { key: 'dashboard', label: 'Visão geral', icon: LayoutDashboard },
-                      { key: 'trilhas', label: 'Trilha Dinâmica (IA)', icon: GraduationCap }
+                      { key: 'plano', label: 'Plano por startup', icon: Target },
+                      { key: 'trilhas', label: 'Trilhas de conhecimento', icon: GraduationCap },
+                      { key: 'benchmarking', label: 'Benchmarking', icon: Scale },
+                      { key: 'pin', label: 'Configurar PIN', icon: Key },
+                      { key: 'matriz', label: 'Matriz de perguntas', icon: ListChecks }
                     ].map(item => {
                       const Icon = item.icon;
                       return (
                         <button
                           key={item.key}
                           onClick={() => {
-                            setActiveAdminTab(item.key);
+                            if (item.key === 'matriz') {
+                              setShowMatrixModal(true);
+                            } else {
+                              setActiveAdminTab(item.key);
+                            }
                             setMobileMenuOpen(false);
                           }}
                           className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition ${
-                            activeAdminTab === item.key ? 'bg-teal-500 text-slate-950' : 'text-slate-200 hover:bg-slate-800'
+                            activeAdminTab === item.key && item.key !== 'matriz' ? 'bg-teal-500 text-slate-950' : 'text-slate-200 hover:bg-slate-800'
                           }`}
                         >
                           <Icon className="h-4 w-4" /> {item.label}
@@ -713,52 +741,133 @@ export default function App() {
                 </button>
               </aside>
 
-              {/* CONTEÚDO PRINCIPAL DO ADMIN */}
+              {/* CONTEÚDO PRINCIPAL DAS ABAS */}
               <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
+
+                {/* 1. VISÃO GERAL (DASHBOARD) */}
                 {activeAdminTab === 'dashboard' && (
                   <div className="space-y-6">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                      <h1 className="text-lg md:text-xl font-bold text-slate-900">Visão Geral do Portfólio (Supabase)</h1>
-                      <button
-                        onClick={fetchStartups}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-sm"
-                      >
-                        <RefreshCw className="h-3.5 w-3.5" /> Atualizar dados
-                      </button>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200 shadow-sm">
-                        <span className="text-[10px] font-bold text-slate-500 uppercase">Score Médio</span>
-                        <p className="text-2xl md:text-3xl font-black text-slate-900 mt-1">{avgOverallScore.toFixed(1)}</p>
+                      <div>
+                        <h1 className="text-xl font-bold text-slate-900">Dashboard de maturidade das startups</h1>
+                        <p className="text-xs text-slate-500">Métricas consolidadas, análise individual e distribuição do portfólio.</p>
                       </div>
-                      <div className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200 shadow-sm">
-                        <span className="text-[10px] font-bold text-slate-500 uppercase">Startups Registradas</span>
-                        <p className="text-2xl md:text-3xl font-black text-purple-700 mt-1">{safeSubmissions.length}</p>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={fetchStartups}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-sm"
+                        >
+                          <RefreshCw className="h-3.5 w-3.5" /> Atualizar dados
+                        </button>
                       </div>
                     </div>
 
-                    {/* GRÁFICOS RESTAURADOS */}
+                    {/* CARDS DE PONTUAÇÃO E DESTAQUES */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pontuação Média</span>
+                        <p className="text-2xl font-black text-slate-900 mt-1">{avgOverallScore.toFixed(1)} <span className="text-xs text-slate-400 font-normal">/ 200 pts</span></p>
+                        <span className="text-[11px] text-slate-500 block mt-1">Média por dimensão: {(avgOverallScore / 8).toFixed(1)} / 25</span>
+                      </div>
+
+                      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Destaque Principal</span>
+                        <p className="text-sm font-bold text-teal-700 mt-1 truncate">{highlightTop}</p>
+                        <span className="text-[11px] text-slate-500 block mt-1">Maior pontuação do portfólio</span>
+                      </div>
+
+                      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Maior Oportunidade</span>
+                        <p className="text-sm font-bold text-amber-700 mt-1 truncate">{highlightLow}</p>
+                        <span className="text-[11px] text-slate-500 block mt-1">Gargalo prioritário do lote</span>
+                      </div>
+
+                      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Startups Analisadas</span>
+                        <p className="text-2xl font-black text-purple-700 mt-1">{safeSubmissions.length}</p>
+                        <span className="text-[11px] text-slate-500 block mt-1">Total cadastrado no programa</span>
+                      </div>
+                    </div>
+
+                    {/* GRÁFICOS RADAR E BARRAS DE PONTUAÇÃO */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      {/* GRÁFICO DE RADAR DE MATURIDADE */}
-                      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                        <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Maturidade Média por Dimensão</h3>
+                      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                        <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Radar de Maturidade (Média Geral)</h3>
                         <div className="h-64 w-full">
                           <ResponsiveContainer width="100%" height="100%">
                             <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarChartData}>
                               <PolarGrid stroke="#e2e8f0" />
                               <PolarAngleAxis dataKey="subject" tick={<RadarTick />} />
                               <PolarRadiusAxis angle={30} domain={[0, 25]} stroke="#cbd5e1" fontSize={10} />
-                              <Radar name="Média" dataKey="A" stroke="#0d9488" fill="#0d9488" fillOpacity={0.4} />
+                              <Radar name="Média" dataKey="A" stroke="#0d9488" fill="#0d9488" fillOpacity={0.3} />
                             </RadarChart>
                           </ResponsiveContainer>
                         </div>
                       </div>
 
-                      {/* DISTRIBUIÇÃO POR ESTÁGIO */}
-                      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                        <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Distribuição por Estágio</h3>
+                      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                        <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Pontuação por Dimensão (0 a 25 pts)</h3>
                         <div className="h-64 w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={barChartData}>
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                              <XAxis dataKey="name" stroke="#64748b" fontSize={9} interval={0} />
+                              <YAxis domain={[0, 25]} stroke="#64748b" fontSize={10} />
+                              <Tooltip />
+                              <Bar dataKey="Score" fill="#0d9488" radius={[4, 4, 0, 0]} />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* OBSERVAÇÕES DA STARTUP POR DIMENSÃO */}
+                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                        <div>
+                          <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                            <MessageSquare className="h-4 w-4 text-teal-600" /> Observações da Startup por Dimensão
+                          </h3>
+                          <p className="text-xs text-slate-500">Selecione uma dimensão para visualizar os relatos das startups.</p>
+                        </div>
+                        <select
+                          value={selectedObsDimension}
+                          onChange={e => setSelectedObsDimension(e.target.value)}
+                          className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800"
+                        >
+                          {GOVTECH_DIMENSIONS.map(d => (
+                            <option key={d.id} value={d.id}>{d.name}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="space-y-3">
+                        {safeSubmissions.filter(s => s.notes?.[selectedObsDimension]).length === 0 ? (
+                          <div className="p-4 bg-slate-50 rounded-xl text-xs text-slate-500 text-center">
+                            Nenhuma observação registrada para esta dimensão.
+                          </div>
+                        ) : (
+                          safeSubmissions.map(s => {
+                            if (!s.notes?.[selectedObsDimension]) return null;
+                            return (
+                              <div key={s.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+                                <div className="flex justify-between items-center">
+                                  <span className="font-bold text-xs text-slate-900">{s.startupName}</span>
+                                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${getStageBadge(s.stage)}`}>{s.stage}</span>
+                                </div>
+                                <p className="text-xs text-slate-600 italic">"{s.notes[selectedObsDimension]}"</p>
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+
+                    {/* DISTRIBUIÇÕES POR ESTÁGIO E SETOR */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                        <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Distribuição por Estágio de Maturidade</h3>
+                        <div className="h-56 w-full">
                           <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={stageDistribution}>
                               <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -770,37 +879,75 @@ export default function App() {
                           </ResponsiveContainer>
                         </div>
                       </div>
+
+                      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                        <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Distribuição por Setor de Atuação</h3>
+                        <div className="h-56 w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={segmentDistribution}>
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                              <XAxis dataKey="name" stroke="#64748b" fontSize={10} />
+                              <YAxis allowDecimals={false} stroke="#64748b" fontSize={11} />
+                              <Tooltip />
+                              <Bar dataKey="Startups" fill="#0d9488" radius={[6, 6, 0, 0]} />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
                     </div>
 
-                    {/* TABELA DE RESPOSTAS */}
+                    {/* TABELA COMPLETA DE STARTUPS CADASTRADAS */}
                     <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-                      <div className="p-4 border-b border-slate-200 bg-slate-50 font-bold text-xs text-slate-800">
-                        Respostas Recebidas ({safeSubmissions.length})
+                      <div className="p-4 border-b border-slate-200 bg-slate-50 font-bold text-xs text-slate-800 flex justify-between items-center">
+                        <span>Startups Cadastradas ({safeSubmissions.length})</span>
                       </div>
                       <div className="overflow-x-auto">
-                        <table className="w-full text-left text-xs min-w-[600px]">
+                        <table className="w-full text-left text-xs min-w-[700px]">
                           <thead className="bg-slate-100 text-slate-600 font-bold">
                             <tr>
                               <th className="p-3">Startup</th>
-                              <th className="p-3">Fundador</th>
-                              <th className="p-3">Segmento</th>
+                              <th className="p-3">Fundador e Contato</th>
                               <th className="p-3">Estágio</th>
-                              <th className="p-3">Score</th>
-                              <th className="p-3">Data</th>
+                              <th className="p-3">Score Total</th>
+                              <th className="p-3 text-right">Ações</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-slate-100">
                             {safeSubmissions.length === 0 ? (
-                              <tr><td colSpan={6} className="p-5 text-center text-slate-400">Nenhuma startup respondeu ainda.</td></tr>
+                              <tr><td colSpan={5} className="p-5 text-center text-slate-400">Nenhuma startup registrada.</td></tr>
                             ) : (
                               safeSubmissions.map(s => (
                                 <tr key={s.id}>
-                                  <td className="p-3 font-bold text-slate-900">{s.startupName}</td>
-                                  <td className="p-3 text-slate-600">{s.founder}</td>
-                                  <td className="p-3 text-slate-500">{s.segment}</td>
-                                  <td className="p-3"><span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${getStageBadge(s.stage)}`}>{s.stage}</span></td>
-                                  <td className="p-3 font-extrabold text-teal-700">{s.score}/200</td>
-                                  <td className="p-3 text-slate-500">{s.date}</td>
+                                  <td className="p-3">
+                                    <span className="font-bold text-slate-900 block">{s.startupName}</span>
+                                    <span className="text-[10px] text-slate-500">{s.segment}</span>
+                                  </td>
+                                  <td className="p-3">
+                                    <span className="font-medium text-slate-800 block">{s.founder}</span>
+                                    <span className="text-[10px] text-slate-500 block">{s.whatsapp} · {s.email}</span>
+                                  </td>
+                                  <td className="p-3">
+                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${getStageBadge(s.stage)}`}>{s.stage}</span>
+                                  </td>
+                                  <td className="p-3 font-extrabold text-teal-700">{s.score} / 200</td>
+                                  <td className="p-3 text-right space-x-2">
+                                    <button
+                                      onClick={() => {
+                                        setSelectedPlanStartupId(s.id);
+                                        setActiveAdminTab('plano');
+                                      }}
+                                      className="text-xs font-bold text-teal-700 hover:underline"
+                                    >
+                                      Ver plano &gt;
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeleteStartup(s.id)}
+                                      className="text-rose-600 hover:text-rose-800 p-1"
+                                      title="Excluir"
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5 inline" />
+                                    </button>
+                                  </td>
                                 </tr>
                               ))
                             )}
@@ -811,23 +958,18 @@ export default function App() {
                   </div>
                 )}
 
-                {/* ABA DE TRILHA DINÂMICA PERSONALIZADA */}
-                {activeAdminTab === 'trilhas' && (
+                {/* 2. PLANO POR STARTUP */}
+                {activeAdminTab === 'plano' && (
                   <div className="space-y-6">
                     <div className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                       <div>
-                        <h1 className="text-lg md:text-xl font-bold text-slate-900 flex items-center gap-2">
-                          <Sparkles className="h-5 w-5 text-teal-600" /> Trilha Dinâmica
-                        </h1>
-                        <p className="text-xs text-slate-600 mt-0.5">
-                          Módulos organizados de acordo com as notas da startup.
-                        </p>
+                        <h1 className="text-xl font-bold text-slate-900">Plano de ação por startup</h1>
+                        <p className="text-xs text-slate-500">Ações por dimensão, ferramentas sugeridas, métricas e entregáveis esperados.</p>
                       </div>
-
                       <div className="w-full md:w-72">
                         <select
-                          value={selectedTrackStartupId}
-                          onChange={e => setSelectedTrackStartupId(e.target.value)}
+                          value={selectedPlanStartupId}
+                          onChange={e => setSelectedPlanStartupId(e.target.value)}
                           className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 outline-none"
                         >
                           {safeSubmissions.map(s => (
@@ -837,49 +979,44 @@ export default function App() {
                       </div>
                     </div>
 
-                    {currentTrackStartup ? (
-                      <div className="bg-white p-4 md:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                    {currentPlanStartup ? (
+                      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
                         <div className="border-b border-slate-100 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                           <div>
-                            <h2 className="text-base font-bold text-slate-900">{currentTrackStartup.startupName}</h2>
-                            <span className="text-xs text-slate-500">Fundador: {currentTrackStartup.founder} · Score: {currentTrackStartup.score}/200</span>
+                            <span className="text-[10px] font-bold text-teal-600 uppercase tracking-wider block">PLANO PERSONALIZADO</span>
+                            <h2 className="text-xl font-extrabold text-slate-900">{currentPlanStartup.startupName}</h2>
+                            <p className="text-xs text-slate-500 mt-0.5">
+                              Fundador: {currentPlanStartup.founder} · {currentPlanStartup.segment} · Score: {currentPlanStartup.score} / 200 pts
+                            </p>
                           </div>
-                          <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getStageBadge(currentTrackStartup.stage)}`}>
-                            Estágio: {currentTrackStartup.stage}
+                          <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getStageBadge(currentPlanStartup.stage)}`}>
+                            {currentPlanStartup.stage}
                           </span>
                         </div>
 
-                        <div className="space-y-4">
-                          {['Alta', 'Média', 'Baixa'].map(priorityLevel => {
-                            const modulesInLevel = dynamicModules.filter(m => m.priority === priorityLevel);
-                            if (modulesInLevel.length === 0) return null;
-
+                        {/* EXIBIÇÃO DAS 8 DIMENSÕES COM AÇÕES */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {GOVTECH_DIMENSIONS.map(dim => {
+                            const score = currentPlanStartup.dimensions?.[dim.name] || 0;
+                            const percent = Math.round((score / 25) * 100);
                             return (
-                              <div key={priorityLevel} className="space-y-3">
-                                <div className="flex items-center gap-2">
-                                  <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${
-                                    priorityLevel === 'Alta' ? 'bg-rose-50 text-rose-800 border-rose-300' :
-                                    priorityLevel === 'Média' ? 'bg-amber-50 text-amber-800 border-amber-300' :
-                                    'bg-slate-100 text-slate-700 border-slate-300'
-                                  }`}>
-                                    Prioridade {priorityLevel} {priorityLevel === 'Alta' && '(Gargalos)'}
-                                  </span>
+                              <div key={dim.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                                <div className="flex justify-between items-start">
+                                  <div>
+                                    <h4 className="font-bold text-xs text-slate-900">{dim.name}</h4>
+                                    <span className="text-[11px] font-semibold text-teal-700">{score} / 25 pts · {percent}%</span>
+                                  </div>
+                                  <span className="text-[10px] bg-white border border-slate-200 px-2 py-0.5 rounded text-slate-600">Meta: Sustentar &amp; Evoluir</span>
                                 </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                  {modulesInLevel.map((mod, idx) => (
-                                    <div key={mod.id} className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-start gap-3">
-                                      <span className="w-6 h-6 rounded-full bg-teal-700 text-white font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">
-                                        {idx + 1}
-                                      </span>
-                                      <div>
-                                        <h4 className="text-xs font-bold text-slate-900">{mod.title}</h4>
-                                        <p className="text-[11px] text-slate-500 mt-0.5">
-                                          Dimensão: <span className="font-semibold text-teal-700">{mod.dimName}</span> ({mod.score}/25)
-                                        </p>
-                                      </div>
-                                    </div>
-                                  ))}
+                                <div className="space-y-2 text-xs text-slate-700">
+                                  <div className="p-2.5 bg-white rounded-lg border border-slate-200">
+                                    <span className="font-bold text-[10px] text-slate-400 uppercase block">Ferramentas Sugeridas</span>
+                                    <p className="text-[11px] text-slate-600 mt-0.5">Miro, Notion, Formulários de validação e OKRs.</p>
+                                  </div>
+                                  <div className="p-2.5 bg-white rounded-lg border border-slate-200">
+                                    <span className="font-bold text-[10px] text-slate-400 uppercase block">Métricas a Acompanhar</span>
+                                    <p className="text-[11px] text-slate-600 mt-0.5">Taxa de conversão, engajamento semanal e runway.</p>
+                                  </div>
                                 </div>
                               </div>
                             );
@@ -888,11 +1025,119 @@ export default function App() {
                       </div>
                     ) : (
                       <div className="bg-white p-8 rounded-2xl text-center text-xs text-slate-500 border border-slate-200">
-                        Nenhuma startup cadastrada no banco de dados para gerar a trilha.
+                        Nenhuma startup cadastrada.
                       </div>
                     )}
                   </div>
                 )}
+
+                {/* 3. TRILHAS DE CONHECIMENTO */}
+                {activeAdminTab === 'trilhas' && (
+                  <div className="space-y-6">
+                    <div>
+                      <h1 className="text-xl font-bold text-slate-900">Trilhas de conhecimento</h1>
+                      <p className="text-xs text-slate-500">Três pacotes de capacitação com 12 temáticas cada, cobrindo as 8 dimensões do diagnóstico.</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {[
+                        { title: 'Trilha 1 — Fundação e Validação', desc: 'Indicada para startups em Ideação e início de Operação', count: '12 Temáticas' },
+                        { title: 'Trilha 2 — Tração Comercial e Produto', desc: 'Indicada para startups em Operação e Tração', count: '12 Temáticas' },
+                        { title: 'Trilha 3 — Governança, Capital e Escala', desc: 'Indicada para startups em Tração e Escala', count: '12 Temáticas' }
+                      ].map((t, idx) => (
+                        <div key={idx} className="p-4 bg-white rounded-2xl border border-teal-500/30 shadow-sm space-y-2">
+                          <span className="text-[10px] font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full">{t.count}</span>
+                          <h3 className="font-bold text-xs text-slate-900">{t.title}</h3>
+                          <p className="text-[11px] text-slate-500">{t.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 4. BENCHMARKING */}
+                {activeAdminTab === 'benchmarking' && (
+                  <div className="space-y-6">
+                    <div>
+                      <h1 className="text-xl font-bold text-slate-900">Benchmarking entre startups</h1>
+                      <p className="text-xs text-slate-500">Selecione até 3 startups para comparar os resultados do diagnóstico lado a lado.</p>
+                    </div>
+
+                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">STARTUPS SELECIONADAS</span>
+                      <div className="flex flex-wrap gap-2">
+                        {safeSubmissions.map(s => {
+                          const isSel = selectedBenchStartups.includes(s.id);
+                          return (
+                            <button
+                              key={s.id}
+                              onClick={() => {
+                                if (isSel) setSelectedBenchStartups(selectedBenchStartups.filter(id => id !== s.id));
+                                else if (selectedBenchStartups.length < 3) setSelectedBenchStartups([...selectedBenchStartups, s.id]);
+                              }}
+                              className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition ${
+                                isSel ? 'bg-teal-500 text-slate-950 border-teal-400' : 'bg-slate-50 text-slate-600 border-slate-200'
+                              }`}
+                            >
+                              {s.startupName}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
+                        {selectedBenchStartups.map(id => {
+                          const s = safeSubmissions.find(sub => sub.id === id);
+                          if (!s) return null;
+                          return (
+                            <div key={s.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                              <h3 className="font-bold text-sm text-slate-900">{s.startupName}</h3>
+                              <p className="text-xl font-black text-teal-700">{s.score} <span className="text-xs font-normal text-slate-400">/ 200</span></p>
+                              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border inline-block ${getStageBadge(s.stage)}`}>{s.stage}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 5. CONFIGURAR PIN */}
+                {activeAdminTab === 'pin' && (
+                  <div className="max-w-md bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <div>
+                      <h2 className="text-base font-bold text-slate-900">Alterar senha do administrador</h2>
+                      <p className="text-xs text-slate-500 mt-0.5">Defina uma nova senha de acesso ao painel de mentoria.</p>
+                    </div>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">NOVA SENHA / PIN</label>
+                        <input
+                          type="password"
+                          value={newPinInput}
+                          onChange={e => setNewPinInput(e.target.value)}
+                          placeholder="Mínimo de 4 caracteres"
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 outline-none focus:border-teal-500"
+                        />
+                      </div>
+                      <button
+                        onClick={() => {
+                          if (newPinInput.length >= 4) {
+                            setAdminPin(newPinInput);
+                            alert('PIN alterado com sucesso!');
+                            setNewPinInput('');
+                          } else {
+                            alert('A senha deve ter pelo menos 4 caracteres.');
+                          }
+                        }}
+                        className="w-full py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-bold rounded-xl text-xs transition"
+                      >
+                        Salvar nova senha
+                      </button>
+                    </div>
+                  </div>
+                )}
+
               </main>
             </div>
           )}

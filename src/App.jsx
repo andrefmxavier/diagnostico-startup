@@ -14,7 +14,7 @@ import {
 import { supabase } from './supabaseClient';
 
 // ============================================================================
-// 1. ESTRUTURA DAS 8 DIMENSÕES E 40 INDICADORES
+// 1. DIMENSÕES E INDICADORES
 // ============================================================================
 const GOVTECH_DIMENSIONS = [
   {
@@ -124,14 +124,12 @@ const GOVTECH_DIMENSIONS = [
 ];
 
 const SHORT_LABELS = GOVTECH_DIMENSIONS.reduce((acc, d) => { acc[d.name] = d.short; return acc; }, {});
-const DIM_BY_ID = GOVTECH_DIMENSIONS.reduce((acc, d) => { acc[d.id] = d; return acc; }, {});
 const DIM_ID_BY_NAME = GOVTECH_DIMENSIONS.reduce((acc, d) => { acc[d.name] = d.id; return acc; }, {});
 const getShortLabel = (fullName) => SHORT_LABELS?.[fullName] || fullName || '';
-
 const ALL_QUESTIONS = GOVTECH_DIMENSIONS.flatMap(d => d.questions);
 
 // ============================================================================
-// 2. BANCO GLOBAL DE MÓDULOS DE CAPACITAÇÃO
+// 2. MÓDULOS DE CAPACITAÇÃO (TRILHA DINÂMICA)
 // ============================================================================
 const ALL_MODULES_DATABASE = [
   { id: 'm1', title: 'Tese de valor e dor prioritária do cliente', dim: 'estrategia' },
@@ -172,12 +170,18 @@ const ALL_MODULES_DATABASE = [
 ];
 
 const STAGE_LIST = ['Ideação', 'Operação', 'Tração', 'Escala'];
-const STAGE_COLORS = {
-  'Ideação': '#D97706',
-  'Operação': '#2563EB',
-  'Tração': '#0D9488',
-  'Escala': '#7C3AED'
-};
+const SEGMENT_OPTIONS = [
+  'SaaS B2B',
+  'GovTech / Cidades Inteligentes',
+  'Healthtech / Saúde',
+  'Edtech / Educação',
+  'Fintech / Serviços Financeiros',
+  'Agtech / Agronegócio',
+  'E-commerce / Retailtech',
+  'Outro'
+];
+
+const SEGMENT_PALETTE = ['#0D9488', '#2563EB', '#7C3AED', '#D97706', '#0891B2', '#DB2777', '#65A30D', '#475569'];
 
 const wrapLabel = (text, maxChars) => {
   const words = String(text || '').split(' ');
@@ -201,33 +205,11 @@ const RadarTick = (props) => {
   const lines = wrapLabel(payload?.value, 11);
   const offsetY = -((lines.length - 1) * 10) / 2;
   return (
-    <text
-      x={x}
-      y={y + offsetY}
-      textAnchor={textAnchor}
-      fill={color}
-      fontSize={10}
-      fontWeight={700}
-      dominantBaseline="central"
-    >
+    <text x={x} y={y + offsetY} textAnchor={textAnchor} fill={color} fontSize={10} fontWeight={700} dominantBaseline="central">
       {lines.map((line, i) => (
         <tspan key={i} x={x} dy={i === 0 ? 0 : 11}>{line}</tspan>
       ))}
     </text>
-  );
-};
-
-const AngledTick = (props) => {
-  const { x = 0, y = 0, payload, color = '#1E293B', angle = -35 } = props;
-  const lines = wrapLabel(payload?.value, 12);
-  return (
-    <g transform={`translate(${x},${y + 8}) rotate(${angle})`}>
-      <text textAnchor="end" fill={color} fontSize={9} fontWeight={700}>
-        {lines.map((line, i) => (
-          <tspan key={i} x={0} dy={i === 0 ? 0 : 10}>{line}</tspan>
-        ))}
-      </text>
-    </g>
   );
 };
 
@@ -260,17 +242,10 @@ const EMPTY_FORM = {
   notes: {}
 };
 
-const PRINT_STYLES = `
-  @media print {
-    @page { size: A4 portrait; margin: 10mm; }
-    html, body { background: #ffffff !important; color: #0f172a !important; }
-    .no-print, aside { display: none !important; }
-    .print-root { display: block !important; padding: 0 !important; }
-  }
-`;
-
 export default function App() {
   const [role, setRole] = useState(null);
+  const [adminAuth, setAdminAuth] = useState(false);
+  const [adminPinInput, setAdminPinInput] = useState('');
   const [submissions, setSubmissions] = useState([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -290,7 +265,7 @@ export default function App() {
         founder: item.founder,
         email: item.email,
         whatsapp: item.whatsapp,
-        segment: item.segment,
+        segment: item.segment || 'Não informado',
         stage: item.stage,
         score: item.score,
         date: item.date,
@@ -307,6 +282,15 @@ export default function App() {
   useEffect(() => {
     fetchStartups();
   }, []);
+
+  const handleAdminLogin = (e) => {
+    e.preventDefault();
+    if (adminPinInput === 'admin123') {
+      setAdminAuth(true);
+    } else {
+      alert('Senha incorreta!');
+    }
+  };
 
   const handleFormSubmit = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
@@ -373,6 +357,32 @@ export default function App() {
     ? (safeSubmissions.reduce((acc, curr) => acc + (curr?.score || 0), 0) / safeSubmissions.length)
     : 0;
 
+  const activeDimValues = {};
+  GOVTECH_DIMENSIONS.forEach(dim => {
+    const totalDimScore = safeSubmissions.reduce((acc, curr) => acc + (curr?.dimensions?.[dim.name] || 0), 0);
+    activeDimValues[dim.name] = safeSubmissions.length > 0
+      ? Number((totalDimScore / safeSubmissions.length).toFixed(1))
+      : 0;
+  });
+
+  const radarChartData = Object.entries(activeDimValues).map(([key, val]) => ({
+    subject: getShortLabel(key),
+    A: Number(val) || 0
+  }));
+
+  const stageDistribution = STAGE_LIST.map(stage => ({
+    name: stage,
+    Startups: safeSubmissions.filter(s => s?.stage === stage).length
+  }));
+
+  const segmentDistribution = Object.entries(
+    safeSubmissions.reduce((acc, s) => {
+      const key = s?.segment || 'Outro';
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {})
+  ).map(([name, value]) => ({ name, Startups: value }));
+
   const currentTrackStartup = safeSubmissions.find(s => s.id === selectedTrackStartupId) || safeSubmissions[0];
 
   const getDynamicTrackForStartup = (startup) => {
@@ -411,10 +421,9 @@ export default function App() {
   const answeredCount = ALL_QUESTIONS.filter(q => formData.responses?.[q.id] > 0).length;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans print-root">
-      <style>{PRINT_STYLES}</style>
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
 
-      {/* TELA DE SELEÇÃO DE ÁREA */}
+      {/* SELEÇÃO DE INÍCIO */}
       {!role && (
         <div className="min-h-screen bg-slate-900 flex flex-col justify-between p-4 md:p-6">
           <header className="max-w-6xl mx-auto w-full flex flex-col sm:flex-row justify-between items-center gap-3 py-4 border-b border-slate-800 text-center sm:text-left">
@@ -520,13 +529,27 @@ export default function App() {
                           />
                         </div>
                       </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 mb-1">E-mail *</label>
-                        <input
-                          type="email" required value={formData.email}
-                          onChange={e => setFormData({ ...formData, email: e.target.value })}
-                          className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-teal-400"
-                        />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-bold text-slate-300 mb-1">E-mail *</label>
+                          <input
+                            type="email" required value={formData.email}
+                            onChange={e => setFormData({ ...formData, email: e.target.value })}
+                            className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-teal-400"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-300 mb-1">Segmento / Setor *</label>
+                          <select
+                            value={formData.segment}
+                            onChange={e => setFormData({ ...formData, segment: e.target.value })}
+                            className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-teal-400"
+                          >
+                            {SEGMENT_OPTIONS.map(opt => (
+                              <option key={opt} value={opt}>{opt}</option>
+                            ))}
+                          </select>
+                        </div>
                       </div>
                     </div>
                     <button
@@ -598,201 +621,282 @@ export default function App() {
         </div>
       )}
 
-      {/* PAINEL ADMINISTRATIVO COM SUPORTE A MOBILE */}
+      {/* PAINEL ADMINISTRATIVO */}
       {role === 'admin' && (
-        <div className="flex flex-col md:flex-row h-screen bg-slate-100 font-sans text-slate-800 overflow-hidden">
-          {/* HEADER MOBILE DO ADMIN */}
-          <div className="md:hidden bg-slate-900 text-white px-4 py-3 flex justify-between items-center border-b border-slate-800 shrink-0">
-            <LogoHeader size="normal" />
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg bg-slate-800 text-slate-200"
-            >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
-          </div>
-
-          {/* ASIDE (MENU LATERAL DESKTOP + MENU GAVETA MOBILE) */}
-          <aside className={`${
-            mobileMenuOpen ? 'block' : 'hidden'
-          } md:block w-full md:w-64 bg-slate-900 text-white flex flex-col justify-between p-5 border-r border-slate-800 shrink-0 z-20`}>
-            <div className="space-y-6">
-              <div className="hidden md:block">
-                <LogoHeader size="normal" />
-              </div>
-              <nav className="space-y-1">
-                {[
-                  { key: 'dashboard', label: 'Visão geral', icon: LayoutDashboard },
-                  { key: 'trilhas', label: 'Trilha Dinâmica (IA)', icon: GraduationCap }
-                ].map(item => {
-                  const Icon = item.icon;
-                  return (
-                    <button
-                      key={item.key}
-                      onClick={() => {
-                        setActiveAdminTab(item.key);
-                        setMobileMenuOpen(false);
-                      }}
-                      className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition ${
-                        activeAdminTab === item.key ? 'bg-teal-500 text-slate-950' : 'text-slate-200 hover:bg-slate-800'
-                      }`}
-                    >
-                      <Icon className="h-4 w-4" /> {item.label}
-                    </button>
-                  );
-                })}
-              </nav>
-            </div>
-            <button
-              onClick={() => setRole(null)}
-              className="mt-6 md:mt-0 text-xs text-slate-400 hover:text-white flex items-center gap-2"
-            >
-              <LogOut className="h-4 w-4" /> Sair do painel
-            </button>
-          </aside>
-
-          {/* CONTEÚDO PRINCIPAL DO ADMIN */}
-          <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
-            {activeAdminTab === 'dashboard' && (
-              <div className="space-y-6">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                  <h1 className="text-lg md:text-xl font-bold text-slate-900">Visão Geral do Portfólio (Supabase)</h1>
+        <>
+          {/* TELA DE AUTENTICAÇÃO / LOGIN DO ADMIN */}
+          {!adminAuth ? (
+            <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+              <form onSubmit={handleAdminLogin} className="bg-slate-950 border border-slate-800 p-6 md:p-8 rounded-3xl max-w-md w-full space-y-6 text-center">
+                <div className="w-12 h-12 bg-purple-500/10 text-purple-400 rounded-2xl flex items-center justify-center mx-auto border border-purple-500/20">
+                  <Lock className="h-6 w-6" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-white">Acesso Restrito</h2>
+                  <p className="text-xs text-slate-400 mt-1">Digite a senha de administrador para acessar o painel.</p>
+                </div>
+                <div>
+                  <input
+                    type="password"
+                    placeholder="Senha do Admin"
+                    value={adminPinInput}
+                    onChange={e => setAdminPinInput(e.target.value)}
+                    className="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-sm text-center text-white outline-none focus:border-purple-500"
+                  />
+                </div>
+                <div className="flex gap-3">
                   <button
-                    onClick={fetchStartups}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-sm"
+                    type="button"
+                    onClick={() => setRole(null)}
+                    className="w-1/2 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-xs"
                   >
-                    <RefreshCw className="h-3.5 w-3.5" /> Atualizar dados
+                    Voltar
+                  </button>
+                  <button
+                    type="submit"
+                    className="w-1/2 py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs"
+                  >
+                    Entrar
                   </button>
                 </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase">Score Médio</span>
-                    <p className="text-2xl md:text-3xl font-black text-slate-900 mt-1">{avgOverallScore.toFixed(1)}</p>
-                  </div>
-                  <div className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase">Startups Registradas</span>
-                    <p className="text-2xl md:text-3xl font-black text-purple-700 mt-1">{safeSubmissions.length}</p>
-                  </div>
-                </div>
-
-                {/* TABELA DE RESPOSTAS REAL TIME */}
-                <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-                  <div className="p-4 border-b border-slate-200 bg-slate-50 font-bold text-xs text-slate-800">
-                    Respostas Recebidas ({safeSubmissions.length})
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs min-w-[500px]">
-                      <thead className="bg-slate-100 text-slate-600 font-bold">
-                        <tr>
-                          <th className="p-3">Startup</th>
-                          <th className="p-3">Fundador</th>
-                          <th className="p-3">Estágio</th>
-                          <th className="p-3">Score</th>
-                          <th className="p-3">Data</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100">
-                        {safeSubmissions.length === 0 ? (
-                          <tr><td colSpan={5} className="p-5 text-center text-slate-400">Nenhuma startup respondeu ainda.</td></tr>
-                        ) : (
-                          safeSubmissions.map(s => (
-                            <tr key={s.id}>
-                              <td className="p-3 font-bold text-slate-900">{s.startupName}</td>
-                              <td className="p-3 text-slate-600">{s.founder}</td>
-                              <td className="p-3"><span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${getStageBadge(s.stage)}`}>{s.stage}</span></td>
-                              <td className="p-3 font-extrabold text-teal-700">{s.score}/200</td>
-                              <td className="p-3 text-slate-500">{s.date}</td>
-                            </tr>
-                          ))
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+              </form>
+            </div>
+          ) : (
+            <div className="flex flex-col md:flex-row h-screen bg-slate-100 font-sans text-slate-800 overflow-hidden">
+              {/* HEADER MOBILE */}
+              <div className="md:hidden bg-slate-900 text-white px-4 py-3 flex justify-between items-center border-b border-slate-800 shrink-0">
+                <LogoHeader size="normal" />
+                <button
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="p-2 rounded-lg bg-slate-800 text-slate-200"
+                >
+                  {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                </button>
               </div>
-            )}
 
-            {/* ABA DE TRILHA DINÂMICA PERSONALIZADA */}
-            {activeAdminTab === 'trilhas' && (
-              <div className="space-y-6">
-                <div className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                  <div>
-                    <h1 className="text-lg md:text-xl font-bold text-slate-900 flex items-center gap-2">
-                      <Sparkles className="h-5 w-5 text-teal-600" /> Trilha Dinâmica
-                    </h1>
-                    <p className="text-xs text-slate-600 mt-0.5">
-                      Módulos organizados de acordo com as notas da startup.
-                    </p>
+              {/* BARRA LATERAL */}
+              <aside className={`${
+                mobileMenuOpen ? 'block' : 'hidden'
+              } md:block w-full md:w-64 bg-slate-900 text-white flex flex-col justify-between p-5 border-r border-slate-800 shrink-0 z-20`}>
+                <div className="space-y-6">
+                  <div className="hidden md:block">
+                    <LogoHeader size="normal" />
                   </div>
-
-                  <div className="w-full md:w-72">
-                    <select
-                      value={selectedTrackStartupId}
-                      onChange={e => setSelectedTrackStartupId(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 outline-none"
-                    >
-                      {safeSubmissions.map(s => (
-                        <option key={s.id} value={s.id}>{s.startupName} ({s.stage})</option>
-                      ))}
-                    </select>
-                  </div>
+                  <nav className="space-y-1">
+                    {[
+                      { key: 'dashboard', label: 'Visão geral', icon: LayoutDashboard },
+                      { key: 'trilhas', label: 'Trilha Dinâmica (IA)', icon: GraduationCap }
+                    ].map(item => {
+                      const Icon = item.icon;
+                      return (
+                        <button
+                          key={item.key}
+                          onClick={() => {
+                            setActiveAdminTab(item.key);
+                            setMobileMenuOpen(false);
+                          }}
+                          className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition ${
+                            activeAdminTab === item.key ? 'bg-teal-500 text-slate-950' : 'text-slate-200 hover:bg-slate-800'
+                          }`}
+                        >
+                          <Icon className="h-4 w-4" /> {item.label}
+                        </button>
+                      );
+                    })}
+                  </nav>
                 </div>
+                <button
+                  onClick={() => { setAdminAuth(false); setRole(null); }}
+                  className="mt-6 md:mt-0 text-xs text-slate-400 hover:text-white flex items-center gap-2"
+                >
+                  <LogOut className="h-4 w-4" /> Sair do painel
+                </button>
+              </aside>
 
-                {currentTrackStartup && (
-                  <div className="bg-white p-4 md:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-                    <div className="border-b border-slate-100 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                      <div>
-                        <h2 className="text-base font-bold text-slate-900">{currentTrackStartup.startupName}</h2>
-                        <span className="text-xs text-slate-500">Fundador: {currentTrackStartup.founder} · Score: {currentTrackStartup.score}/200</span>
-                      </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getStageBadge(currentTrackStartup.stage)}`}>
-                        Estágio: {currentTrackStartup.stage}
-                      </span>
+              {/* CONTEÚDO PRINCIPAL DO ADMIN */}
+              <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
+                {activeAdminTab === 'dashboard' && (
+                  <div className="space-y-6">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                      <h1 className="text-lg md:text-xl font-bold text-slate-900">Visão Geral do Portfólio (Supabase)</h1>
+                      <button
+                        onClick={fetchStartups}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-sm"
+                      >
+                        <RefreshCw className="h-3.5 w-3.5" /> Atualizar dados
+                      </button>
                     </div>
 
-                    <div className="space-y-4">
-                      {['Alta', 'Média', 'Baixa'].map(priorityLevel => {
-                        const modulesInLevel = dynamicModules.filter(m => m.priority === priorityLevel);
-                        if (modulesInLevel.length === 0) return null;
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200 shadow-sm">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase">Score Médio</span>
+                        <p className="text-2xl md:text-3xl font-black text-slate-900 mt-1">{avgOverallScore.toFixed(1)}</p>
+                      </div>
+                      <div className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200 shadow-sm">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase">Startups Registradas</span>
+                        <p className="text-2xl md:text-3xl font-black text-purple-700 mt-1">{safeSubmissions.length}</p>
+                      </div>
+                    </div>
 
-                        return (
-                          <div key={priorityLevel} className="space-y-3">
-                            <div className="flex items-center gap-2">
-                              <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${
-                                priorityLevel === 'Alta' ? 'bg-rose-50 text-rose-800 border-rose-300' :
-                                priorityLevel === 'Média' ? 'bg-amber-50 text-amber-800 border-amber-300' :
-                                'bg-slate-100 text-slate-700 border-slate-300'
-                              }`}>
-                                Prioridade {priorityLevel} {priorityLevel === 'Alta' && '(Gargalos)'}
-                              </span>
-                            </div>
+                    {/* GRÁFICOS RESTAURADOS */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* GRÁFICO DE RADAR DE MATURIDADE */}
+                      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Maturidade Média por Dimensão</h3>
+                        <div className="h-64 w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarChartData}>
+                              <PolarGrid stroke="#e2e8f0" />
+                              <PolarAngleAxis dataKey="subject" tick={<RadarTick />} />
+                              <PolarRadiusAxis angle={30} domain={[0, 25]} stroke="#cbd5e1" fontSize={10} />
+                              <Radar name="Média" dataKey="A" stroke="#0d9488" fill="#0d9488" fillOpacity={0.4} />
+                            </RadarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                              {modulesInLevel.map((mod, idx) => (
-                                <div key={mod.id} className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-start gap-3">
-                                  <span className="w-6 h-6 rounded-full bg-teal-700 text-white font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">
-                                    {idx + 1}
-                                  </span>
-                                  <div>
-                                    <h4 className="text-xs font-bold text-slate-900">{mod.title}</h4>
-                                    <p className="text-[11px] text-slate-500 mt-0.5">
-                                      Dimensão: <span className="font-semibold text-teal-700">{mod.dimName}</span> ({mod.score}/25)
-                                    </p>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        );
-                      })}
+                      {/* DISTRIBUIÇÃO POR ESTÁGIO */}
+                      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Distribuição por Estágio</h3>
+                        <div className="h-64 w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={stageDistribution}>
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                              <XAxis dataKey="name" stroke="#64748b" fontSize={11} />
+                              <YAxis allowDecimals={false} stroke="#64748b" fontSize={11} />
+                              <Tooltip />
+                              <Bar dataKey="Startups" fill="#2563eb" radius={[6, 6, 0, 0]} />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* TABELA DE RESPOSTAS */}
+                    <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                      <div className="p-4 border-b border-slate-200 bg-slate-50 font-bold text-xs text-slate-800">
+                        Respostas Recebidas ({safeSubmissions.length})
+                      </div>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left text-xs min-w-[600px]">
+                          <thead className="bg-slate-100 text-slate-600 font-bold">
+                            <tr>
+                              <th className="p-3">Startup</th>
+                              <th className="p-3">Fundador</th>
+                              <th className="p-3">Segmento</th>
+                              <th className="p-3">Estágio</th>
+                              <th className="p-3">Score</th>
+                              <th className="p-3">Data</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100">
+                            {safeSubmissions.length === 0 ? (
+                              <tr><td colSpan={6} className="p-5 text-center text-slate-400">Nenhuma startup respondeu ainda.</td></tr>
+                            ) : (
+                              safeSubmissions.map(s => (
+                                <tr key={s.id}>
+                                  <td className="p-3 font-bold text-slate-900">{s.startupName}</td>
+                                  <td className="p-3 text-slate-600">{s.founder}</td>
+                                  <td className="p-3 text-slate-500">{s.segment}</td>
+                                  <td className="p-3"><span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${getStageBadge(s.stage)}`}>{s.stage}</span></td>
+                                  <td className="p-3 font-extrabold text-teal-700">{s.score}/200</td>
+                                  <td className="p-3 text-slate-500">{s.date}</td>
+                                </tr>
+                              ))
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </div>
                 )}
-              </div>
-            )}
-          </main>
-        </div>
+
+                {/* ABA DE TRILHA DINÂMICA PERSONALIZADA */}
+                {activeAdminTab === 'trilhas' && (
+                  <div className="space-y-6">
+                    <div className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                      <div>
+                        <h1 className="text-lg md:text-xl font-bold text-slate-900 flex items-center gap-2">
+                          <Sparkles className="h-5 w-5 text-teal-600" /> Trilha Dinâmica
+                        </h1>
+                        <p className="text-xs text-slate-600 mt-0.5">
+                          Módulos organizados de acordo com as notas da startup.
+                        </p>
+                      </div>
+
+                      <div className="w-full md:w-72">
+                        <select
+                          value={selectedTrackStartupId}
+                          onChange={e => setSelectedTrackStartupId(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 outline-none"
+                        >
+                          {safeSubmissions.map(s => (
+                            <option key={s.id} value={s.id}>{s.startupName} ({s.stage})</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    {currentTrackStartup ? (
+                      <div className="bg-white p-4 md:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                        <div className="border-b border-slate-100 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                          <div>
+                            <h2 className="text-base font-bold text-slate-900">{currentTrackStartup.startupName}</h2>
+                            <span className="text-xs text-slate-500">Fundador: {currentTrackStartup.founder} · Score: {currentTrackStartup.score}/200</span>
+                          </div>
+                          <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getStageBadge(currentTrackStartup.stage)}`}>
+                            Estágio: {currentTrackStartup.stage}
+                          </span>
+                        </div>
+
+                        <div className="space-y-4">
+                          {['Alta', 'Média', 'Baixa'].map(priorityLevel => {
+                            const modulesInLevel = dynamicModules.filter(m => m.priority === priorityLevel);
+                            if (modulesInLevel.length === 0) return null;
+
+                            return (
+                              <div key={priorityLevel} className="space-y-3">
+                                <div className="flex items-center gap-2">
+                                  <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${
+                                    priorityLevel === 'Alta' ? 'bg-rose-50 text-rose-800 border-rose-300' :
+                                    priorityLevel === 'Média' ? 'bg-amber-50 text-amber-800 border-amber-300' :
+                                    'bg-slate-100 text-slate-700 border-slate-300'
+                                  }`}>
+                                    Prioridade {priorityLevel} {priorityLevel === 'Alta' && '(Gargalos)'}
+                                  </span>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                  {modulesInLevel.map((mod, idx) => (
+                                    <div key={mod.id} className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-start gap-3">
+                                      <span className="w-6 h-6 rounded-full bg-teal-700 text-white font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">
+                                        {idx + 1}
+                                      </span>
+                                      <div>
+                                        <h4 className="text-xs font-bold text-slate-900">{mod.title}</h4>
+                                        <p className="text-[11px] text-slate-500 mt-0.5">
+                                          Dimensão: <span className="font-semibold text-teal-700">{mod.dimName}</span> ({mod.score}/25)
+                                        </p>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bg-white p-8 rounded-2xl text-center text-xs text-slate-500 border border-slate-200">
+                        Nenhuma startup cadastrada no banco de dados para gerar a trilha.
+                      </div>
+                    )}
+                  </div>
+                )}
+              </main>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

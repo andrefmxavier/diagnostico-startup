@@ -124,7 +124,6 @@ const GOVTECH_DIMENSIONS = [
 ];
 
 const SHORT_LABELS = GOVTECH_DIMENSIONS.reduce((acc, d) => { acc[d.name] = d.short; return acc; }, {});
-const DIM_ID_BY_NAME = GOVTECH_DIMENSIONS.reduce((acc, d) => { acc[d.name] = d.id; return acc; }, {});
 const getShortLabel = (fullName) => SHORT_LABELS?.[fullName] || fullName || '';
 const ALL_QUESTIONS = GOVTECH_DIMENSIONS.flatMap(d => d.questions);
 
@@ -136,7 +135,7 @@ const SEGMENT_OPTIONS = [
   'Edtech / Educação',
   'Fintech / Serviços Financeiros',
   'Agtech / Agronegócio',
-  'E-commerce / Retailtech',
+  'E-commerce / Marketplace',
   'Outro'
 ];
 
@@ -158,7 +157,7 @@ const wrapLabel = (text, maxChars) => {
 };
 
 const RadarTick = (props) => {
-  const { x = 0, y = 0, textAnchor, payload, color = '#1E293B' } = props;
+  const { x = 0, y = 0, textAnchor, payload, color = '#94a3b8' } = props;
   const lines = wrapLabel(payload?.value, 11);
   const offsetY = -((lines.length - 1) * 10) / 2;
   return (
@@ -212,6 +211,8 @@ export default function App() {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState(EMPTY_FORM);
   const [submitted, setSubmitted] = useState(false);
+  const [lastSubmission, setLastSubmission] = useState(null);
+  const [copiedLink, setCopiedLink] = useState(false);
 
   const [activeAdminTab, setActiveAdminTab] = useState('dashboard');
   const [selectedPlanStartupId, setSelectedPlanStartupId] = useState('');
@@ -219,26 +220,30 @@ export default function App() {
   const [selectedObsDimension, setSelectedObsDimension] = useState('estrategia');
 
   const fetchStartups = async () => {
-    const { data, error } = await supabase.from('startups').select('*');
-    if (data && !error) {
-      const formatted = data.map(item => ({
-        id: item.id,
-        startupName: item.startup_name,
-        founder: item.founder,
-        email: item.email,
-        whatsapp: item.whatsapp,
-        segment: item.segment || 'SaaS B2B',
-        stage: item.stage,
-        score: item.score,
-        date: item.date,
-        dimensions: item.dimensions,
-        notes: item.notes
-      }));
-      setSubmissions(formatted);
-      if (formatted.length > 0 && !selectedPlanStartupId) {
-        setSelectedPlanStartupId(formatted[0].id);
-        setSelectedBenchStartups([formatted[0].id, formatted[1]?.id].filter(Boolean));
+    try {
+      const { data, error } = await supabase.from('startups').select('*');
+      if (data && !error) {
+        const formatted = data.map(item => ({
+          id: item.id,
+          startupName: item.startup_name,
+          founder: item.founder,
+          email: item.email,
+          whatsapp: item.whatsapp,
+          segment: item.segment || 'SaaS B2B',
+          stage: item.stage,
+          score: item.score,
+          date: item.date,
+          dimensions: item.dimensions,
+          notes: item.notes
+        }));
+        setSubmissions(formatted);
+        if (formatted.length > 0 && !selectedPlanStartupId) {
+          setSelectedPlanStartupId(formatted[0].id);
+          setSelectedBenchStartups([formatted[0].id, formatted[1]?.id].filter(Boolean));
+        }
       }
+    } catch (err) {
+      console.error("Erro ao buscar startups:", err);
     }
   };
 
@@ -264,7 +269,7 @@ export default function App() {
     GOVTECH_DIMENSIONS.forEach(dim => {
       let dimTotal = 0;
       (dim.questions || []).forEach(q => {
-        dimTotal += formData.responses?.[q.id] || 0;
+        dimTotal += Number(formData.responses?.[q.id] || 0);
       });
       dimScores[dim.name] = dimTotal;
       grandTotal += dimTotal;
@@ -282,11 +287,11 @@ export default function App() {
 
     const newEntry = {
       id: Date.now().toString(),
-      startup_name: formData.startupName,
-      founder: formData.founder,
-      email: formData.email,
-      whatsapp: formData.whatsapp,
-      segment: formData.segment,
+      startup_name: formData.startupName || 'Startup Sem Nome',
+      founder: formData.founder || 'Não informado',
+      email: formData.email || 'Não informado',
+      whatsapp: formData.whatsapp || 'Não informado',
+      segment: formData.segment || 'SaaS B2B',
       stage,
       score: grandTotal,
       date: new Date().toISOString().split('T')[0],
@@ -294,14 +299,19 @@ export default function App() {
       notes: cleanNotes
     };
 
-    const { error } = await supabase.from('startups').insert([newEntry]);
-
-    if (!error) {
-      fetchStartups();
-      setSubmitted(true);
-    } else {
-      alert('Erro ao enviar respostas. Tente novamente.');
+    try {
+      const { error } = await supabase.from('startups').insert([newEntry]);
+      if (error) console.error("Erro no Supabase:", error);
+    } catch (err) {
+      console.error("Exceção no envio:", err);
     }
+
+    setLastSubmission({
+      ...newEntry,
+      startupName: newEntry.startup_name
+    });
+    setSubmitted(true);
+    fetchStartups();
   };
 
   const handleDeleteStartup = async (id) => {
@@ -383,7 +393,7 @@ export default function App() {
               <X className="h-6 w-6" />
             </button>
             <div>
-              <h2 className="text-xl font-bold text-slate-900">Matriz de Perguntas & Dimensões</h2>
+              <h2 className="text-xl font-bold text-slate-900">Matriz de Perguntas &amp; Dimensões</h2>
               <p className="text-xs text-slate-500 mt-1">8 dimensões · 40 indicadores · escala de 1 (discordo totalmente) a 5 (concordo totalmente)</p>
             </div>
             <div className="space-y-6">
@@ -439,7 +449,7 @@ export default function App() {
                   </div>
                   <div>
                     <h2 className="text-base md:text-lg font-bold text-white">Área da startup</h2>
-                    <p className="text-xs text-slate-300 mt-1">Responda os 40 indicadores e receba o radar de maturidade, o score por dimensão e o link do relatório.</p>
+                    <p className="text-xs text-slate-300 mt-1">Responda os 40 indicadores e receba o radar de maturidade, o score por dimensão e o relatório completo.</p>
                   </div>
                 </div>
                 <div className="mt-6 flex items-center text-xs font-bold text-teal-300 gap-2">
@@ -467,7 +477,7 @@ export default function App() {
             </div>
           </main>
           <footer className="text-center text-[11px] text-slate-500 py-4">
-            Hub de Inovação & Incubação · 2026
+            Hub de Inovação &amp; Incubação · 2026
           </footer>
         </div>
       )}
@@ -485,7 +495,7 @@ export default function App() {
                 <ListChecks className="h-3.5 w-3.5" /> Matriz de perguntas
               </button>
               <button
-                onClick={() => { setRole(null); setSubmitted(false); }}
+                onClick={() => { setRole(null); setSubmitted(false); setFormData(EMPTY_FORM); }}
                 className="text-xs font-medium text-slate-200 hover:text-white bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700 flex items-center gap-1.5"
               >
                 <LogOut className="h-3.5 w-3.5" /> Voltar ao início
@@ -504,7 +514,7 @@ export default function App() {
                     </div>
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-[11px] font-bold uppercase text-slate-300 mb-1">Nome da startup *</label>
+                        <label className="block text-[11px] font-bold uppercase text-slate-300 mb-1">NOME DA STARTUP *</label>
                         <input
                           type="text" required value={formData.startupName}
                           onChange={e => setFormData({ ...formData, startupName: e.target.value })}
@@ -513,7 +523,7 @@ export default function App() {
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-[11px] font-bold uppercase text-slate-300 mb-1">Nome do fundador *</label>
+                          <label className="block text-[11px] font-bold uppercase text-slate-300 mb-1">NOME DO FUNDADOR *</label>
                           <input
                             type="text" required value={formData.founder}
                             onChange={e => setFormData({ ...formData, founder: e.target.value })}
@@ -521,7 +531,7 @@ export default function App() {
                           />
                         </div>
                         <div>
-                          <label className="block text-[11px] font-bold uppercase text-slate-300 mb-1">WhatsApp do fundador *</label>
+                          <label className="block text-[11px] font-bold uppercase text-slate-300 mb-1">WHATSAPP DO FUNDADOR *</label>
                           <input
                             type="text" required value={formData.whatsapp}
                             onChange={e => setFormData({ ...formData, whatsapp: e.target.value })}
@@ -531,7 +541,7 @@ export default function App() {
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-[11px] font-bold uppercase text-slate-300 mb-1">E-mail de contato *</label>
+                          <label className="block text-[11px] font-bold uppercase text-slate-300 mb-1">E-MAIL DE CONTATO *</label>
                           <input
                             type="email" required value={formData.email}
                             onChange={e => setFormData({ ...formData, email: e.target.value })}
@@ -539,7 +549,7 @@ export default function App() {
                           />
                         </div>
                         <div>
-                          <label className="block text-[11px] font-bold uppercase text-slate-300 mb-1">Segmento de atuação *</label>
+                          <label className="block text-[11px] font-bold uppercase text-slate-300 mb-1">SEGMENTO DE ATUAÇÃO *</label>
                           <select
                             value={formData.segment}
                             onChange={e => setFormData({ ...formData, segment: e.target.value })}
@@ -564,11 +574,19 @@ export default function App() {
                   </div>
                 ) : (
                   <div className="space-y-6 md:space-y-8">
-                    <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 flex justify-between items-center sticky top-16 z-20">
-                      <span className="text-xs font-bold text-slate-300">Progresso de respostas:</span>
-                      <span className="text-xs font-extrabold text-teal-300 bg-teal-500/10 px-3 py-1 rounded-lg border border-teal-500/20">
-                        {answeredCount} / 40 respondidas
-                      </span>
+                    {/* BARRA FIXA DE PROGRESSO E LEGENDA */}
+                    <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2 sticky top-16 z-20 shadow-xl">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs font-bold text-slate-300">Progresso de respostas:</span>
+                        <span className="text-xs font-extrabold text-teal-300 bg-teal-500/10 px-3 py-1 rounded-lg border border-teal-500/20">
+                          {answeredCount} / 40 respondidas
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center text-[11px] font-medium text-slate-400 border-t border-slate-800/80 pt-2">
+                        <span><b className="text-teal-400">1:</b> Discordo Totalmente</span>
+                        <span><b className="text-teal-400">3:</b> Parcial / Neutro</span>
+                        <span><b className="text-teal-400">5:</b> Concordo Totalmente</span>
+                      </div>
                     </div>
 
                     {GOVTECH_DIMENSIONS.map((dim, dimIdx) => (
@@ -576,6 +594,12 @@ export default function App() {
                         <div className="space-y-1">
                           <h3 className="font-bold text-white text-xs md:text-sm">{dimIdx + 1}. {dim.name}</h3>
                           <p className="text-[11px] text-slate-400">{dim.description}</p>
+                        </div>
+
+                        <div className="flex justify-between items-center bg-slate-900/60 px-3 py-1.5 rounded-lg border border-slate-800 text-[10px] text-slate-400">
+                          <span>1 = Mínimo / Discordo</span>
+                          <span>3 = Médio</span>
+                          <span>5 = Máximo / Concordo</span>
                         </div>
 
                         <div className="divide-y divide-slate-800">
@@ -592,7 +616,7 @@ export default function App() {
                                     }))}
                                     className={`w-9 h-9 md:w-8 md:h-8 rounded-xl text-xs font-bold border transition ${
                                       formData.responses?.[q.id] === score
-                                        ? 'bg-teal-500 text-slate-950 border-teal-400 shadow-md'
+                                        ? 'bg-teal-500 text-slate-950 border-teal-400 shadow-md scale-105'
                                         : 'bg-slate-900 text-slate-400 border-slate-800 hover:border-slate-700'
                                     }`}
                                   >
@@ -604,7 +628,6 @@ export default function App() {
                           ))}
                         </div>
 
-                        {/* OBSERVAÇÃO POR DIMENSÃO */}
                         <div className="pt-2">
                           <label className="block text-[11px] font-bold text-slate-400 mb-1">
                             Observações ou contexto adicional para {dim.name} (opcional):
@@ -624,7 +647,7 @@ export default function App() {
                     ))}
                     <button
                       onClick={handleFormSubmit}
-                      className="w-full py-4 bg-teal-500 text-slate-950 font-black rounded-xl text-xs shadow-lg shadow-teal-500/20"
+                      className="w-full py-4 bg-teal-500 hover:bg-teal-400 text-slate-950 font-black rounded-xl text-xs shadow-lg shadow-teal-500/20 transition"
                     >
                       Enviar diagnóstico
                     </button>
@@ -632,10 +655,105 @@ export default function App() {
                 )}
               </div>
             ) : (
-              <div className="bg-slate-900 p-6 md:p-8 rounded-3xl space-y-4 text-center border border-slate-800">
-                <CheckCircle2 className="h-10 w-10 md:h-12 md:w-12 text-teal-400 mx-auto" />
-                <h2 className="text-lg md:text-xl font-bold text-white">Diagnóstico enviado com sucesso!</h2>
-                <p className="text-xs text-slate-400">Sua pontuação foi gravada na nuvem e enviada ao painel de mentoria.</p>
+              <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-6">
+                  <div>
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-teal-500/10 border border-teal-500/25 rounded-full text-teal-300 font-bold text-[11px]">
+                      <CheckCircle2 className="h-3.5 w-3.5" /> Diagnóstico concluído
+                    </span>
+                    <h2 className="text-2xl font-black text-white mt-2">{lastSubmission?.startupName}</h2>
+                    <p className="text-xs text-slate-400 mt-1">
+                      Fundador: <b className="text-slate-200">{lastSubmission?.founder}</b> · Segmento: <b className="text-slate-200">{lastSubmission?.segment}</b>
+                    </p>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      📞 {lastSubmission?.whatsapp} · ✉️ {lastSubmission?.email}
+                    </p>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <div className="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-center min-w-[100px]">
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">SCORE TOTAL</span>
+                      <p className="text-2xl font-black text-teal-400 mt-0.5">{lastSubmission?.score} <span className="text-xs text-slate-500 font-normal">/200</span></p>
+                    </div>
+                    <div className="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-center min-w-[100px] flex flex-col justify-center">
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">ESTÁGIO</span>
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${getStageBadge(lastSubmission?.stage)}`}>
+                        {lastSubmission?.stage}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-3">
+                    <h3 className="text-xs font-bold text-white uppercase tracking-wider text-center">RADAR DE MATURIDADE (8 DIMENSÕES)</h3>
+                    <div className="h-64 w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <RadarChart cx="50%" cy="50%" outerRadius="70%" data={
+                          GOVTECH_DIMENSIONS.map(d => ({
+                            subject: getShortLabel(d.name),
+                            A: lastSubmission?.dimensions?.[d.name] || 0
+                          }))
+                        }>
+                          <PolarGrid stroke="#334155" />
+                          <PolarAngleAxis dataKey="subject" tick={<RadarTick />} />
+                          <PolarRadiusAxis angle={30} domain={[0, 25]} stroke="#475569" fontSize={10} />
+                          <Radar name="Startup" dataKey="A" stroke="#0d9488" fill="#0d9488" fillOpacity={0.4} />
+                        </RadarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-3">
+                    <h3 className="text-xs font-bold text-white uppercase tracking-wider">PONTUAÇÃO POR DIMENSÃO</h3>
+                    <div className="space-y-2">
+                      {GOVTECH_DIMENSIONS.map(d => {
+                        const score = lastSubmission?.dimensions?.[d.name] || 0;
+                        return (
+                          <div key={d.id} className="p-2.5 bg-slate-900 rounded-xl border border-slate-800 flex justify-between items-center">
+                            <span className="text-xs font-semibold text-slate-200">{d.name}</span>
+                            <span className="text-xs font-bold text-teal-300 bg-teal-500/10 px-2.5 py-0.5 rounded-lg border border-teal-500/20">
+                              {score} / 25
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-3 pt-4 border-t border-slate-800">
+                  <div className="flex gap-2 w-full sm:w-auto">
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(window.location.href);
+                        setCopiedLink(true);
+                        setTimeout(() => setCopiedLink(false), 2000);
+                      }}
+                      className="w-full sm:w-auto px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-xs border border-slate-700 flex items-center justify-center gap-2"
+                    >
+                      {copiedLink ? <Check className="h-4 w-4 text-teal-400" /> : <Copy className="h-4 w-4" />}
+                      {copiedLink ? 'Link copiado!' : 'Copiar link do resultado'}
+                    </button>
+                    <button
+                      onClick={() => window.print()}
+                      className="w-full sm:w-auto px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-xs border border-slate-700 flex items-center justify-center gap-2"
+                    >
+                      <Printer className="h-4 w-4" /> Exportar PDF / Imprimir
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setSubmitted(false);
+                      setCurrentStep(0);
+                      setFormData(EMPTY_FORM);
+                    }}
+                    className="w-full sm:w-auto px-5 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs transition"
+                  >
+                    Preencher novo diagnóstico
+                  </button>
+                </div>
               </div>
             )}
           </main>
@@ -682,25 +800,43 @@ export default function App() {
               </form>
             </div>
           ) : (
-            <div className="flex flex-col md:flex-row h-screen bg-slate-100 font-sans text-slate-800 overflow-hidden">
-              {/* HEADER MOBILE */}
-              <div className="md:hidden bg-slate-900 text-white px-4 py-3 flex justify-between items-center border-b border-slate-800 shrink-0">
+            <div className="flex flex-col md:flex-row h-screen bg-slate-100 font-sans text-slate-800 overflow-hidden relative">
+              
+              {/* TOPO MOBILE ADMIN */}
+              <div className="md:hidden bg-slate-900 text-white px-4 py-3 flex justify-between items-center border-b border-slate-800 shrink-0 z-30">
                 <LogoHeader size="normal" />
                 <button
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="p-2 rounded-lg bg-slate-800 text-slate-200"
+                  className="p-2 rounded-xl bg-slate-800 text-slate-200 border border-slate-700 focus:outline-none"
                 >
                   {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                 </button>
               </div>
 
-              {/* SIDEBAR COM TODOS OS MENUS ORIGINAIS */}
-              <aside className={`${
-                mobileMenuOpen ? 'block' : 'hidden'
-              } md:block w-full md:w-64 bg-slate-900 text-white flex flex-col justify-between p-5 border-r border-slate-800 shrink-0 z-20`}>
+              {/* OVERLAY PARA CELULAR QUANDO O MENU ESTÁ ABERTO */}
+              {mobileMenuOpen && (
+                <div 
+                  className="md:hidden fixed inset-0 bg-slate-950/80 z-40 backdrop-blur-sm"
+                  onClick={() => setMobileMenuOpen(false)}
+                />
+              )}
+
+              {/* SIDEBAR COM SUPORTE PERFEITO A CELULAR */}
+              <aside className={`
+                fixed md:static inset-y-0 left-0 z-50
+                w-72 md:w-64 bg-slate-900 text-white flex flex-col justify-between p-5 border-r border-slate-800 shrink-0
+                transform transition-transform duration-300 ease-in-out
+                ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+              `}>
                 <div className="space-y-6">
-                  <div className="hidden md:block">
+                  <div className="flex justify-between items-center">
                     <LogoHeader size="normal" />
+                    <button 
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="md:hidden p-1.5 text-slate-400 hover:text-white"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
                   </div>
                   <nav className="space-y-1">
                     {[
@@ -735,16 +871,16 @@ export default function App() {
                 </div>
                 <button
                   onClick={() => { setAdminAuth(false); setRole(null); }}
-                  className="mt-6 md:mt-0 text-xs text-slate-400 hover:text-white flex items-center gap-2"
+                  className="mt-6 text-xs text-slate-400 hover:text-white flex items-center gap-2 pt-4 border-t border-slate-800"
                 >
                   <LogOut className="h-4 w-4" /> Sair do painel
                 </button>
               </aside>
 
-              {/* CONTEÚDO PRINCIPAL DAS ABAS */}
+              {/* CONTEÚDO PRINCIPAL DO ADMIN */}
               <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
 
-                {/* 1. VISÃO GERAL (DASHBOARD) */}
+                {/* 1. VISÃO GERAL */}
                 {activeAdminTab === 'dashboard' && (
                   <div className="space-y-6">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
@@ -762,7 +898,6 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* CARDS DE PONTUAÇÃO E DESTAQUES */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pontuação Média</span>
@@ -789,7 +924,6 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* GRÁFICOS RADAR E BARRAS DE PONTUAÇÃO */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
                         <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Radar de Maturidade (Média Geral)</h3>
@@ -821,14 +955,13 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* OBSERVAÇÕES DA STARTUP POR DIMENSÃO */}
                     <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
                         <div>
                           <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                             <MessageSquare className="h-4 w-4 text-teal-600" /> Observações da Startup por Dimensão
                           </h3>
-                          <p className="text-xs text-slate-500">Selecione uma dimensão para visualizar os relatos das startups.</p>
+                          <p className="text-xs text-slate-500">Selecione uma dimensão para ver os comentários.</p>
                         </div>
                         <select
                           value={selectedObsDimension}
@@ -863,7 +996,6 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* DISTRIBUIÇÕES POR ESTÁGIO E SETOR */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
                         <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Distribuição por Estágio de Maturidade</h3>
@@ -896,7 +1028,6 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* TABELA COMPLETA DE STARTUPS CADASTRADAS */}
                     <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
                       <div className="p-4 border-b border-slate-200 bg-slate-50 font-bold text-xs text-slate-800 flex justify-between items-center">
                         <span>Startups Cadastradas ({safeSubmissions.length})</span>
@@ -994,7 +1125,6 @@ export default function App() {
                           </span>
                         </div>
 
-                        {/* EXIBIÇÃO DAS 8 DIMENSÕES COM AÇÕES */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {GOVTECH_DIMENSIONS.map(dim => {
                             const score = currentPlanStartup.dimensions?.[dim.name] || 0;

@@ -13,7 +13,6 @@ import {
 
 // ============================================================================
 // 1. AS 8 DIMENSÕES E OS 40 INDICADORES
-//    "short" = rótulo enxuto usado nos gráficos
 // ============================================================================
 const GOVTECH_DIMENSIONS = [
   {
@@ -128,8 +127,7 @@ const DIM_ID_BY_NAME = GOVTECH_DIMENSIONS.reduce((acc, d) => { acc[d.name] = d.i
 const getShortLabel = (fullName) => SHORT_LABELS?.[fullName] || fullName || '';
 
 // ============================================================================
-// 2. PLAYBOOK DE AÇÕES COM SUBTÓPICOS PRÁTICOS POR DIMENSÃO
-//    Cada frente ajusta a ação ao nível e traz ferramentas, métricas e entregável
+// 2. PLAYBOOK DE AÇÕES COM SUBTÓPICOS PRÁTICOS
 // ============================================================================
 const ACTION_PLAYBOOK = {
   estrategia: [
@@ -367,7 +365,7 @@ const ACTION_PLAYBOOK = {
 };
 
 // ============================================================================
-// 3. TRÊS TRILHAS DE CAPACITAÇÃO, 12 TEMÁTICAS CADA, COBRINDO AS 8 DIMENSÕES
+// 3. TRÊS TRILHAS DE CAPACITAÇÃO
 // ============================================================================
 const LEARNING_TRACKS = [
   {
@@ -443,7 +441,7 @@ const STAGE_COLORS = {
 const SEGMENT_PALETTE = ['#0D9488', '#2563EB', '#7C3AED', '#D97706', '#0891B2', '#DB2777', '#65A30D', '#475569'];
 
 // ============================================================================
-// 4. RÓTULOS DOS GRÁFICOS SEM SOBREPOSIÇÃO
+// 4. HELPER PARA FORMATAR TEXTO DE RÓTULOS
 // ============================================================================
 const wrapLabel = (text, maxChars) => {
   const words = String(text || '').split(' ');
@@ -561,7 +559,7 @@ const EMPTY_FORM = {
 };
 
 // ============================================================================
-// 6. CSS DE IMPRESSÃO A4 (quebra natural de páginas, sem cortar cards)
+// 6. CSS DE IMPRESSÃO A4
 // ============================================================================
 const PRINT_STYLES = `
   @media print {
@@ -643,6 +641,7 @@ export default function App() {
   });
 
   const [dashboardSelection, setDashboardSelection] = useState('todas');
+  const [selectedDashboardDim, setSelectedDashboardDim] = useState('estrategia');
   const [showMatrix, setShowMatrix] = useState(false);
 
   const [currentStep, setCurrentStep] = useState(0);
@@ -985,58 +984,14 @@ export default function App() {
         <main className="max-w-5xl mx-auto w-full my-auto py-12 text-center space-y-10">
           <div className="space-y-4">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-teal-500/10 border border-teal-500/25 rounded-full text-teal-300 font-bold text-xs uppercase tracking-wider">
-              <Zap className="h-3.5 w-3.5" /> Hub GovTech PR
+              <Zap className="h-3.5 w-3.5" /> Hub Govtech PR
             </div>
-            <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white max-w-4xl mx-auto leading-tight uppercase">
-              Diagnóstico de Maturidade - Avaliação em 8 Dimensões Estratégicas
+            <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white max-w-4xl mx-auto leading-tight">
+              Diagnóstico de Maturidade
             </h1>
-            <p className="text-slate-200 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
-              Mapeamento de governança, tecnologia, tração e planejamento de conhecimento para aceleradoras e programas de inovação.
+            <p className="text-teal-300 text-sm md:text-base font-semibold max-w-2xl mx-auto leading-relaxed">
+              Avaliação em 8 dimensões estratégicas
             </p>
-          </div>
-
-          {/* BLOCO INSTITUCIONAL EXPLICATIVO */}
-          <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6 md:p-7 text-left max-w-4xl mx-auto shadow-2xl space-y-5">
-            <div className="flex items-center gap-2 text-teal-300">
-              <Info className="h-4 w-4" />
-              <span className="text-xs font-bold uppercase tracking-widest">Sobre o diagnóstico</span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              <div className="space-y-2">
-                <h3 className="text-sm font-bold text-white">O que é</h3>
-                <p className="text-xs text-slate-200 leading-relaxed">
-                  Ferramenta de mapeamento contínuo para ecossistemas de inovação. Cada rodada registra a fotografia atual
-                  da startup e permite acompanhar a evolução ao longo do programa.
-                </p>
-              </div>
-              <div className="space-y-2 md:border-l md:border-slate-700 md:pl-5">
-                <h3 className="text-sm font-bold text-white">Metodologia</h3>
-                <p className="text-xs text-slate-200 leading-relaxed">
-                  Avaliação quantitativa em escala de 1 a 5, distribuída em 8 dimensões estratégicas e 40 indicadores.
-                  Cada dimensão vale até 25 pontos, somando 200 pontos.
-                </p>
-              </div>
-              <div className="space-y-2 md:border-l md:border-slate-700 md:pl-5">
-                <h3 className="text-sm font-bold text-white">Objetivo</h3>
-                <p className="text-xs text-slate-200 leading-relaxed">
-                  Gerar matrizes de maturidade, identificar gargalos operacionais e direcionar planos de ação
-                  personalizados por dimensão, com trilhas de capacitação correspondentes.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-slate-700">
-              <span className="text-[11px] text-slate-300">
-                Estágios calculados: Ideação (0–70) · Operação (71–120) · Tração (121–170) · Escala (171–200)
-              </span>
-              <button
-                onClick={() => setShowMatrix(true)}
-                className="ml-auto text-xs font-bold text-teal-300 hover:text-teal-200 flex items-center gap-2 border border-teal-500/30 bg-teal-500/10 px-3.5 py-2 rounded-xl transition"
-              >
-                <ListChecks className="h-3.5 w-3.5" /> Ver matriz de perguntas
-              </button>
-            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto text-left">
@@ -1404,7 +1359,6 @@ export default function App() {
                             </div>
                           ))}
 
-                          {/* OBSERVAÇÕES: SEMPRE EM BRANCO, SEM PLACEHOLDER */}
                           <div className="p-4 bg-slate-950 border border-slate-800 rounded-2xl space-y-2">
                             <label className="text-xs font-bold text-slate-200 flex items-center gap-2">
                               <MessageSquare className="h-3.5 w-3.5 text-teal-300" />
@@ -1653,7 +1607,6 @@ export default function App() {
                 <span className="text-[11px] text-slate-500">{worstDimension[1]} / 25 pts</span>
               </div>
 
-              {/* BADGE DE ESTÁGIO QUANDO INDIVIDUAL, TOTAL QUANDO MÉDIA GERAL */}
               <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm avoid-break">
                 <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                   {selectedDashboardStartup ? 'Estágio de maturidade' : 'Startups analisadas'}
@@ -1717,6 +1670,67 @@ export default function App() {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
+            </div>
+
+            {/* SEÇÃO: OBSERVAÇÕES DA STARTUP POR DIMENSÃO */}
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4 avoid-break">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 pb-3">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <MessageSquare className="h-4 w-4 text-teal-700" />
+                    Observações da Startup por Dimensão
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {selectedDashboardStartup
+                      ? `Exibindo notas deixadas por ${selectedDashboardStartup.startupName}`
+                      : 'Selecione uma startup individual no topo para filtrar ou veja as observações gerais abaixo'}
+                  </p>
+                </div>
+
+                <div className="w-full sm:w-64 no-print">
+                  <select
+                    value={selectedDashboardDim}
+                    onChange={e => setSelectedDashboardDim(e.target.value)}
+                    className="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800"
+                  >
+                    {GOVTECH_DIMENSIONS.map(d => (
+                      <option key={d.id} value={d.id}>{d.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {(() => {
+                const targetDim = GOVTECH_DIMENSIONS.find(d => d.id === selectedDashboardDim);
+                const targetSubmissions = selectedDashboardStartup ? [selectedDashboardStartup] : safeSubmissions;
+                const filteredNotes = targetSubmissions.filter(s => s?.notes?.[selectedDashboardDim] && String(s.notes[selectedDashboardDim]).trim());
+
+                if (filteredNotes.length === 0) {
+                  return (
+                    <div className="p-6 bg-slate-50 rounded-xl text-center text-xs text-slate-500 border border-slate-200">
+                      Sem comentários registrados para esta dimensão.
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {filteredNotes.map(s => (
+                      <div key={s.id} className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="font-bold text-slate-900">{s.startupName}</span>
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${getStageBadge(s.stage)}`}>
+                            {s.stage}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-700 leading-relaxed pt-1">
+                          "{s.notes[selectedDashboardDim]}"
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
             </div>
 
             {/* DISTRIBUIÇÃO POR ESTÁGIO + POR SETOR */}

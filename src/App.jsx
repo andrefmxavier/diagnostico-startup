@@ -5,7 +5,7 @@ import {
   ChevronRight, RefreshCw, LogOut, ArrowRight, Star, ChevronLeft,
   Building2, Activity, Zap, Layers, BarChart3, HelpCircle, Phone, 
   Printer, Share2, Scale, Target, BrainCircuit, Key, Download, Trash2,
-  BookOpen, Calendar, CheckSquare, Link as LinkIcon, Cpu
+  BookOpen, Calendar, CheckSquare, Link as LinkIcon, Cpu, MessageSquare
 } from 'lucide-react';
 import { 
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, 
@@ -13,7 +13,7 @@ import {
 } from 'recharts';
 
 // ============================================================================
-// 1. CONFIGURAÇÃO DAS 8 DIMENSÕES COM TECNOLOGIA (5 PERGUNTAS CADA = 40 TOTAL)
+// 1. ESTRUTURA DAS 8 DIMENSÕES COM CAMPO DE TEXTO OPÇÃO
 // ============================================================================
 const GOVTECH_DIMENSIONS = [
   {
@@ -114,9 +114,8 @@ const GOVTECH_DIMENSIONS = [
   }
 ];
 
-// Lista de 30 Módulos de Conteúdo da Trilha Anual Recomendada
+// 30 Módulos de Conteúdo da Trilha Anual Recomendada
 const ANNUAL_CURRICULUM = [
-  // Q1 - Módulos Prioridade Alta (1 a 8)
   { id: 1, quarter: 'Q1', title: 'Validação de Problema e Entrevistas com Clientes', dim: 'Estrutura, Produto & Validação', priority: 'Alta' },
   { id: 2, quarter: 'Q1', title: 'Modelagem de Proposta de Valor e Tese B2B/B2G', dim: 'Estratégia & Tese de Mercado', priority: 'Alta' },
   { id: 3, quarter: 'Q1', title: 'Construção de MVP Funcional de Baixo Custo', dim: 'Estrutura, Produto & Validação', priority: 'Alta' },
@@ -126,7 +125,6 @@ const ANNUAL_CURRICULUM = [
   { id: 7, quarter: 'Q1', title: 'DRE Gerencial e Controle de Cash Burn', dim: 'Recursos, Runway & B2G', priority: 'Alta' },
   { id: 8, quarter: 'Q1', title: 'UX/UI: Design de Interfaces para Usuário Final', dim: 'Pessoas & Competências', priority: 'Média' },
 
-  // Q2 - Módulos Prioridade Alta / Média (9 a 16)
   { id: 9, quarter: 'Q2', title: 'Implementação de IA Generativa no Produto', dim: 'Tecnologia, IA & Propriedade Intelectual', priority: 'Alta' },
   { id: 10, quarter: 'Q2', title: 'Funil de Vendas B2B e Métricas de Conversão', dim: 'Processos & Agilidade', priority: 'Alta' },
   { id: 11, quarter: 'Q2', title: 'Captação de Fomento Aberto (FINEP / Sebrae / CNPq)', dim: 'Recursos, Runway & B2G', priority: 'Alta' },
@@ -136,7 +134,6 @@ const ANNUAL_CURRICULUM = [
   { id: 15, quarter: 'Q2', title: 'Cultura de Experimentação e Testes A/B', dim: 'Cultura de Inovação', priority: 'Média' },
   { id: 16, quarter: 'Q2', title: 'Estratégia de Marketing de Conteúdo e Outbound', dim: 'Processos & Agilidade', priority: 'Média' },
 
-  // Q3 - Módulos Prioridade Média (17 a 23)
   { id: 17, quarter: 'Q3', title: 'Métricas Avançadas: CAC, LTV, Churn e LTV/CAC', dim: 'Recursos, Runway & B2G', priority: 'Média' },
   { id: 18, quarter: 'Q3', title: 'Modelos de Licitação, Dispensa e Pregão Eletrônico', dim: 'Estratégia & Tese de Mercado', priority: 'Média' },
   { id: 19, quarter: 'Q3', title: 'Integração de APIs e Interoperabilidade de Dados', dim: 'Tecnologia, IA & Propriedade Intelectual', priority: 'Média' },
@@ -145,7 +142,6 @@ const ANNUAL_CURRICULUM = [
   { id: 22, quarter: 'Q3', title: 'Provas de Conceito (PoC) com Órgãos e Empresas', dim: 'Estrutura, Produto & Validação', priority: 'Média' },
   { id: 23, quarter: 'Q3', title: 'Governança Corporativa e Conselho Consultivo', dim: 'Liderança & Time', priority: 'Média' },
 
-  // Q4 - Módulos Prioridade Avançada (24 a 30)
   { id: 24, quarter: 'Q4', title: 'Preparação para Rodadas de Investimento Anjo e VC', dim: 'Recursos, Runway & B2G', priority: 'Média' },
   { id: 25, quarter: 'Q4', title: 'Escalabilidade de Servidores em Nuvem e DevOps', dim: 'Tecnologia, IA & Propriedade Intelectual', priority: 'Baixa' },
   { id: 26, quarter: 'Q4', title: 'Estratégias de Expansão Nacional e Franquias', dim: 'Estratégia & Tese de Mercado', priority: 'Baixa' },
@@ -176,6 +172,10 @@ const INITIAL_STARTUPS = [
       'Estrutura, Produto & Validação': 20,
       'Processos & Agilidade': 18,
       'Recursos, Runway & B2G': 20
+    },
+    notes: {
+      'estrategia': 'Atuamos fortemente em prefeituras do interior do PR.',
+      'tecnologia': 'Usamos modelo de IA para detectar rachaduras via câmera de celular.'
     }
   },
   {
@@ -197,28 +197,8 @@ const INITIAL_STARTUPS = [
       'Estrutura, Produto & Validação': 16,
       'Processos & Agilidade': 15,
       'Recursos, Runway & B2G': 13
-    }
-  },
-  {
-    id: '3',
-    startupName: 'WhatsAlvará',
-    founder: 'Lucas Mendes',
-    email: 'lucas@whatsalvara.com',
-    whatsapp: '(43) 98877-6655',
-    segment: 'SaaS B2B / Governança',
-    stage: 'Ideação',
-    score: 88,
-    date: '2026-02-15',
-    dimensions: {
-      'Estratégia & Tese de Mercado': 14,
-      'Liderança & Time': 12,
-      'Tecnologia, IA & Propriedade Intelectual': 11,
-      'Cultura de Inovação': 11,
-      'Pessoas & Competências': 10,
-      'Estrutura, Produto & Validação': 10,
-      'Processos & Agilidade': 9,
-      'Recursos, Runway & B2G': 11
-    }
+    },
+    notes: {}
   }
 ];
 
@@ -232,10 +212,18 @@ export default function App() {
   const [pinChangeSuccess, setPinChangeSuccess] = useState(false);
   const [authError, setAuthError] = useState(false);
 
-  // Submissões e Persistência
+  // Submissões com Validação para Evitar Tela Preta por Dados Antigos
   const [submissions, setSubmissions] = useState(() => {
-    const saved = localStorage.getItem('hub_v2_submissions');
-    return saved ? JSON.parse(saved) : INITIAL_STARTUPS;
+    try {
+      const saved = localStorage.getItem('hub_v3_submissions');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.error("Erro ao carregar do localStorage", e);
+    }
+    return INITIAL_STARTUPS;
   });
 
   // Filtro de Visualização no Dashboard Admin ('todas' ou id da startup)
@@ -249,7 +237,8 @@ export default function App() {
     email: '',
     whatsapp: '',
     segment: 'SaaS B2B',
-    responses: {}
+    responses: {},
+    notes: {} // Textos livres por dimensão
   });
   const [submitted, setSubmitted] = useState(false);
   const [lastSubmission, setLastSubmission] = useState(null);
@@ -262,8 +251,28 @@ export default function App() {
   const [selectedStageFilter, setSelectedStageFilter] = useState('Todos');
   const [benchmarkingSelected, setBenchmarkingSelected] = useState(['1', '2']);
 
+  // Detecta se a URL contém resultado compartilhado
   useEffect(() => {
-    localStorage.setItem('hub_v2_submissions', JSON.stringify(submissions));
+    const params = new URLSearchParams(window.location.search);
+    const sharedData = params.get('result');
+    if (sharedData) {
+      try {
+        const decoded = JSON.parse(decodeURIComponent(escape(atob(sharedData))));
+        setLastSubmission(decoded);
+        setSubmitted(true);
+        setRole('startup');
+      } catch (e) {
+        console.error("Erro ao ler resultado do link", e);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('hub_v3_submissions', JSON.stringify(submissions));
+    } catch (e) {
+      console.error("Erro ao salvar no localStorage", e);
+    }
   }, [submissions]);
 
   const handleAdminLogin = (e) => {
@@ -292,6 +301,9 @@ export default function App() {
       setSubmissions(prev => prev.filter(s => s.id !== id));
       if (selectedStartup && selectedStartup.id === id) {
         setSelectedStartup(null);
+      }
+      if (dashboardSelection === id) {
+        setDashboardSelection('todas');
       }
     }
   };
@@ -327,12 +339,25 @@ export default function App() {
       stage,
       score: grandTotal,
       date: new Date().toISOString().split('T')[0],
-      dimensions: dimScores
+      dimensions: dimScores,
+      notes: formData.notes
     };
 
     setSubmissions(prev => [newEntry, ...prev]);
     setLastSubmission(newEntry);
     setSubmitted(true);
+  };
+
+  // Gerador de Link Único Compartilhável
+  const generateShareableLink = (submission) => {
+    if (!submission) return window.location.origin;
+    try {
+      const jsonString = JSON.stringify(submission);
+      const encoded = btoa(unescape(encodeURIComponent(jsonString)));
+      return `${window.location.origin}${window.location.pathname}?result=${encoded}`;
+    } catch (e) {
+      return window.location.href;
+    }
   };
 
   const getStageBadge = (stage) => {
@@ -347,7 +372,7 @@ export default function App() {
 
   // Trilha de Recomendações por Dimensão
   const getActionPlanForDimension = (dimName, score) => {
-    const percentage = (score / 25) * 100;
+    const percentage = ((score || 0) / 25) * 100;
     if (percentage >= 80) {
       return { level: 'Avançado', meta: 'Referência', color: 'text-emerald-600', actions: ['Consolidar parcerias estratégicas nacionais e expansão de mercado', 'Documentar cases de sucesso para republicação e atração de investimento', 'Servir como mentora de referência para outras startups do ecossistema'] };
     } else if (percentage >= 50) {
@@ -357,24 +382,33 @@ export default function App() {
     }
   };
 
-  // Dados Exibidos no Dashboard (Calculados com base na Seleção do Usuário)
+  // CÁLCULOS SEGUROS PARA EVITAR TELA PRETA (DASHBOARD ADMIN)
+  const safeSubmissions = Array.isArray(submissions) ? submissions : [];
+
+  const filteredSubmissions = safeSubmissions.filter(s => {
+    if (!s) return false;
+    const matchesSearch = (s.startupName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (s.founder || '').toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStage = selectedStageFilter === 'Todos' || s.stage === selectedStageFilter;
+    return matchesSearch && matchesStage;
+  });
+
   const displayedSubmissions = dashboardSelection === 'todas'
-    ? submissions
-    : submissions.filter(s => s.id === dashboardSelection);
+    ? safeSubmissions
+    : safeSubmissions.filter(s => s && s.id === dashboardSelection);
 
   const avgOverallScore = displayedSubmissions.length > 0
-    ? (displayedSubmissions.reduce((acc, curr) => acc + curr.score, 0) / displayedSubmissions.length).toFixed(1)
+    ? (displayedSubmissions.reduce((acc, curr) => acc + (curr?.score || 0), 0) / displayedSubmissions.length).toFixed(1)
     : 0;
 
-  // Médias ou Notas do Item Selecionado
   const activeDimValues = {};
   GOVTECH_DIMENSIONS.forEach(dim => {
     if (dashboardSelection === 'todas') {
-      const totalDimScore = submissions.reduce((acc, curr) => acc + (curr.dimensions[dim.name] || 0), 0);
-      activeDimValues[dim.name] = submissions.length > 0 ? (totalDimScore / submissions.length).toFixed(1) : 0;
+      const totalDimScore = safeSubmissions.reduce((acc, curr) => acc + (curr?.dimensions?.[dim.name] || 0), 0);
+      activeDimValues[dim.name] = safeSubmissions.length > 0 ? (totalDimScore / safeSubmissions.length).toFixed(1) : 0;
     } else {
-      const single = submissions.find(s => s.id === dashboardSelection);
-      activeDimValues[dim.name] = single ? (single.dimensions[dim.name] || 0) : 0;
+      const single = safeSubmissions.find(s => s?.id === dashboardSelection);
+      activeDimValues[dim.name] = single?.dimensions?.[dim.name] || 0;
     }
   });
 
@@ -467,18 +501,34 @@ export default function App() {
   }
 
   // ---------------------------------------------------------------------------
-  // TELA 2: VISÃO DA STARTUP (FORMULÁRIO PASSO A PASSO + ENCERRAMENTO CLEAN)
+  // TELA 2: VISÃO DA STARTUP (FORMULÁRIO PASSO A PASSO + ENCERRAMENTO COM PDF/LINK)
   // ---------------------------------------------------------------------------
   if (role === 'startup') {
     return (
       <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
-        <header className="bg-slate-900 border-b border-slate-800 py-4 px-8 flex justify-between items-center sticky top-0 z-30">
+        {/* ESTILOS DE IMPRESSÃO PDF DEDICADOS */}
+        <style>{`
+          @media print {
+            body { background: #ffffff !important; color: #000000 !important; }
+            header, button, .no-print { display: none !important; }
+            .print-area { border: none !important; background: #ffffff !important; color: #000000 !important; box-shadow: none !important; p: 0 !important; }
+            .print-card { background: #f8fafc !important; border: 1px solid #cbd5e1 !important; color: #000000 !important; }
+            .print-text { color: #000000 !important; }
+          }
+        `}</style>
+
+        <header className="bg-slate-900 border-b border-slate-800 py-4 px-8 flex justify-between items-center sticky top-0 z-30 no-print">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-teal-500 text-slate-950 font-black flex items-center justify-center text-sm">H</div>
             <span className="font-bold text-sm tracking-wide text-white">Hub Diagnóstico — Startup</span>
           </div>
           <button 
-            onClick={() => { setRole(null); setSubmitted(false); setCurrentStep(0); }}
+            onClick={() => {
+              window.history.pushState({}, document.title, window.location.pathname);
+              setRole(null);
+              setSubmitted(false);
+              setCurrentStep(0);
+            }}
             className="text-xs font-medium text-slate-400 hover:text-white flex items-center gap-2 bg-slate-800 px-3.5 py-2 rounded-xl border border-slate-700 transition"
           >
             <LogOut className="h-3.5 w-3.5" /> Voltar ao Início
@@ -487,22 +537,22 @@ export default function App() {
 
         <main className="max-w-4xl mx-auto w-full flex-1 py-10 px-4">
           {submitted ? (
-            /* ENCERRAMENTO COM DESIGN LEGÍVEL, LINK E IMPRESSÃO PDF */
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-8 relative overflow-hidden">
+            /* ENCERRAMENTO COM DESIGN LEGÍVEL, LINK REAL E IMPRESSÃO PDF */
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-8 relative overflow-hidden print-area">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-800 pb-6">
                 <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full text-xs font-bold border border-emerald-500/20 mb-2">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full text-xs font-bold border border-emerald-500/20 mb-2 no-print">
                     <CheckCircle2 className="h-3.5 w-3.5" /> Diagnóstico Concluído
                   </div>
-                  <h1 className="text-2xl font-black text-white">{lastSubmission?.startupName}</h1>
-                  <p className="text-xs text-slate-300 mt-1">Fundador: {lastSubmission?.founder} · Segmento: {lastSubmission?.segment}</p>
+                  <h1 className="text-2xl font-black text-white print-text">{lastSubmission?.startupName}</h1>
+                  <p className="text-xs text-slate-300 mt-1 print-text">Fundador: {lastSubmission?.founder} · Segmento: {lastSubmission?.segment}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-center min-w-[120px]">
+                  <div className="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-center min-w-[120px] print-card">
                     <span className="text-[10px] font-bold text-slate-400 uppercase block">Score Total</span>
                     <span className="text-2xl font-black text-teal-400">{lastSubmission?.score} <span className="text-xs text-slate-500 font-normal">/200</span></span>
                   </div>
-                  <div className="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-center min-w-[120px]">
+                  <div className="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-center min-w-[120px] print-card">
                     <span className="text-[10px] font-bold text-slate-400 uppercase block">Estágio</span>
                     <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border inline-block mt-1 ${getStageBadge(lastSubmission?.stage)}`}>
                       {lastSubmission?.stage}
@@ -513,10 +563,10 @@ export default function App() {
 
               {/* Gráfico de Radar da Startup */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 h-80">
-                  <h3 className="text-xs font-bold text-slate-300 uppercase mb-2 text-center">Radar de Maturidade (8 Dimensões)</h3>
+                <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 h-80 print-card">
+                  <h3 className="text-xs font-bold text-slate-300 uppercase mb-2 text-center print-text">Radar de Maturidade (8 Dimensões)</h3>
                   <ResponsiveContainer width="100%" height="88%">
-                    <RadarChart data={Object.entries(lastSubmission.dimensions).map(([key, val]) => ({ subject: key.split(' ')[0], A: val }))}>
+                    <RadarChart data={Object.entries(lastSubmission?.dimensions || {}).map(([key, val]) => ({ subject: key.split(' ')[0], A: val }))}>
                       <PolarGrid stroke="#334155" />
                       <PolarAngleAxis dataKey="subject" tick={{ fill: '#CBD5E1', fontSize: 11, fontWeight: 'bold' }} />
                       <PolarRadiusAxis angle={30} domain={[0, 25]} stroke="#475569" />
@@ -526,11 +576,11 @@ export default function App() {
                 </div>
 
                 <div className="space-y-3">
-                  <h3 className="text-xs font-bold text-slate-300 uppercase mb-2">Pontuação Detalhada por Dimensão</h3>
+                  <h3 className="text-xs font-bold text-slate-300 uppercase mb-2 print-text">Pontuação Detalhada por Dimensão</h3>
                   <div className="grid grid-cols-1 gap-2 text-xs">
-                    {Object.entries(lastSubmission.dimensions).map(([dim, val]) => (
-                      <div key={dim} className="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex justify-between items-center">
-                        <span className="text-slate-200 font-medium truncate max-w-[220px]">{dim}</span>
+                    {Object.entries(lastSubmission?.dimensions || {}).map(([dim, val]) => (
+                      <div key={dim} className="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex justify-between items-center print-card">
+                        <span className="text-slate-200 font-medium truncate max-w-[220px] print-text">{dim}</span>
                         <span className="font-extrabold text-teal-400 bg-teal-500/10 px-2.5 py-1 rounded-lg border border-teal-500/20">{val} / 25 pts</span>
                       </div>
                     ))}
@@ -538,17 +588,37 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
+              {/* Exibição das Notas Escritas Opcionais */}
+              {lastSubmission?.notes && Object.keys(lastSubmission.notes).length > 0 && (
+                <div className="space-y-3 pt-4 border-t border-slate-800">
+                  <h3 className="text-xs font-bold text-slate-300 uppercase">Observações da Startup por Dimensão</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    {Object.entries(lastSubmission.notes).map(([dimId, text]) => {
+                      if (!text) return null;
+                      const dimObj = GOVTECH_DIMENSIONS.find(d => d.id === dimId);
+                      return (
+                        <div key={dimId} className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-1 print-card">
+                          <span className="font-bold text-teal-400 block text-[11px]">{dimObj?.name || dimId}</span>
+                          <p className="text-slate-300 leading-relaxed italic">{text}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              <div className="pt-4 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 no-print">
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => {
-                      navigator.clipboard.writeText(window.location.href);
+                      const shareUrl = generateShareableLink(lastSubmission);
+                      navigator.clipboard.writeText(shareUrl);
                       setCopiedLink(true);
                       setTimeout(() => setCopiedLink(false), 3000);
                     }}
                     className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-xs flex items-center gap-2 border border-slate-700"
                   >
-                    <LinkIcon className="h-3.5 w-3.5" /> {copiedLink ? 'Link Copiado!' : 'Copiar Link do Resultado'}
+                    <LinkIcon className="h-3.5 w-3.5" /> {copiedLink ? 'Link Copiado!' : 'Copiar Link Único de Resultado'}
                   </button>
                   <button
                     onClick={() => window.print()}
@@ -560,9 +630,10 @@ export default function App() {
 
                 <button
                   onClick={() => {
+                    window.history.pushState({}, document.title, window.location.pathname);
                     setSubmitted(false);
                     setCurrentStep(0);
-                    setFormData({ startupName: '', founder: '', email: '', whatsapp: '', segment: 'SaaS B2B', responses: {} });
+                    setFormData({ startupName: '', founder: '', email: '', whatsapp: '', segment: 'SaaS B2B', responses: {}, notes: {} });
                   }}
                   className="px-5 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs transition"
                 >
@@ -571,7 +642,7 @@ export default function App() {
               </div>
             </div>
           ) : (
-            /* FORMULÁRIO PASSO A PASSO */
+            /* FORMULÁRIO PASSO A PASSO COM CAMPO DE TEXTO OPÇÃO */
             <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-8">
               {/* Stepper Header */}
               <div className="space-y-3 border-b border-slate-800 pb-6">
@@ -675,7 +746,7 @@ export default function App() {
                   </button>
                 </div>
               ) : (
-                /* ETAPAS 1 A 8: DIMENSÕES */
+                /* ETAPAS 1 A 8: DIMENSÕES COM CAMPO DE TEXTO LIVRE OPÇÃO */
                 <div className="space-y-6">
                   {(() => {
                     const dim = GOVTECH_DIMENSIONS[currentStep - 1];
@@ -723,6 +794,27 @@ export default function App() {
                               </div>
                             </div>
                           ))}
+
+                          {/* CAMPO DE TEXTO LIVRE OPÇÃO DA DIMENSÃO */}
+                          <div className="p-4 bg-slate-950/60 border border-slate-800 rounded-2xl space-y-2">
+                            <label className="text-xs font-bold text-slate-300 flex items-center gap-2">
+                              <MessageSquare className="h-3.5 w-3.5 text-teal-400" />
+                              Observações ou comentários sobre esta dimensão <span className="text-[10px] text-slate-500 font-normal">(Opcional)</span>
+                            </label>
+                            <textarea
+                              rows={2}
+                              value={formData.notes[dim.id] || ''}
+                              onChange={e => {
+                                const val = e.target.value;
+                                setFormData(prev => ({
+                                  ...prev,
+                                  notes: { ...prev.notes, [dim.id]: val }
+                                }));
+                              }}
+                              placeholder="Escreva livremente sobre desafios, projetos em andamento ou detalhes dessa área..."
+                              className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-200 outline-none focus:border-teal-500"
+                            />
+                          </div>
                         </div>
 
                         <div className="flex justify-between items-center pt-4">
@@ -915,8 +1007,8 @@ export default function App() {
                     onChange={e => setDashboardSelection(e.target.value)}
                     className="bg-transparent text-xs font-bold text-teal-600 outline-none cursor-pointer"
                   >
-                    <option value="todas">Média de Todas as Startups ({submissions.length})</option>
-                    {submissions.map(s => (
+                    <option value="todas">Média de Todas as Startups ({safeSubmissions.length})</option>
+                    {safeSubmissions.map(s => (
                       <option key={s.id} value={s.id}>{s.startupName} ({s.stage})</option>
                     ))}
                   </select>
@@ -925,7 +1017,7 @@ export default function App() {
                 <button 
                   onClick={() => {
                     if (window.confirm('Resetar dados para os iniciais de teste?')) {
-                      localStorage.removeItem('hub_v2_submissions');
+                      localStorage.removeItem('hub_v3_submissions');
                       setSubmissions(INITIAL_STARTUPS);
                       setDashboardSelection('todas');
                     }
@@ -1085,13 +1177,13 @@ export default function App() {
                 <select
                   value={selectedStartup ? selectedStartup.id : ''}
                   onChange={e => {
-                    const found = submissions.find(s => s.id === e.target.value);
+                    const found = safeSubmissions.find(s => s.id === e.target.value);
                     setSelectedStartup(found || null);
                   }}
                   className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800"
                 >
                   <option value="">Selecione uma Startup...</option>
-                  {submissions.map(s => (
+                  {safeSubmissions.map(s => (
                     <option key={s.id} value={s.id}>{s.startupName} ({s.stage})</option>
                   ))}
                 </select>
@@ -1115,7 +1207,7 @@ export default function App() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {Object.entries(selectedStartup.dimensions).map(([dimName, score]) => {
+                  {Object.entries(selectedStartup.dimensions || {}).map(([dimName, score]) => {
                     const plan = getActionPlanForDimension(dimName, score);
                     return (
                       <div key={dimName} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
@@ -1220,7 +1312,7 @@ export default function App() {
             <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
               <span className="text-xs font-bold text-slate-500 uppercase">Selecione para Comparar:</span>
               <div className="flex flex-wrap gap-2">
-                {submissions.map(s => {
+                {safeSubmissions.map(s => {
                   const isSelected = benchmarkingSelected.includes(s.id);
                   return (
                     <button
@@ -1251,7 +1343,7 @@ export default function App() {
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {benchmarkingSelected.map(id => {
-                    const s = submissions.find(item => item.id === id);
+                    const s = safeSubmissions.find(item => item.id === id);
                     if (!s) return null;
                     return (
                       <div key={s.id} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2">
@@ -1271,8 +1363,8 @@ export default function App() {
                     <BarChart data={GOVTECH_DIMENSIONS.map(d => {
                       const entry = { name: d.name.split(' ')[0] };
                       benchmarkingSelected.forEach(id => {
-                        const s = submissions.find(item => item.id === id);
-                        if (s) entry[s.startupName] = s.dimensions[d.name] || 0;
+                        const s = safeSubmissions.find(item => item.id === id);
+                        if (s) entry[s.startupName] = s.dimensions?.[d.name] || 0;
                       });
                       return entry;
                     })}>
@@ -1281,9 +1373,9 @@ export default function App() {
                       <YAxis domain={[0, 25]} tick={{ fill: '#64748B', fontSize: 10 }} />
                       <Tooltip contentStyle={{ backgroundColor: '#FFFFFF', borderColor: '#E2E8F0', borderRadius: '8px' }} />
                       <Legend />
-                      <Bar dataKey={submissions.find(s => s.id === benchmarkingSelected[0])?.startupName} fill="#0D9488" radius={[4, 4, 0, 0]} />
-                      {benchmarkingSelected[1] && <Bar dataKey={submissions.find(s => s.id === benchmarkingSelected[1])?.startupName} fill="#2563EB" radius={[4, 4, 0, 0]} />}
-                      {benchmarkingSelected[2] && <Bar dataKey={submissions.find(s => s.id === benchmarkingSelected[2])?.startupName} fill="#9333EA" radius={[4, 4, 0, 0]} />}
+                      <Bar dataKey={safeSubmissions.find(s => s.id === benchmarkingSelected[0])?.startupName} fill="#0D9488" radius={[4, 4, 0, 0]} />
+                      {benchmarkingSelected[1] && <Bar dataKey={safeSubmissions.find(s => s.id === benchmarkingSelected[1])?.startupName} fill="#2563EB" radius={[4, 4, 0, 0]} />}
+                      {benchmarkingSelected[2] && <Bar dataKey={safeSubmissions.find(s => s.id === benchmarkingSelected[2])?.startupName} fill="#9333EA" radius={[4, 4, 0, 0]} />}
                     </BarChart>
                   </ResponsiveContainer>
                 </div>

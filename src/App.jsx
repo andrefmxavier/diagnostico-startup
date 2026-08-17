@@ -4,7 +4,7 @@ import {
   ChevronRight, ChevronDown, ChevronUp, RefreshCw, LogOut, ArrowRight, ChevronLeft,
   Zap, Phone, Mail, Printer, Scale, Target, Key, Trash2, Copy, Check, X,
   ListChecks, Wrench, Gauge, Package, MessageSquare, Info,
-  Link as LinkIcon, GraduationCap, Building2, Sparkles
+  Link as LinkIcon, GraduationCap, Building2, Sparkles, Menu
 } from 'lucide-react';
 import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
@@ -14,7 +14,7 @@ import {
 import { supabase } from './supabaseClient';
 
 // ============================================================================
-// 1. AS 8 DIMENSÕES E OS 40 INDICADORES
+// 1. ESTRUTURA DAS 8 DIMENSÕES E 40 INDICADORES
 // ============================================================================
 const GOVTECH_DIMENSIONS = [
   {
@@ -178,7 +178,6 @@ const STAGE_COLORS = {
   'Tração': '#0D9488',
   'Escala': '#7C3AED'
 };
-const SEGMENT_PALETTE = ['#0D9488', '#2563EB', '#7C3AED', '#D97706', '#0891B2', '#DB2777', '#65A30D', '#475569'];
 
 const wrapLabel = (text, maxChars) => {
   const words = String(text || '').split(' ');
@@ -199,20 +198,20 @@ const wrapLabel = (text, maxChars) => {
 
 const RadarTick = (props) => {
   const { x = 0, y = 0, textAnchor, payload, color = '#1E293B' } = props;
-  const lines = wrapLabel(payload?.value, 13);
-  const offsetY = -((lines.length - 1) * 11) / 2;
+  const lines = wrapLabel(payload?.value, 11);
+  const offsetY = -((lines.length - 1) * 10) / 2;
   return (
     <text
       x={x}
       y={y + offsetY}
       textAnchor={textAnchor}
       fill={color}
-      fontSize={11}
+      fontSize={10}
       fontWeight={700}
       dominantBaseline="central"
     >
       {lines.map((line, i) => (
-        <tspan key={i} x={x} dy={i === 0 ? 0 : 12}>{line}</tspan>
+        <tspan key={i} x={x} dy={i === 0 ? 0 : 11}>{line}</tspan>
       ))}
     </text>
   );
@@ -220,12 +219,12 @@ const RadarTick = (props) => {
 
 const AngledTick = (props) => {
   const { x = 0, y = 0, payload, color = '#1E293B', angle = -35 } = props;
-  const lines = wrapLabel(payload?.value, 16);
+  const lines = wrapLabel(payload?.value, 12);
   return (
-    <g transform={`translate(${x},${y + 10}) rotate(${angle})`}>
-      <text textAnchor="end" fill={color} fontSize={10} fontWeight={700}>
+    <g transform={`translate(${x},${y + 8}) rotate(${angle})`}>
+      <text textAnchor="end" fill={color} fontSize={9} fontWeight={700}>
         {lines.map((line, i) => (
-          <tspan key={i} x={0} dy={i === 0 ? 0 : 11}>{line}</tspan>
+          <tspan key={i} x={0} dy={i === 0 ? 0 : 10}>{line}</tspan>
         ))}
       </text>
     </g>
@@ -235,16 +234,16 @@ const AngledTick = (props) => {
 const LogoHeader = ({ size = 'normal' }) => {
   const isLarge = size === 'large';
   return (
-    <div className="flex items-center gap-3.5">
-      <div className={`${isLarge ? 'w-12 h-12 text-2xl' : 'w-10 h-10 text-xl'} rounded-2xl bg-gradient-to-br from-teal-400 via-teal-500 to-emerald-600 flex items-center justify-center font-black text-slate-950 shadow-lg shadow-teal-500/25 border border-teal-300/40 relative overflow-hidden group`}>
-        <span className="relative z-10 font-extrabold tracking-tighter">H</span>
+    <div className="flex items-center gap-3">
+      <div className={`${isLarge ? 'w-10 h-10 md:w-12 md:h-12 text-xl md:text-2xl' : 'w-8 h-8 md:w-10 md:h-10 text-lg md:text-xl'} rounded-2xl bg-gradient-to-br from-teal-400 via-teal-500 to-emerald-600 flex items-center justify-center font-black text-slate-950 shadow-lg shadow-teal-500/25 border border-teal-300/40 shrink-0`}>
+        <span className="font-extrabold tracking-tighter">H</span>
       </div>
       <div>
-        <span className={`font-black tracking-tight text-white block ${isLarge ? 'text-lg' : 'text-base'}`}>
+        <span className={`font-black tracking-tight text-white block ${isLarge ? 'text-base md:text-lg' : 'text-sm md:text-base'}`}>
           HUB DE DIAGNÓSTICO
         </span>
-        <span className="text-[10px] text-teal-300 font-bold tracking-widest uppercase block">
-          Maturidade de Startups 2026
+        <span className="text-[9px] md:text-[10px] text-teal-300 font-bold tracking-widest uppercase block">
+          Maturidade 2026
         </span>
       </div>
     </div>
@@ -263,8 +262,8 @@ const EMPTY_FORM = {
 
 const PRINT_STYLES = `
   @media print {
-    @page { size: A4 portrait; margin: 12mm; }
-    html, body { background: #ffffff !important; color: #0f172a !important; height: auto !important; }
+    @page { size: A4 portrait; margin: 10mm; }
+    html, body { background: #ffffff !important; color: #0f172a !important; }
     .no-print, aside { display: none !important; }
     .print-root { display: block !important; padding: 0 !important; }
   }
@@ -272,27 +271,17 @@ const PRINT_STYLES = `
 
 export default function App() {
   const [role, setRole] = useState(null);
-  const [adminAuth, setAdminAuth] = useState(false);
-  const [adminPin, setAdminPin] = useState('admin123');
-  const [passwordInput, setPasswordInput] = useState('');
   const [submissions, setSubmissions] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const [dashboardSelection, setDashboardSelection] = useState('todas');
-  const [selectedDashboardDim, setSelectedDashboardDim] = useState('estrategia');
-  const [showMatrix, setShowMatrix] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState(EMPTY_FORM);
   const [submitted, setSubmitted] = useState(false);
-  const [lastSubmission, setLastSubmission] = useState(null);
 
   const [activeAdminTab, setActiveAdminTab] = useState('dashboard');
   const [selectedTrackStartupId, setSelectedTrackStartupId] = useState('');
 
-  // CARREGAR DADOS DO SUPABASE
   const fetchStartups = async () => {
-    setLoading(true);
     const { data, error } = await supabase.from('startups').select('*');
     if (data && !error) {
       const formatted = data.map(item => ({
@@ -313,7 +302,6 @@ export default function App() {
         setSelectedTrackStartupId(formatted[0].id);
       }
     }
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -363,10 +351,6 @@ export default function App() {
 
     if (!error) {
       fetchStartups();
-      setLastSubmission({
-        ...newEntry,
-        startupName: newEntry.startup_name
-      });
       setSubmitted(true);
     } else {
       alert('Erro ao enviar respostas. Tente novamente.');
@@ -388,14 +372,6 @@ export default function App() {
   const avgOverallScore = safeSubmissions.length > 0
     ? (safeSubmissions.reduce((acc, curr) => acc + (curr?.score || 0), 0) / safeSubmissions.length)
     : 0;
-
-  const activeDimValues = {};
-  GOVTECH_DIMENSIONS.forEach(dim => {
-    const totalDimScore = safeSubmissions.reduce((acc, curr) => acc + (curr?.dimensions?.[dim.name] || 0), 0);
-    activeDimValues[dim.name] = safeSubmissions.length > 0
-      ? Number((totalDimScore / safeSubmissions.length).toFixed(1))
-      : 0;
-  });
 
   const currentTrackStartup = safeSubmissions.find(s => s.id === selectedTrackStartupId) || safeSubmissions[0];
 
@@ -432,6 +408,7 @@ export default function App() {
   };
 
   const dynamicModules = getDynamicTrackForStartup(currentTrackStartup);
+  const answeredCount = ALL_QUESTIONS.filter(q => formData.responses?.[q.id] > 0).length;
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans print-root">
@@ -439,56 +416,56 @@ export default function App() {
 
       {/* TELA DE SELEÇÃO DE ÁREA */}
       {!role && (
-        <div className="min-h-screen bg-slate-900 flex flex-col justify-between p-6">
-          <header className="max-w-6xl mx-auto w-full flex justify-between items-center py-4 border-b border-slate-800">
+        <div className="min-h-screen bg-slate-900 flex flex-col justify-between p-4 md:p-6">
+          <header className="max-w-6xl mx-auto w-full flex flex-col sm:flex-row justify-between items-center gap-3 py-4 border-b border-slate-800 text-center sm:text-left">
             <LogoHeader size="large" />
-            <span className="text-xs font-semibold px-3.5 py-1.5 bg-teal-500/10 border border-teal-500/25 rounded-full text-teal-300">
+            <span className="text-[11px] font-semibold px-3 py-1 bg-teal-500/10 border border-teal-500/25 rounded-full text-teal-300">
               Programa de Incubação e Aceleração 2026
             </span>
           </header>
 
-          <main className="max-w-5xl mx-auto w-full my-auto py-12 text-center space-y-10">
-            <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-teal-500/10 border border-teal-500/25 rounded-full text-teal-300 font-bold text-xs uppercase">
+          <main className="max-w-5xl mx-auto w-full my-auto py-8 text-center space-y-8">
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-teal-500/10 border border-teal-500/25 rounded-full text-teal-300 font-bold text-[11px] uppercase">
                 <Zap className="h-3.5 w-3.5" /> Hub Govtech PR
               </div>
-              <h1 className="text-4xl md:text-6xl font-black text-white">Diagnóstico de Maturidade</h1>
-              <p className="text-teal-300 text-sm md:text-base font-semibold">Avaliação em 8 dimensões estratégicas</p>
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-white px-2">Diagnóstico de Maturidade</h1>
+              <p className="text-teal-300 text-xs sm:text-base font-semibold">Avaliação em 8 dimensões estratégicas</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto text-left">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 max-w-3xl mx-auto text-left px-2">
               <button
                 onClick={() => setRole('startup')}
-                className="bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-teal-500/60 rounded-2xl p-6 transition shadow-2xl flex flex-col justify-between"
+                className="bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-teal-500/60 rounded-2xl p-5 md:p-6 transition shadow-2xl flex flex-col justify-between"
               >
-                <div className="space-y-4">
-                  <div className="w-12 h-12 bg-teal-500/15 text-teal-300 rounded-xl flex items-center justify-center border border-teal-500/25">
-                    <Rocket className="h-6 w-6" />
+                <div className="space-y-3">
+                  <div className="w-10 h-10 bg-teal-500/15 text-teal-300 rounded-xl flex items-center justify-center border border-teal-500/25">
+                    <Rocket className="h-5 w-5" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-white">Área da startup</h2>
+                    <h2 className="text-base md:text-lg font-bold text-white">Área da startup</h2>
                     <p className="text-xs text-slate-300 mt-1">Preencha o diagnóstico e receba seu score por dimensão.</p>
                   </div>
                 </div>
-                <div className="mt-8 flex items-center text-xs font-bold text-teal-300 gap-2">
+                <div className="mt-6 flex items-center text-xs font-bold text-teal-300 gap-2">
                   Iniciar diagnóstico <ArrowRight className="h-4 w-4" />
                 </div>
               </button>
 
               <button
                 onClick={() => setRole('admin')}
-                className="bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-purple-500/60 rounded-2xl p-6 transition shadow-2xl flex flex-col justify-between"
+                className="bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-purple-500/60 rounded-2xl p-5 md:p-6 transition shadow-2xl flex flex-col justify-between"
               >
-                <div className="space-y-4">
-                  <div className="w-12 h-12 bg-purple-500/15 text-purple-300 rounded-xl flex items-center justify-center border border-purple-500/25">
-                    <ShieldAlert className="h-6 w-6" />
+                <div className="space-y-3">
+                  <div className="w-10 h-10 bg-purple-500/15 text-purple-300 rounded-xl flex items-center justify-center border border-purple-500/25">
+                    <ShieldAlert className="h-5 w-5" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-white">Painel do administrador</h2>
+                    <h2 className="text-base md:text-lg font-bold text-white">Painel do administrador</h2>
                     <p className="text-xs text-slate-300 mt-1">Análise em tempo real de todas as startups.</p>
                   </div>
                 </div>
-                <div className="mt-8 flex items-center text-xs font-bold text-purple-300 gap-2">
+                <div className="mt-6 flex items-center text-xs font-bold text-purple-300 gap-2">
                   Acessar área restrita <Lock className="h-3.5 w-3.5" />
                 </div>
               </button>
@@ -500,38 +477,38 @@ export default function App() {
       {/* ÁREA DA STARTUP */}
       {role === 'startup' && (
         <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
-          <header className="bg-slate-900 border-b border-slate-800 py-4 px-6 flex justify-between items-center sticky top-0 z-30">
+          <header className="bg-slate-900 border-b border-slate-800 py-3 px-4 md:px-6 flex justify-between items-center sticky top-0 z-30">
             <LogoHeader size="normal" />
             <button
               onClick={() => { setRole(null); setSubmitted(false); }}
-              className="text-xs font-medium text-slate-200 hover:text-white bg-slate-800 px-3.5 py-2 rounded-xl border border-slate-700"
+              className="text-xs font-medium text-slate-200 hover:text-white bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700"
             >
-              Voltar ao início
+              Voltar
             </button>
           </header>
 
-          <main className="max-w-4xl mx-auto w-full py-10 px-4">
+          <main className="max-w-4xl mx-auto w-full py-6 md:py-10 px-3 md:px-4">
             {!submitted ? (
-              <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-8">
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl md:rounded-3xl p-4 md:p-8 shadow-2xl space-y-6 md:space-y-8">
                 {currentStep === 0 ? (
-                  <div className="space-y-6">
-                    <h2 className="text-xl font-bold text-white">Identificação da startup</h2>
+                  <div className="space-y-5">
+                    <h2 className="text-lg md:text-xl font-bold text-white">Identificação da startup</h2>
                     <div className="space-y-4">
                       <div>
                         <label className="block text-xs font-bold text-slate-300 mb-1">Nome da startup *</label>
                         <input
                           type="text" required value={formData.startupName}
                           onChange={e => setFormData({ ...formData, startupName: e.target.value })}
-                          className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white"
+                          className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-teal-400"
                         />
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-xs font-bold text-slate-300 mb-1">Fundador *</label>
                           <input
                             type="text" required value={formData.founder}
                             onChange={e => setFormData({ ...formData, founder: e.target.value })}
-                            className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white"
+                            className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-teal-400"
                           />
                         </div>
                         <div>
@@ -539,7 +516,7 @@ export default function App() {
                           <input
                             type="text" required value={formData.whatsapp}
                             onChange={e => setFormData({ ...formData, whatsapp: e.target.value })}
-                            className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white"
+                            className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-teal-400"
                           />
                         </div>
                       </div>
@@ -548,7 +525,7 @@ export default function App() {
                         <input
                           type="email" required value={formData.email}
                           onChange={e => setFormData({ ...formData, email: e.target.value })}
-                          className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white"
+                          className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-teal-400"
                         />
                       </div>
                     </div>
@@ -557,21 +534,28 @@ export default function App() {
                         if (formData.startupName && formData.founder) setCurrentStep(1);
                         else alert('Preencha os campos obrigatórios.');
                       }}
-                      className="w-full py-3.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs"
+                      className="w-full py-3.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs transition"
                     >
                       Iniciar questionário (40 indicadores)
                     </button>
                   </div>
                 ) : (
-                  <div className="space-y-8">
+                  <div className="space-y-6 md:space-y-8">
+                    <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 flex justify-between items-center sticky top-16 z-20">
+                      <span className="text-xs font-bold text-slate-300">Progresso:</span>
+                      <span className="text-xs font-extrabold text-teal-300 bg-teal-500/10 px-3 py-1 rounded-lg border border-teal-500/20">
+                        {answeredCount} / 40 respondidas
+                      </span>
+                    </div>
+
                     {GOVTECH_DIMENSIONS.map((dim, dimIdx) => (
-                      <div key={dim.id} className="bg-slate-950 border border-slate-800 rounded-2xl p-5 space-y-4">
-                        <h3 className="font-bold text-white text-sm">{dimIdx + 1}. {dim.name}</h3>
+                      <div key={dim.id} className="bg-slate-950 border border-slate-800 rounded-xl md:rounded-2xl p-4 md:p-5 space-y-4">
+                        <h3 className="font-bold text-white text-xs md:text-sm">{dimIdx + 1}. {dim.name}</h3>
                         <div className="divide-y divide-slate-800">
                           {dim.questions.map((q, qIdx) => (
-                            <div key={q.id} className="py-3 flex justify-between items-center gap-4">
-                              <span className="text-xs text-slate-200">{dimIdx + 1}.{qIdx + 1} {q.text}</span>
-                              <div className="flex gap-2">
+                            <div key={q.id} className="py-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                              <span className="text-xs text-slate-200 leading-relaxed">{dimIdx + 1}.{qIdx + 1} {q.text}</span>
+                              <div className="flex gap-2 justify-end shrink-0 pt-1 md:pt-0">
                                 {[1, 2, 3, 4, 5].map(score => (
                                   <button
                                     key={score}
@@ -579,10 +563,10 @@ export default function App() {
                                       ...prev,
                                       responses: { ...(prev.responses || {}), [q.id]: score }
                                     }))}
-                                    className={`w-7 h-7 rounded-lg text-xs font-bold border ${
+                                    className={`w-9 h-9 md:w-8 md:h-8 rounded-xl text-xs font-bold border transition ${
                                       formData.responses?.[q.id] === score
-                                        ? 'bg-teal-500 text-slate-950 border-teal-400'
-                                        : 'bg-slate-900 text-slate-400 border-slate-800'
+                                        ? 'bg-teal-500 text-slate-950 border-teal-400 shadow-md'
+                                        : 'bg-slate-900 text-slate-400 border-slate-800 hover:border-slate-700'
                                     }`}
                                   >
                                     {score}
@@ -596,7 +580,7 @@ export default function App() {
                     ))}
                     <button
                       onClick={handleFormSubmit}
-                      className="w-full py-3.5 bg-teal-500 text-slate-950 font-bold rounded-xl text-xs"
+                      className="w-full py-4 bg-teal-500 text-slate-950 font-black rounded-xl text-xs shadow-lg shadow-teal-500/20"
                     >
                       Enviar diagnóstico
                     </button>
@@ -604,22 +588,38 @@ export default function App() {
                 )}
               </div>
             ) : (
-              <div className="bg-slate-900 p-8 rounded-3xl space-y-4 text-center">
-                <CheckCircle2 className="h-12 w-12 text-teal-400 mx-auto" />
-                <h2 className="text-xl font-bold text-white">Diagnóstico enviado com sucesso!</h2>
-                <p className="text-xs text-slate-400">Sua pontuação foi salva no banco de dados e enviada ao painel de mentoria.</p>
+              <div className="bg-slate-900 p-6 md:p-8 rounded-3xl space-y-4 text-center border border-slate-800">
+                <CheckCircle2 className="h-10 w-10 md:h-12 md:w-12 text-teal-400 mx-auto" />
+                <h2 className="text-lg md:text-xl font-bold text-white">Diagnóstico enviado com sucesso!</h2>
+                <p className="text-xs text-slate-400">Sua pontuação foi gravada na nuvem e enviada ao painel de mentoria.</p>
               </div>
             )}
           </main>
         </div>
       )}
 
-      {/* PAINEL ADMINISTRATIVO */}
+      {/* PAINEL ADMINISTRATIVO COM SUPORTE A MOBILE */}
       {role === 'admin' && (
-        <div className="flex h-screen bg-slate-100 font-sans text-slate-800 overflow-hidden">
-          <aside className="w-64 bg-slate-900 text-white flex flex-col justify-between p-5 border-r border-slate-800 shrink-0">
+        <div className="flex flex-col md:flex-row h-screen bg-slate-100 font-sans text-slate-800 overflow-hidden">
+          {/* HEADER MOBILE DO ADMIN */}
+          <div className="md:hidden bg-slate-900 text-white px-4 py-3 flex justify-between items-center border-b border-slate-800 shrink-0">
+            <LogoHeader size="normal" />
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-lg bg-slate-800 text-slate-200"
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
+
+          {/* ASIDE (MENU LATERAL DESKTOP + MENU GAVETA MOBILE) */}
+          <aside className={`${
+            mobileMenuOpen ? 'block' : 'hidden'
+          } md:block w-full md:w-64 bg-slate-900 text-white flex flex-col justify-between p-5 border-r border-slate-800 shrink-0 z-20`}>
             <div className="space-y-6">
-              <LogoHeader size="normal" />
+              <div className="hidden md:block">
+                <LogoHeader size="normal" />
+              </div>
               <nav className="space-y-1">
                 {[
                   { key: 'dashboard', label: 'Visão geral', icon: LayoutDashboard },
@@ -629,8 +629,11 @@ export default function App() {
                   return (
                     <button
                       key={item.key}
-                      onClick={() => setActiveAdminTab(item.key)}
-                      className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold ${
+                      onClick={() => {
+                        setActiveAdminTab(item.key);
+                        setMobileMenuOpen(false);
+                      }}
+                      className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition ${
                         activeAdminTab === item.key ? 'bg-teal-500 text-slate-950' : 'text-slate-200 hover:bg-slate-800'
                       }`}
                     >
@@ -640,42 +643,46 @@ export default function App() {
                 })}
               </nav>
             </div>
-            <button onClick={() => setRole(null)} className="text-xs text-slate-400 hover:text-white">
-              Sair do painel
+            <button
+              onClick={() => setRole(null)}
+              className="mt-6 md:mt-0 text-xs text-slate-400 hover:text-white flex items-center gap-2"
+            >
+              <LogOut className="h-4 w-4" /> Sair do painel
             </button>
           </aside>
 
-          <main className="flex-1 overflow-y-auto p-8 space-y-6">
+          {/* CONTEÚDO PRINCIPAL DO ADMIN */}
+          <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
             {activeAdminTab === 'dashboard' && (
               <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h1 className="text-xl font-bold text-slate-900">Visão Geral do Portfólio (Supabase)</h1>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                  <h1 className="text-lg md:text-xl font-bold text-slate-900">Visão Geral do Portfólio (Supabase)</h1>
                   <button
                     onClick={fetchStartups}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-sm"
                   >
                     <RefreshCw className="h-3.5 w-3.5" /> Atualizar dados
                   </button>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-white p-5 rounded-2xl border border-slate-200">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <span className="text-[10px] font-bold text-slate-500 uppercase">Score Médio</span>
-                    <p className="text-3xl font-black text-slate-900 mt-1">{avgOverallScore.toFixed(1)}</p>
+                    <p className="text-2xl md:text-3xl font-black text-slate-900 mt-1">{avgOverallScore.toFixed(1)}</p>
                   </div>
-                  <div className="bg-white p-5 rounded-2xl border border-slate-200">
+                  <div className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <span className="text-[10px] font-bold text-slate-500 uppercase">Startups Registradas</span>
-                    <p className="text-3xl font-black text-purple-700 mt-1">{safeSubmissions.length}</p>
+                    <p className="text-2xl md:text-3xl font-black text-purple-700 mt-1">{safeSubmissions.length}</p>
                   </div>
                 </div>
 
                 {/* TABELA DE RESPOSTAS REAL TIME */}
-                <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+                <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
                   <div className="p-4 border-b border-slate-200 bg-slate-50 font-bold text-xs text-slate-800">
                     Respostas Recebidas ({safeSubmissions.length})
                   </div>
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs">
+                    <table className="w-full text-left text-xs min-w-[500px]">
                       <thead className="bg-slate-100 text-slate-600 font-bold">
                         <tr>
                           <th className="p-3">Startup</th>
@@ -709,21 +716,21 @@ export default function App() {
             {/* ABA DE TRILHA DINÂMICA PERSONALIZADA */}
             {activeAdminTab === 'trilhas' && (
               <div className="space-y-6">
-                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
+                <div className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <div>
-                    <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                      <Sparkles className="h-5 w-5 text-teal-600" /> Trilha Dinâmica de Capacitação
+                    <h1 className="text-lg md:text-xl font-bold text-slate-900 flex items-center gap-2">
+                      <Sparkles className="h-5 w-5 text-teal-600" /> Trilha Dinâmica
                     </h1>
-                    <p className="text-xs text-slate-600">
-                      Módulos organizados automaticamente de acordo com as notas do diagnóstico da startup.
+                    <p className="text-xs text-slate-600 mt-0.5">
+                      Módulos organizados de acordo com as notas da startup.
                     </p>
                   </div>
 
-                  <div className="w-72">
+                  <div className="w-full md:w-72">
                     <select
                       value={selectedTrackStartupId}
                       onChange={e => setSelectedTrackStartupId(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900"
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 outline-none"
                     >
                       {safeSubmissions.map(s => (
                         <option key={s.id} value={s.id}>{s.startupName} ({s.stage})</option>
@@ -733,11 +740,11 @@ export default function App() {
                 </div>
 
                 {currentTrackStartup && (
-                  <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-                    <div className="border-b border-slate-100 pb-4 flex justify-between items-center">
+                  <div className="bg-white p-4 md:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                    <div className="border-b border-slate-100 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                       <div>
                         <h2 className="text-base font-bold text-slate-900">{currentTrackStartup.startupName}</h2>
-                        <span className="text-xs text-slate-500">Fundador: {currentTrackStartup.founder} · Score Total: {currentTrackStartup.score}/200</span>
+                        <span className="text-xs text-slate-500">Fundador: {currentTrackStartup.founder} · Score: {currentTrackStartup.score}/200</span>
                       </div>
                       <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getStageBadge(currentTrackStartup.stage)}`}>
                         Estágio: {currentTrackStartup.stage}
@@ -757,7 +764,7 @@ export default function App() {
                                 priorityLevel === 'Média' ? 'bg-amber-50 text-amber-800 border-amber-300' :
                                 'bg-slate-100 text-slate-700 border-slate-300'
                               }`}>
-                                Prioridade {priorityLevel} {priorityLevel === 'Alta' && '(Ataque de Gargalos)'}
+                                Prioridade {priorityLevel} {priorityLevel === 'Alta' && '(Gargalos)'}
                               </span>
                             </div>
 
@@ -770,7 +777,7 @@ export default function App() {
                                   <div>
                                     <h4 className="text-xs font-bold text-slate-900">{mod.title}</h4>
                                     <p className="text-[11px] text-slate-500 mt-0.5">
-                                      Dimensão: <span className="font-semibold text-teal-700">{mod.dimName}</span> (Nota atual: {mod.score}/25)
+                                      Dimensão: <span className="font-semibold text-teal-700">{mod.dimName}</span> ({mod.score}/25)
                                     </p>
                                   </div>
                                 </div>

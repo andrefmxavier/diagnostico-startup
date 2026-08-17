@@ -126,6 +126,9 @@ const DIM_BY_ID = GOVTECH_DIMENSIONS.reduce((acc, d) => { acc[d.id] = d; return 
 const DIM_ID_BY_NAME = GOVTECH_DIMENSIONS.reduce((acc, d) => { acc[d.name] = d.id; return acc; }, {});
 const getShortLabel = (fullName) => SHORT_LABELS?.[fullName] || fullName || '';
 
+// TOTAL DE PERGUNTAS DO FORMULÁRIO (8 * 5 = 40)
+const ALL_QUESTIONS = GOVTECH_DIMENSIONS.flatMap(d => d.questions);
+
 // ============================================================================
 // 2. PLAYBOOK DE AÇÕES COM SUBTÓPICOS PRÁTICOS
 // ============================================================================
@@ -134,7 +137,7 @@ const ACTION_PLAYBOOK = {
     {
       frente: 'Validação da dor e da tese de valor',
       baixo: 'Rodar 15 entrevistas de descoberta com clientes-alvo para confirmar qual é a dor prioritária e como ela é resolvida hoje.',
-      medio: 'Segmentar a base já entrevistada e priorizar os dois nichos com maior urgência e disposição a pagar.',
+      medio: 'Segmentar a base já entrevistada e priorizar os dois nichos com maior urgência e disposition a pagar.',
       alto: 'Converter a tese validada em plano de expansão para novas praças e verticais, com hipóteses de entrada documentadas.',
       ferramentas: 'Roteiro de entrevista no formato The Mom Test, quadro de dores no Miro e registro padronizado no Notion ou Google Forms.',
       metricas: 'Número de entrevistas concluídas, percentual que confirma a dor como prioritária e valor declarado de disposição a pagar.',
@@ -496,6 +499,29 @@ const AngledTick = (props) => {
 };
 
 // ============================================================================
+// COMPONENTE DE LOGO REUTILIZÁVEL (Design aprimorado)
+// ============================================================================
+const LogoHeader = ({ size = 'normal' }) => {
+  const isLarge = size === 'large';
+  return (
+    <div className="flex items-center gap-3.5">
+      <div className={`${isLarge ? 'w-12 h-12 text-2xl' : 'w-10 h-10 text-xl'} rounded-2xl bg-gradient-to-br from-teal-400 via-teal-500 to-emerald-600 flex items-center justify-center font-black text-slate-950 shadow-lg shadow-teal-500/25 border border-teal-300/40 relative overflow-hidden group`}>
+        <span className="relative z-10 font-extrabold tracking-tighter">H</span>
+        <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+      </div>
+      <div>
+        <span className={`font-black tracking-tight text-white block ${isLarge ? 'text-lg' : 'text-base'}`}>
+          HUB DE DIAGNÓSTICO
+        </span>
+        <span className="text-[10px] text-teal-300 font-bold tracking-widest uppercase block">
+          Maturidade de Startups 2026
+        </span>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
 // 5. DADOS INICIAIS
 // ============================================================================
 const INITIAL_STARTUPS = [
@@ -644,7 +670,7 @@ export default function App() {
   const [selectedDashboardDim, setSelectedDashboardDim] = useState('estrategia');
   const [showMatrix, setShowMatrix] = useState(false);
 
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0); // 0 = cadastro inicial, 1 = lista completa de perguntas
   const [formData, setFormData] = useState(EMPTY_FORM);
   const [submitted, setSubmitted] = useState(false);
   const [lastSubmission, setLastSubmission] = useState(null);
@@ -895,6 +921,8 @@ export default function App() {
     (a, b) => (PRIORITY_ORDER[a.priority] ?? 9) - (PRIORITY_ORDER[b.priority] ?? 9)
   );
 
+  const answeredCount = ALL_QUESTIONS.filter(q => formData.responses?.[q.id] > 0).length;
+
   // --------------------------------------------------------------------------
   // MODAL: MATRIZ DE PERGUNTAS & DIMENSÕES
   // --------------------------------------------------------------------------
@@ -967,17 +995,9 @@ export default function App() {
         {renderMatrixModal()}
 
         <header className="max-w-6xl mx-auto w-full flex flex-wrap gap-4 justify-between items-center py-4 border-b border-slate-800">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-teal-500 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-teal-500/20">
-              H
-            </div>
-            <div>
-              <span className="font-extrabold text-base tracking-tight text-white block">HUB DE DIAGNÓSTICO</span>
-              <span className="text-[10px] text-teal-300 font-bold tracking-widest uppercase">Maturidade de Startups 2026</span>
-            </div>
-          </div>
+          <LogoHeader size="large" />
           <span className="text-xs font-semibold px-3.5 py-1.5 bg-teal-500/10 border border-teal-500/25 rounded-full text-teal-300">
-            Programa de Aceleração & Inovação
+            Programa de Incubação e Aceleração 2026
           </span>
         </header>
 
@@ -1054,10 +1074,7 @@ export default function App() {
         {renderMatrixModal()}
 
         <header className="bg-slate-900 border-b border-slate-800 py-4 px-6 md:px-8 flex flex-wrap gap-3 justify-between items-center sticky top-0 z-30 no-print">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-teal-500 text-slate-950 font-black flex items-center justify-center text-sm">H</div>
-            <span className="font-bold text-sm tracking-wide text-white">Hub Diagnóstico — Startup</span>
-          </div>
+          <LogoHeader size="normal" />
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowMatrix(true)}
@@ -1079,7 +1096,7 @@ export default function App() {
           </div>
         </header>
 
-        <main className="max-w-4xl mx-auto w-full flex-1 py-10 px-4 print-scroll">
+        <main className="max-w-5xl mx-auto w-full flex-1 py-10 px-4 print-scroll">
           {submitted ? (
             <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl space-y-8 print-area">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-800 pb-6 avoid-break">
@@ -1212,22 +1229,8 @@ export default function App() {
             </div>
           ) : (
             <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl space-y-8">
-              <div className="space-y-3 border-b border-slate-800 pb-6">
-                <div className="flex justify-between items-center text-xs font-semibold text-slate-300">
-                  <span>Passo {currentStep + 1} de {GOVTECH_DIMENSIONS.length + 1}</span>
-                  <span className="text-teal-300">
-                    {Math.round(((currentStep + 1) / (GOVTECH_DIMENSIONS.length + 1)) * 100)}% concluído
-                  </span>
-                </div>
-                <div className="h-2 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800">
-                  <div
-                    className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 transition-all duration-300"
-                    style={{ width: `${((currentStep + 1) / (GOVTECH_DIMENSIONS.length + 1)) * 100}%` }}
-                  />
-                </div>
-              </div>
-
               {currentStep === 0 ? (
+                /* PASSO 0: IDENTIFICAÇÃO DA STARTUP */
                 <div className="space-y-6">
                   <div>
                     <h2 className="text-xl font-bold text-white">Identificação da startup</h2>
@@ -1306,35 +1309,68 @@ export default function App() {
                     }}
                     className="w-full py-3.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-teal-500/20"
                   >
-                    Iniciar indicador 1 de 40 <ArrowRight className="h-4 w-4" />
+                    Iniciar questionário (40 indicadores) <ArrowRight className="h-4 w-4" />
                   </button>
                 </div>
               ) : (
-                <div className="space-y-6">
-                  {(() => {
-                    const dim = GOVTECH_DIMENSIONS[currentStep - 1];
-                    if (!dim) return null;
-                    return (
-                      <>
-                        <div>
-                          <span className="text-[10px] font-bold text-teal-300 uppercase tracking-widest block mb-1">
-                            Dimensão {currentStep} de {GOVTECH_DIMENSIONS.length}
+                /* PASSO 1: QUESTIONÁRIO NO FORMATO MATRIZ DE PERGUNTAS */
+                <div className="space-y-8">
+                  {/* BARRA DE PROGRESSO E HEADER */}
+                  <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-3 sticky top-20 z-20 shadow-xl">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                      <div>
+                        <h2 className="text-base font-bold text-white">Questionário de Maturidade</h2>
+                        <p className="text-xs text-slate-400">
+                          Escala: 1 (Discordo totalmente) a 5 (Concordo totalmente)
+                        </p>
+                      </div>
+                      <span className="text-xs font-bold text-teal-300 bg-teal-500/10 px-3 py-1.5 rounded-xl border border-teal-500/20">
+                        {answeredCount} / 40 respondidas ({Math.round((answeredCount / 40) * 100)}%)
+                      </span>
+                    </div>
+
+                    <div className="h-2 w-full bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+                      <div
+                        className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 transition-all duration-300"
+                        style={{ width: `${(answeredCount / 40) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* LISTA DE TODAS AS 8 DIMENSÕES E SUAS PERGUNTAS */}
+                  <div className="space-y-6">
+                    {GOVTECH_DIMENSIONS.map((dim, dimIdx) => (
+                      <div key={dim.id} className="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
+                        {/* CABEÇALHO DA DIMENSÃO */}
+                        <div className="bg-slate-900 px-5 py-4 border-b border-slate-800 flex justify-between items-center gap-4">
+                          <div>
+                            <h3 className="text-sm font-bold text-white">
+                              {dimIdx + 1}. {dim.name}
+                            </h3>
+                            <p className="text-xs text-slate-400 mt-0.5">{dim.description}</p>
+                          </div>
+                          <span className="text-[10px] font-bold text-teal-300 bg-teal-500/10 border border-teal-500/20 px-2.5 py-1 rounded-full whitespace-nowrap">
+                            até 25 pts
                           </span>
-                          <h2 className="text-xl font-bold text-white">{dim.name}</h2>
-                          <p className="text-xs text-slate-300 mt-1">{dim.description}</p>
                         </div>
 
-                        <div className="space-y-5">
-                          {(dim.questions || []).map((q, idx) => (
-                            <div key={q.id} className="p-4 bg-slate-950 border border-slate-800 rounded-2xl space-y-3">
-                              <p className="text-xs font-semibold text-slate-100 leading-relaxed">
-                                <span className="text-teal-300 font-bold mr-2">Q{idx + 1}.</span>
-                                {q.text}
-                              </p>
+                        {/* LISTA DE PERGUNTAS DA DIMENSÃO */}
+                        <div className="divide-y divide-slate-800/60">
+                          {dim.questions.map((q, qIdx) => (
+                            <div key={q.id} className="p-4 md:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-900/40 transition">
+                              <div className="flex items-start gap-3 flex-1">
+                                <span className="font-bold text-teal-400 text-xs shrink-0 mt-0.5">
+                                  {dimIdx + 1}.{qIdx + 1}
+                                </span>
+                                <p className="text-xs font-medium text-slate-200 leading-relaxed">
+                                  {q.text}
+                                </p>
+                              </div>
 
-                              <div className="flex items-center justify-between gap-2 max-w-md mx-auto pt-1">
-                                <span className="text-[10px] text-slate-300 font-semibold">1 · Discordo</span>
-                                <div className="flex gap-3">
+                              {/* ESCALA DE 1 A 5 NAS BOLINHAS */}
+                              <div className="flex items-center justify-end gap-3 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-slate-800/50">
+                                <span className="text-[10px] text-slate-400 font-semibold hidden sm:inline">1 (Discordo)</span>
+                                <div className="flex items-center gap-2 md:gap-3 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800">
                                   {[1, 2, 3, 4, 5].map(score => (
                                     <label key={score} className="flex flex-col items-center gap-1 cursor-pointer group">
                                       <input
@@ -1346,81 +1382,67 @@ export default function App() {
                                           ...prev,
                                           responses: { ...(prev.responses || {}), [q.id]: score }
                                         }))}
-                                        className="accent-teal-500 h-4 w-4"
+                                        className="accent-teal-500 h-4 w-4 cursor-pointer"
                                       />
-                                      <span className="text-xs font-bold text-slate-200 group-hover:text-teal-300 transition">
+                                      <span className={`text-[10px] font-bold ${formData.responses?.[q.id] === score ? 'text-teal-300' : 'text-slate-400'} group-hover:text-teal-300 transition`}>
                                         {score}
                                       </span>
                                     </label>
                                   ))}
                                 </div>
-                                <span className="text-[10px] text-slate-300 font-semibold">5 · Concordo</span>
+                                <span className="text-[10px] text-slate-400 font-semibold hidden sm:inline">5 (Concordo)</span>
                               </div>
                             </div>
                           ))}
-
-                          <div className="p-4 bg-slate-950 border border-slate-800 rounded-2xl space-y-2">
-                            <label className="text-xs font-bold text-slate-200 flex items-center gap-2">
-                              <MessageSquare className="h-3.5 w-3.5 text-teal-300" />
-                              Observações sobre esta dimensão
-                              <span className="text-[10px] text-slate-400 font-normal">(opcional)</span>
-                            </label>
-                            <textarea
-                              rows={3}
-                              value={formData.notes?.[dim.id] || ''}
-                              onChange={e => {
-                                const val = e.target.value;
-                                setFormData(prev => ({
-                                  ...prev,
-                                  notes: { ...(prev.notes || {}), [dim.id]: val }
-                                }));
-                              }}
-                              className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-100 outline-none focus:border-teal-400"
-                            />
-                          </div>
                         </div>
 
-                        <div className="flex justify-between items-center pt-4">
-                          <button
-                            onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))}
-                            className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold rounded-xl text-xs flex items-center gap-1.5"
-                          >
-                            <ChevronLeft className="h-4 w-4" /> Anterior
-                          </button>
-
-                          {currentStep < GOVTECH_DIMENSIONS.length ? (
-                            <button
-                              onClick={() => {
-                                const answered = (dim.questions || []).every(q => formData.responses?.[q.id]);
-                                if (!answered) {
-                                  alert('Responda os 5 indicadores desta dimensão antes de avançar.');
-                                  return;
-                                }
-                                setCurrentStep(prev => prev + 1);
-                              }}
-                              className="px-5 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-1.5"
-                            >
-                              Próxima dimensão <ChevronRight className="h-4 w-4" />
-                            </button>
-                          ) : (
-                            <button
-                              onClick={(e) => {
-                                const answered = (dim.questions || []).every(q => formData.responses?.[q.id]);
-                                if (!answered) {
-                                  alert('Responda os 5 indicadores desta dimensão antes de concluir.');
-                                  return;
-                                }
-                                handleFormSubmit(e);
-                              }}
-                              className="px-6 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-black rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-teal-500/20"
-                            >
-                              Concluir e ver diagnóstico <CheckCircle2 className="h-4 w-4" />
-                            </button>
-                          )}
+                        {/* CAMPO DE OBSERVAÇÃO AO FINAL DA DIMENSÃO */}
+                        <div className="p-4 bg-slate-900/40 border-t border-slate-800 space-y-2">
+                          <label className="text-xs font-bold text-slate-300 flex items-center gap-2">
+                            <MessageSquare className="h-3.5 w-3.5 text-teal-300" />
+                            Observação sobre {dim.short}
+                            <span className="text-[10px] text-slate-500 font-normal">(opcional)</span>
+                          </label>
+                          <textarea
+                            rows={2}
+                            placeholder=""
+                            value={formData.notes?.[dim.id] || ''}
+                            onChange={e => {
+                              const val = e.target.value;
+                              setFormData(prev => ({
+                                ...prev,
+                                notes: { ...(prev.notes || {}), [dim.id]: val }
+                              }));
+                            }}
+                            className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 outline-none focus:border-teal-400 transition"
+                          />
                         </div>
-                      </>
-                    );
-                  })()}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* CONTROLES E BOTÃO FINAL */}
+                  <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-slate-800">
+                    <button
+                      onClick={() => setCurrentStep(0)}
+                      className="w-full sm:w-auto px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition"
+                    >
+                      <ChevronLeft className="h-4 w-4" /> Alterar dados cadastrais
+                    </button>
+
+                    <button
+                      onClick={(e) => {
+                        if (answeredCount < 40) {
+                          alert(`Você respondeu ${answeredCount} de 40 perguntas. Por favor, preencha todos os indicadores antes de enviar.`);
+                          return;
+                        }
+                        handleFormSubmit(e);
+                      }}
+                      className="w-full sm:w-auto px-8 py-3.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-2 shadow-xl shadow-teal-500/20 transition"
+                    >
+                      Concluir e ver diagnóstico <CheckCircle2 className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -1491,15 +1513,7 @@ export default function App() {
 
       <aside className="w-64 bg-slate-900 text-white flex flex-col justify-between p-5 border-r border-slate-800 shrink-0 no-print">
         <div className="space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-teal-500 flex items-center justify-center font-black text-slate-950 text-base">
-              H
-            </div>
-            <div>
-              <span className="font-extrabold text-sm block text-white">Hub Diagnóstico</span>
-              <span className="text-[10px] text-teal-300 font-bold uppercase">Painel de mentoria</span>
-            </div>
-          </div>
+          <LogoHeader size="normal" />
 
           <nav className="space-y-1">
             {[
@@ -1701,7 +1715,6 @@ export default function App() {
               </div>
 
               {(() => {
-                const targetDim = GOVTECH_DIMENSIONS.find(d => d.id === selectedDashboardDim);
                 const targetSubmissions = selectedDashboardStartup ? [selectedDashboardStartup] : safeSubmissions;
                 const filteredNotes = targetSubmissions.filter(s => s?.notes?.[selectedDashboardDim] && String(s.notes[selectedDashboardDim]).trim());
 

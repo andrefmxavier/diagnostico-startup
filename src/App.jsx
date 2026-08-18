@@ -207,6 +207,7 @@ export default function App() {
   const [submissions, setSubmissions] = useState([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showMatrixModal, setShowMatrixModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState(EMPTY_FORM);
@@ -222,7 +223,11 @@ export default function App() {
   const fetchStartups = async () => {
     try {
       const { data, error } = await supabase.from('startups').select('*');
-      if (data && !error) {
+      if (error) {
+        console.error("Erro ao carregar startups:", error);
+        return;
+      }
+      if (data) {
         const formatted = data.map(item => ({
           id: item.id,
           startupName: item.startup_name,
@@ -243,7 +248,7 @@ export default function App() {
         }
       }
     } catch (err) {
-      console.error("Erro ao buscar startups:", err);
+      console.error("Exceção ao buscar startups:", err);
     }
   };
 
@@ -262,6 +267,7 @@ export default function App() {
 
   const handleFormSubmit = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
+    setIsSubmitting(true);
 
     const dimScores = {};
     let grandTotal = 0;
@@ -300,18 +306,27 @@ export default function App() {
     };
 
     try {
-      const { error } = await supabase.from('startups').insert([newEntry]);
-      if (error) console.error("Erro no Supabase:", error);
-    } catch (err) {
-      console.error("Exceção no envio:", err);
-    }
+      const { data, error } = await supabase.from('startups').insert([newEntry]).select();
+      
+      if (error) {
+        console.error("Erro no Supabase ao inserir:", error);
+        alert(`Erro ao salvar no banco de dados: ${error.message}`);
+        setIsSubmitting(false);
+        return;
+      }
 
-    setLastSubmission({
-      ...newEntry,
-      startupName: newEntry.startup_name
-    });
-    setSubmitted(true);
-    fetchStartups();
+      setLastSubmission({
+        ...newEntry,
+        startupName: newEntry.startup_name
+      });
+      setSubmitted(true);
+      await fetchStartups();
+    } catch (err) {
+      console.error("Exceção grave no salvamento:", err);
+      alert("Ocorreu um erro inesperado de conexão. Tente novamente.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleDeleteStartup = async (id) => {
@@ -320,7 +335,7 @@ export default function App() {
       if (!error) {
         fetchStartups();
       } else {
-        alert('Erro ao excluir registro.');
+        alert(`Erro ao excluir registro: ${error.message}`);
       }
     }
   };
@@ -646,10 +661,11 @@ export default function App() {
                       </div>
                     ))}
                     <button
+                      disabled={isSubmitting}
                       onClick={handleFormSubmit}
-                      className="w-full py-4 bg-teal-500 hover:bg-teal-400 text-slate-950 font-black rounded-xl text-xs shadow-lg shadow-teal-500/20 transition"
+                      className="w-full py-4 bg-teal-500 hover:bg-teal-400 disabled:bg-slate-700 text-slate-950 font-black rounded-xl text-xs shadow-lg shadow-teal-500/20 transition flex items-center justify-center gap-2"
                     >
-                      Enviar diagnóstico
+                      {isSubmitting ? 'Enviando e salvando...' : 'Enviar diagnóstico'}
                     </button>
                   </div>
                 )}
@@ -802,7 +818,6 @@ export default function App() {
           ) : (
             <div className="flex flex-col md:flex-row h-screen bg-slate-100 font-sans text-slate-800 overflow-hidden relative">
               
-              {/* TOPO MOBILE ADMIN */}
               <div className="md:hidden bg-slate-900 text-white px-4 py-3 flex justify-between items-center border-b border-slate-800 shrink-0 z-30">
                 <LogoHeader size="normal" />
                 <button
@@ -813,7 +828,6 @@ export default function App() {
                 </button>
               </div>
 
-              {/* OVERLAY PARA CELULAR QUANDO O MENU ESTÁ ABERTO */}
               {mobileMenuOpen && (
                 <div 
                   className="md:hidden fixed inset-0 bg-slate-950/80 z-40 backdrop-blur-sm"
@@ -821,7 +835,6 @@ export default function App() {
                 />
               )}
 
-              {/* SIDEBAR COM SUPORTE PERFEITO A CELULAR */}
               <aside className={`
                 fixed md:static inset-y-0 left-0 z-50
                 w-72 md:w-64 bg-slate-900 text-white flex flex-col justify-between p-5 border-r border-slate-800 shrink-0
@@ -877,7 +890,6 @@ export default function App() {
                 </button>
               </aside>
 
-              {/* CONTEÚDO PRINCIPAL DO ADMIN */}
               <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
 
                 {/* 1. VISÃO GERAL */}

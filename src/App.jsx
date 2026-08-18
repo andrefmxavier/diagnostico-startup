@@ -14,7 +14,7 @@ import {
 import { supabase } from './supabaseClient';
 
 // ============================================================================
-// 1. ESTRUTURA DAS 8 DIMENSÕES E INDICADORES
+// ESTRUTURA DAS 8 DIMENSÕES E INDICADORES
 // ============================================================================
 const GOVTECH_DIMENSIONS = [
   {
@@ -139,12 +139,23 @@ const DETAILED_TRACKS = [
       { name: 'Processos & Agilidade', count: 1 },
       { name: 'Recursos & Runway', count: 2 }
     ],
-    modules: [
-      { id: 1, title: 'Tese de valor e dor prioritária do cliente', category: 'Estratégia & Tese de Mercado', priority: 'Alta' },
-      { id: 2, title: 'Entrevistas de descoberta e construção de MVP enxuto', category: 'Estrutura, Produto & Validação', priority: 'Alta' },
-      { id: 3, title: 'Acordo de sócios, vesting e cap table', category: 'Liderança & Time', priority: 'Alta' },
-      { id: 4, title: 'DRE gerencial e controle de queima de caixa', category: 'Recursos, Runway & B2G', priority: 'Alta' },
-      { id: 5, title: 'Desenvolvimento de Pitch e Narrativa de Vendas', category: 'Pessoas & Competências', priority: 'Média' }
+    modulesHigh: [
+      { id: 1, title: 'Tese de valor e dor prioritária do cliente', category: 'Estratégia & Tese de Mercado' },
+      { id: 2, title: 'Entrevistas de descoberta e construção de MVP enxuto', category: 'Estrutura, Produto & Validação' },
+      { id: 3, title: 'Acordo de sócios, vesting e cap table', category: 'Liderança & Time' },
+      { id: 4, title: 'DRE gerencial e controle de queima de caixa', category: 'Recursos, Runway & B2G' },
+      { id: 5, title: 'Arquitetura inicial de software e conformidade com a LGPD', category: 'Tecnologia, IA & Propriedade Intelectual' }
+    ],
+    modulesMedium: [
+      { id: 6, title: 'Rotina ágil de entrega com Scrum e Kanban', category: 'Processos & Agilidade' },
+      { id: 7, title: 'UX/UI e simplicidade para o usuário final', category: 'Pessoas & Competências' },
+      { id: 8, title: 'Testes rápidos e registro sistemático de aprendizados', category: 'Cultura de Inovação' },
+      { id: 9, title: 'PoC piloto com cliente âncora: escopo e critérios de aceite', category: 'Estrutura, Produto & Validação' },
+      { id: 10, title: 'Desenvolvimento de Pitch e Narrativa de Vendas', category: 'Pessoas & Competências' }
+    ],
+    modulesLow: [
+      { id: 11, title: 'Mapeamento inicial de Editais de Fomento', category: 'Recursos, Runway & B2G' },
+      { id: 12, title: 'Formulação de hipóteses de modelo de negócios', category: 'Estratégia & Tese de Mercado' }
     ]
   },
   {
@@ -159,11 +170,19 @@ const DETAILED_TRACKS = [
       { name: 'Processos & Agilidade', count: 3 },
       { name: 'Recursos & Runway', count: 2 }
     ],
-    modules: [
-      { id: 1, title: 'Outbound Sales e Maquina de Vendas B2B', category: 'Processos & Agilidade', priority: 'Alta' },
-      { id: 2, title: 'Arquitetura Nuvem Escalável e APIs Abertas', category: 'Tecnologia, IA & Propriedade Intelectual', priority: 'Alta' },
-      { id: 3, title: 'Onboarding de Clientes e Redução de Churn', category: 'Processos & Agilidade', priority: 'Alta' },
-      { id: 4, title: 'Conformidade com LGPD e Segurança Cibernética', category: 'Tecnologia, IA & Propriedade Intelectual', priority: 'Média' }
+    modulesHigh: [
+      { id: 1, title: 'Outbound Sales e Máquina de Vendas B2B', category: 'Processos & Agilidade' },
+      { id: 2, title: 'Arquitetura Nuvem Escalável e APIs Abertas', category: 'Tecnologia, IA & Propriedade Intelectual' },
+      { id: 3, title: 'Onboarding de Clientes e Redução de Churn', category: 'Processos & Agilidade' },
+      { id: 4, title: 'Conformidade com LGPD e Segurança Cibernética', category: 'Tecnologia, IA & Propriedade Intelectual' }
+    ],
+    modulesMedium: [
+      { id: 5, title: 'Introdução a Contratos Públicos e B2G', category: 'Recursos, Runway & B2G' },
+      { id: 6, title: 'Integração de Inteligência Artificial Operacional', category: 'Tecnologia, IA & Propriedade Intelectual' },
+      { id: 7, title: 'Gestão por OKRs Trimestrais para Alinhamento', category: 'Liderança & Time' }
+    ],
+    modulesLow: [
+      { id: 8, title: 'Otimização do Ciclo Médio de Vendas', category: 'Processos & Agilidade' }
     ]
   },
   {
@@ -176,10 +195,17 @@ const DETAILED_TRACKS = [
       { name: 'Tecnologia & IA', count: 2 },
       { name: 'Recursos & Runway', count: 4 }
     ],
-    modules: [
-      { id: 1, title: 'Captação de Investimento Venture Capital', category: 'Recursos, Runway & B2G', priority: 'Alta' },
-      { id: 2, title: 'Estruturação de Conselho Consultivo e Governança', category: 'Liderança & Time', priority: 'Alta' },
-      { id: 3, title: 'Contratualização B2G e Licitações Públicas', category: 'Recursos, Runway & B2G', priority: 'Alta' }
+    modulesHigh: [
+      { id: 1, title: 'Captação de Investimento Venture Capital', category: 'Recursos, Runway & B2G' },
+      { id: 2, title: 'Estruturação de Conselho Consultivo e Governança', category: 'Liderança & Time' },
+      { id: 3, title: 'Contratualização B2G e Licitações Públicas', category: 'Recursos, Runway & B2G' }
+    ],
+    modulesMedium: [
+      { id: 4, title: 'M&A e Estratégia de Saída de Sócios', category: 'Liderança & Time' },
+      { id: 5, title: 'Internacionalização e Expansão para Novos Mercados', category: 'Estratégia & Tese de Mercado' }
+    ],
+    modulesLow: [
+      { id: 6, title: 'Gestão de Crises e Continuidade dos Serviços', category: 'Processos & Agilidade' }
     ]
   }
 ];
@@ -326,10 +352,12 @@ export default function App() {
   const [newPinInput, setNewPinInput] = useState('');
   const [submissions, setSubmissions] = useState([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [showMatrixModal, setShowMatrixModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Filtros
+  // Filtro Individual no Dashboard
+  const [dashboardStartupFilter, setDashboardStartupFilter] = useState('Todos');
+
+  // Filtros de Tabela
   const [tableStageFilter, setTableStageFilter] = useState('Todos');
   const [tableSearchTerm, setTableSearchTerm] = useState('');
   const [activeTrackId, setActiveTrackId] = useState('trilha1');
@@ -343,7 +371,6 @@ export default function App() {
   const [activeAdminTab, setActiveAdminTab] = useState('dashboard');
   const [selectedPlanStartupId, setSelectedPlanStartupId] = useState('');
   const [selectedBenchStartups, setSelectedBenchStartups] = useState([]);
-  const [selectedObsDimension, setSelectedObsDimension] = useState('estrategia');
 
   const fetchStartups = async () => {
     try {
@@ -474,6 +501,10 @@ export default function App() {
 
   const safeSubmissions = Array.isArray(submissions) ? submissions : [];
 
+  // FILTRAGEM DO DASHBOARD POR STARTUP ESPECÍFICA
+  const selectedDashboardStartupObj = safeSubmissions.find(s => s.id === dashboardStartupFilter);
+  const activeDashboardList = selectedDashboardStartupObj ? [selectedDashboardStartupObj] : safeSubmissions;
+
   const tableFilteredSubmissions = safeSubmissions.filter(s => {
     const matchStage = tableStageFilter === 'Todos' || s.stage === tableStageFilter;
     const matchText = !tableSearchTerm || 
@@ -483,15 +514,15 @@ export default function App() {
     return matchStage && matchText;
   });
 
-  const avgOverallScore = safeSubmissions.length > 0
-    ? (safeSubmissions.reduce((acc, curr) => acc + (curr?.score || 0), 0) / safeSubmissions.length)
+  const avgOverallScore = activeDashboardList.length > 0
+    ? (activeDashboardList.reduce((acc, curr) => acc + (curr?.score || 0), 0) / activeDashboardList.length)
     : 0;
 
   const activeDimValues = {};
   GOVTECH_DIMENSIONS.forEach(dim => {
-    const totalDimScore = safeSubmissions.reduce((acc, curr) => acc + (curr?.dimensions?.[dim.name] || 0), 0);
-    activeDimValues[dim.name] = safeSubmissions.length > 0
-      ? Number((totalDimScore / safeSubmissions.length).toFixed(1))
+    const totalDimScore = activeDashboardList.reduce((acc, curr) => acc + (curr?.dimensions?.[dim.name] || 0), 0);
+    activeDimValues[dim.name] = activeDashboardList.length > 0
+      ? Number((totalDimScore / activeDashboardList.length).toFixed(1))
       : 0;
   });
 
@@ -509,23 +540,10 @@ export default function App() {
     Score: Number(val) || 0
   }));
 
-  const stageDistribution = STAGE_LIST.map(stage => ({
-    name: stage,
-    Startups: safeSubmissions.filter(s => s?.stage === stage).length
-  }));
-
-  const segmentDistribution = Object.entries(
-    safeSubmissions.reduce((acc, s) => {
-      const key = s?.segment || 'Outro';
-      acc[key] = (acc[key] || 0) + 1;
-      return acc;
-    }, {})
-  ).map(([name, value]) => ({ name, Startups: value }));
-
   const currentPlanStartup = safeSubmissions.find(s => s.id === selectedPlanStartupId) || safeSubmissions[0];
   const answeredCount = ALL_QUESTIONS.filter(q => formData.responses?.[q.id] > 0).length;
 
-  // Montagem dos Dados de Benchmarking para o Gráfico Agrupado
+  // DADOS DE BENCHMARKING
   const benchSelectedObjects = selectedBenchStartups.map(id => safeSubmissions.find(s => s.id === id)).filter(Boolean);
   const benchChartData = GOVTECH_DIMENSIONS.map(dim => {
     const entry = { name: dim.short };
@@ -539,43 +557,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
-
-      {/* MODAL MATRIZ DE PERGUNTAS */}
-      {showMatrixModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white text-slate-900 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8 space-y-6 shadow-2xl relative">
-            <button
-              onClick={() => setShowMatrixModal(false)}
-              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-slate-500"
-            >
-              <X className="h-6 w-6" />
-            </button>
-            <div>
-              <h2 className="text-xl font-bold text-slate-900">Matriz de Perguntas &amp; Dimensões</h2>
-              <p className="text-xs text-slate-500 mt-1">8 dimensões · 40 indicadores · escala de 1 a 5</p>
-            </div>
-            <div className="space-y-6">
-              {GOVTECH_DIMENSIONS.map((dim, idx) => (
-                <div key={dim.id} className="border border-slate-200 rounded-2xl p-5 space-y-3 bg-slate-50">
-                  <div className="flex justify-between items-center">
-                    <h3 className="font-bold text-sm text-slate-900">{idx + 1}. {dim.name}</h3>
-                    <span className="text-[10px] font-bold px-2.5 py-1 bg-teal-100 text-teal-800 rounded-full">até 25 pts</span>
-                  </div>
-                  <p className="text-xs text-slate-500">{dim.description}</p>
-                  <div className="bg-white rounded-xl divide-y divide-slate-100 border border-slate-200">
-                    {dim.questions.map((q, qIdx) => (
-                      <div key={q.id} className="p-3 text-xs text-slate-700 flex gap-3">
-                        <span className="font-bold text-teal-700 shrink-0">{idx + 1}.{qIdx + 1}</span>
-                        <span>{q.text}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* SELEÇÃO DE INÍCIO */}
       {!role && (
@@ -646,12 +627,6 @@ export default function App() {
           <header className="bg-slate-900 border-b border-slate-800 py-3 px-4 md:px-6 flex justify-between items-center sticky top-0 z-30">
             <LogoHeader size="normal" />
             <div className="flex gap-2">
-              <button
-                onClick={() => setShowMatrixModal(true)}
-                className="text-xs font-medium text-slate-300 hover:text-white bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700 flex items-center gap-1.5"
-              >
-                <ListChecks className="h-3.5 w-3.5" /> Matriz de perguntas
-              </button>
               <button
                 onClick={() => { setRole(null); setSubmitted(false); setFormData(EMPTY_FORM); }}
                 className="text-xs font-medium text-slate-200 hover:text-white bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700 flex items-center gap-1.5"
@@ -1004,15 +979,11 @@ export default function App() {
                         <button
                           key={item.key}
                           onClick={() => {
-                            if (item.key === 'matriz') {
-                              setShowMatrixModal(true);
-                            } else {
-                              setActiveAdminTab(item.key);
-                            }
+                            setActiveAdminTab(item.key);
                             setMobileMenuOpen(false);
                           }}
                           className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition ${
-                            activeAdminTab === item.key && item.key !== 'matriz' ? 'bg-teal-500 text-slate-950' : 'text-slate-200 hover:bg-slate-800'
+                            activeAdminTab === item.key ? 'bg-teal-500 text-slate-950' : 'text-slate-200 hover:bg-slate-800'
                           }`}
                         >
                           <Icon className="h-4 w-4" /> {item.label}
@@ -1031,6 +1002,35 @@ export default function App() {
 
               <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
 
+                {/* MATRIZ DE PERGUNTAS COMO PÁGINA SELECIONADA NO MENU */}
+                {activeAdminTab === 'matriz' && (
+                  <div className="space-y-6 bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm">
+                    <div>
+                      <h1 className="text-xl font-bold text-slate-900">Matriz de Perguntas &amp; Dimensões</h1>
+                      <p className="text-xs text-slate-500 mt-1">8 dimensões · 40 indicadores · escala de 1 a 5</p>
+                    </div>
+                    <div className="space-y-6">
+                      {GOVTECH_DIMENSIONS.map((dim, idx) => (
+                        <div key={dim.id} className="border border-slate-200 rounded-2xl p-5 space-y-3 bg-slate-50">
+                          <div className="flex justify-between items-center">
+                            <h3 className="font-bold text-sm text-slate-900">{idx + 1}. {dim.name}</h3>
+                            <span className="text-[10px] font-bold px-2.5 py-1 bg-teal-100 text-teal-800 rounded-full">até 25 pts</span>
+                          </div>
+                          <p className="text-xs text-slate-500">{dim.description}</p>
+                          <div className="bg-white rounded-xl divide-y divide-slate-100 border border-slate-200">
+                            {dim.questions.map((q, qIdx) => (
+                              <div key={q.id} className="p-3 text-xs text-slate-700 flex gap-3">
+                                <span className="font-bold text-teal-700 shrink-0">{idx + 1}.{qIdx + 1}</span>
+                                <span>{q.text}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* 1. VISÃO GERAL */}
                 {activeAdminTab === 'dashboard' && (
                   <div className="space-y-6">
@@ -1039,12 +1039,34 @@ export default function App() {
                         <h1 className="text-xl font-bold text-slate-900">Dashboard de maturidade das startups</h1>
                         <p className="text-xs text-slate-500">Métricas consolidadas, análise individual e distribuição do portfólio.</p>
                       </div>
-                      <button
-                        onClick={fetchStartups}
-                        className="flex items-center gap-1.5 px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-sm transition"
-                      >
-                        <RefreshCw className="h-3.5 w-3.5" /> Atualizar dados
-                      </button>
+
+                      {/* FILTRO AO LADO DO BOTÃO ATUALIZAR DADOS */}
+                      <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <div className="flex items-center gap-1.5 bg-white border border-slate-300 px-3 py-1.5 rounded-xl text-xs font-semibold shadow-sm">
+                          <Filter className="h-3.5 w-3.5 text-slate-400" />
+                          <span className="text-slate-500">Analisar:</span>
+                          <select
+                            value={dashboardStartupFilter}
+                            onChange={e => setDashboardStartupFilter(e.target.value)}
+                            className="bg-transparent font-bold text-teal-800 outline-none cursor-pointer"
+                          >
+                            <option value="Todos">Visão Geral (Todas)</option>
+                            {safeSubmissions.map(s => (
+                              <option key={s.id} value={s.id}>{s.startupName} ({s.stage})</option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <button
+                          onClick={() => {
+                            setDashboardStartupFilter('Todos');
+                            fetchStartups();
+                          }}
+                          className="flex items-center gap-1.5 px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-sm transition shrink-0"
+                        >
+                          <RefreshCw className="h-3.5 w-3.5" /> Resetar dados
+                        </button>
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1057,32 +1079,46 @@ export default function App() {
                       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Destaque Principal</span>
                         <p className="text-sm font-bold text-teal-700 mt-1 truncate">{highlightTop}</p>
-                        <span className="text-[11px] text-slate-500 block mt-1">Maior pontuação do portfólio</span>
+                        <span className="text-[11px] text-slate-500 block mt-1">Maior pontuação</span>
                       </div>
 
                       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Maior Oportunidade</span>
                         <p className="text-sm font-bold text-amber-700 mt-1 truncate">{highlightLow}</p>
-                        <span className="text-[11px] text-slate-500 block mt-1">Gargalo prioritário do lote</span>
+                        <span className="text-[11px] text-slate-500 block mt-1">Gargalo prioritário</span>
                       </div>
 
-                      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Startups Analisadas</span>
-                        <p className="text-2xl font-black text-purple-700 mt-1">{safeSubmissions.length}</p>
-                        <span className="text-[11px] text-slate-500 block mt-1">Total cadastrado no programa</span>
-                      </div>
+                      {selectedDashboardStartupObj ? (
+                        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Estágio de Maturidade</span>
+                          <div className="mt-2">
+                            <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getStageBadge(selectedDashboardStartupObj.stage)}`}>
+                              {selectedDashboardStartupObj.stage}
+                            </span>
+                          </div>
+                          <span className="text-[11px] text-slate-500 block mt-2 truncate">{selectedDashboardStartupObj.startupName} · {selectedDashboardStartupObj.score} / 200 pts</span>
+                        </div>
+                      ) : (
+                        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Startups Analisadas</span>
+                          <p className="text-2xl font-black text-purple-700 mt-1">{safeSubmissions.length}</p>
+                          <span className="text-[11px] text-slate-500 block mt-1">Total cadastrado no programa</span>
+                        </div>
+                      )}
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-                        <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Radar de Maturidade (Média Geral)</h3>
+                        <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                          {selectedDashboardStartupObj ? `Radar de Maturidade (${selectedDashboardStartupObj.startupName})` : 'Radar de Maturidade (Média Geral)'}
+                        </h3>
                         <div className="h-72 w-full">
                           <ResponsiveContainer width="100%" height="100%">
                             <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarChartData}>
                               <PolarGrid stroke="#e2e8f0" />
                               <PolarAngleAxis dataKey="subject" tick={<RadarTick />} />
                               <PolarRadiusAxis angle={30} domain={[0, 25]} stroke="#cbd5e1" fontSize={10} />
-                              <Radar name="Média" dataKey="A" stroke="#0d9488" fill="#0d9488" fillOpacity={0.3} />
+                              <Radar name="Pontuação" dataKey="A" stroke="#0d9488" fill="#0d9488" fillOpacity={0.3} />
                             </RadarChart>
                           </ResponsiveContainer>
                         </div>
@@ -1111,7 +1147,7 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* TABELA COM FILTRO POR ESTÁGIO, BUSCA E ÍCONES COMPLETOS */}
+                    {/* TABELA COM NOME, SEGMENTO, REDIRECIONAMENTO E AÇÕES */}
                     <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm space-y-4 p-5">
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                         <h3 className="font-bold text-sm text-slate-900">Startups cadastradas</h3>
@@ -1157,7 +1193,7 @@ export default function App() {
                                 <tr key={s.id} className="hover:bg-slate-50/80 transition">
                                   <td className="p-3">
                                     <span className="font-bold text-slate-900 block text-xs">{s.startupName}</span>
-                                    <span className="text-[10px] text-slate-500">{s.segment}</span>
+                                    <span className="text-[10px] text-slate-500 font-medium">{s.segment}</span>
                                   </td>
                                   <td className="p-3">
                                     <span className="font-medium text-slate-800 block text-xs">{s.founder}</span>
@@ -1185,17 +1221,17 @@ export default function App() {
                                     <button
                                       onClick={() => {
                                         navigator.clipboard.writeText(window.location.href);
-                                        alert('Link da startup copiado!');
+                                        alert('Link do diagnóstico copiado com sucesso!');
                                       }}
-                                      className="text-slate-500 hover:text-slate-800"
-                                      title="Copiar link"
+                                      className="text-slate-400 hover:text-slate-700"
+                                      title="Copiar link do diagnóstico"
                                     >
                                       <Copy className="h-3.5 w-3.5 inline" />
                                     </button>
                                     <button
                                       onClick={() => handleDeleteStartup(s.id)}
-                                      className="text-rose-600 hover:text-rose-800"
-                                      title="Excluir"
+                                      className="text-rose-500 hover:text-rose-700"
+                                      title="Excluir startup"
                                     >
                                       <Trash2 className="h-3.5 w-3.5 inline" />
                                     </button>
@@ -1210,7 +1246,7 @@ export default function App() {
                   </div>
                 )}
 
-                {/* 2. PLANO POR STARTUP (Restaurado ao modelo AchaBuraco) */}
+                {/* 2. PLANO POR STARTUP */}
                 {activeAdminTab === 'plano' && (
                   <div className="space-y-6">
                     <div className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -1233,7 +1269,6 @@ export default function App() {
 
                     {currentPlanStartup ? (
                       <div className="space-y-6">
-                        {/* CABEÇALHO DO PLANO COM BOTÃO PDF */}
                         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                           <div>
                             <span className="text-[10px] font-bold text-teal-600 uppercase tracking-wider block">PLANO PERSONALIZADO</span>
@@ -1257,7 +1292,6 @@ export default function App() {
                           </div>
                         </div>
 
-                        {/* OBSERVAÇÕES ENVIADAS PELA STARTUP */}
                         {Object.keys(currentPlanStartup.notes || {}).length > 0 && (
                           <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
                             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">OBSERVAÇÕES ENVIADAS PELA STARTUP</h3>
@@ -1275,7 +1309,6 @@ export default function App() {
                           </div>
                         )}
 
-                        {/* LISTA DAS 8 DIMENSÕES COM ENTREGÁVEIS */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {GOVTECH_DIMENSIONS.map(dim => {
                             const score = currentPlanStartup.dimensions?.[dim.name] || 0;
@@ -1336,7 +1369,7 @@ export default function App() {
                   </div>
                 )}
 
-                {/* 3. TRILHAS DE CONHECIMENTO (Restaurado ao modelo com abas e badges) */}
+                {/* 3. TRILHAS DE CONHECIMENTO (COM ALTA, MÉDIA E BAIXA PRIORIDADE) */}
                 {activeAdminTab === 'trilhas' && (
                   <div className="space-y-6">
                     <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
@@ -1349,7 +1382,6 @@ export default function App() {
                       </span>
                     </div>
 
-                    {/* ABAS SUPERIORES DAS TRILHAS */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {DETAILED_TRACKS.map(t => {
                         const isActive = activeTrackId === t.id;
@@ -1371,7 +1403,6 @@ export default function App() {
                       })}
                     </div>
 
-                    {/* DETALHAMENTO DA TRILHA SELEÇÃO */}
                     {(() => {
                       const track = DETAILED_TRACKS.find(t => t.id === activeTrackId);
                       if (!track) return null;
@@ -1382,7 +1413,6 @@ export default function App() {
                             <p className="text-xs text-slate-500 mt-1">{track.subtitle}</p>
                           </div>
 
-                          {/* RESUMO DAS DIMENSÕES NA TRILHA */}
                           <div className="flex flex-wrap gap-2">
                             {track.dimensionsSummary.map((d, i) => (
                               <span key={i} className="px-3 py-1 bg-teal-50 text-teal-800 border border-teal-200 rounded-full text-[11px] font-semibold">
@@ -1391,32 +1421,78 @@ export default function App() {
                             ))}
                           </div>
 
-                          <div className="pt-2 space-y-3">
-                            <span className="text-[11px] font-bold px-2.5 py-1 bg-rose-100 text-rose-800 rounded-full inline-block">
-                              Prioridade Alta · {track.modules.length} módulos
-                            </span>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              {track.modules.map(mod => (
-                                <div key={mod.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200/80 flex items-start gap-3">
-                                  <div className="w-7 h-7 bg-teal-700 text-white rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
-                                    {mod.id}
+                          {/* PRIORIDADE ALTA */}
+                          {track.modulesHigh?.length > 0 && (
+                            <div className="space-y-3 pt-2">
+                              <span className="text-[11px] font-bold px-3 py-1 bg-rose-100 text-rose-800 border border-rose-200 rounded-full inline-block">
+                                Prioridade Alta · {track.modulesHigh.length} módulos
+                              </span>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {track.modulesHigh.map(mod => (
+                                  <div key={mod.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200/80 flex items-start gap-3">
+                                    <div className="w-7 h-7 bg-teal-700 text-white rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                                      {mod.id}
+                                    </div>
+                                    <div>
+                                      <h4 className="font-bold text-xs text-slate-900">{mod.title}</h4>
+                                      <span className="text-[10px] text-slate-500 block mt-0.5">{mod.category}</span>
+                                    </div>
                                   </div>
-                                  <div>
-                                    <h4 className="font-bold text-xs text-slate-900">{mod.title}</h4>
-                                    <span className="text-[10px] text-slate-500 block mt-0.5">{mod.category}</span>
-                                  </div>
-                                </div>
-                              ))}
+                                ))}
+                              </div>
                             </div>
-                          </div>
+                          )}
+
+                          {/* PRIORIDADE MÉDIA */}
+                          {track.modulesMedium?.length > 0 && (
+                            <div className="space-y-3 pt-2">
+                              <span className="text-[11px] font-bold px-3 py-1 bg-amber-100 text-amber-800 border border-amber-200 rounded-full inline-block">
+                                Prioridade Média · {track.modulesMedium.length} módulos
+                              </span>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {track.modulesMedium.map(mod => (
+                                  <div key={mod.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200/80 flex items-start gap-3">
+                                    <div className="w-7 h-7 bg-teal-700 text-white rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                                      {mod.id}
+                                    </div>
+                                    <div>
+                                      <h4 className="font-bold text-xs text-slate-900">{mod.title}</h4>
+                                      <span className="text-[10px] text-slate-500 block mt-0.5">{mod.category}</span>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* PRIORIDADE BAIXA */}
+                          {track.modulesLow?.length > 0 && (
+                            <div className="space-y-3 pt-2">
+                              <span className="text-[11px] font-bold px-3 py-1 bg-blue-100 text-blue-800 border border-blue-200 rounded-full inline-block">
+                                Prioridade Baixa · {track.modulesLow.length} módulos
+                              </span>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {track.modulesLow.map(mod => (
+                                  <div key={mod.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200/80 flex items-start gap-3">
+                                    <div className="w-7 h-7 bg-teal-700 text-white rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                                      {mod.id}
+                                    </div>
+                                    <div>
+                                      <h4 className="font-bold text-xs text-slate-900">{mod.title}</h4>
+                                      <span className="text-[10px] text-slate-500 block mt-0.5">{mod.category}</span>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       );
                     })()}
                   </div>
                 )}
 
-                {/* 4. BENCHMARKING (Restaurado ao modelo de comparação com gráfico agrupado) */}
+                {/* 4. BENCHMARKING */}
                 {activeAdminTab === 'benchmarking' && (
                   <div className="space-y-6">
                     <div>
@@ -1446,7 +1522,6 @@ export default function App() {
                         })}
                       </div>
 
-                      {/* CARDS COMPARATIVOS */}
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
                         {selectedBenchStartups.map(id => {
                           const s = safeSubmissions.find(sub => sub.id === id);
@@ -1466,7 +1541,6 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* GRÁFICO DE BARRAS AGRUPADAS DE 8 DIMENSÕES */}
                     {benchSelectedObjects.length > 0 && (
                       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                         <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">COMPARATIVO PELAS 8 DIMENSÕES</h3>

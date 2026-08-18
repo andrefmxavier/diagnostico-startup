@@ -149,7 +149,7 @@ const DETAILED_TRACKS = [
     modulesMedium: [
       { id: 6, title: 'Rotina ágil de entrega com Scrum e Kanban', category: 'Processos & Agilidade' },
       { id: 7, title: 'UX/UI e simplicidade para o usuário final', category: 'Pessoas & Competências' },
-      { id: 8, title: 'Testes rápidos e registro sistemático de aprendizados', category: 'Cultura de Inovação' },
+      { id: 8, title: 'Testes rápidos e registro systematico de aprendizados', category: 'Cultura de Inovação' },
       { id: 9, title: 'PoC piloto com cliente âncora: escopo e critérios de aceite', category: 'Estrutura, Produto & Validação' },
       { id: 10, title: 'Desenvolvimento de Pitch e Narrativa de Vendas', category: 'Pessoas & Competências' }
     ],
@@ -210,7 +210,7 @@ const DETAILED_TRACKS = [
   }
 ];
 
-// PLANO DE AÇÃO MULTI-TÓPICOS COMPLETO
+// PLANO DE AÇÃO MULTI-TÓPICOS COMPLETO PARA TODAS AS DIMENSÕES
 const MULTI_TOPIC_RECOMMENDATIONS = {
   estrategia: [
     {
@@ -267,6 +267,13 @@ const MULTI_TOPIC_RECOMMENDATIONS = {
       tools: 'Hotjar, Mixpanel, Maze para testes de usabilidade e formulários de feedback.',
       metrics: 'Número de hipóteses testadas por mês e taxa de conversão em aprendizados aplicados.',
       deliverable: 'Repositório público de aprendizados de produtos e testes A/B.'
+    },
+    {
+      title: 'Gestão da inovação e escuta ativa',
+      action: 'Criar canal direto de coleta de ideias com o time interno e clientes parceiros.',
+      tools: 'Trello de ideias, Canny.io, Typeform e encontros quinzenais de inovação.',
+      metrics: 'Número de sugestões de melhorias implementadas vindas da base de clientes.',
+      deliverable: 'Roadmap de inovação colaborativo atualizado trimestralmente.'
     }
   ],
   pessoas: [
@@ -276,6 +283,13 @@ const MULTI_TOPIC_RECOMMENDATIONS = {
       tools: 'Zendesk, Intercom, Notion Wiki interna e matriz de competências CSD.',
       metrics: 'CSAT de suporte (>90%), First Response Time (FRT) e eNPS do time.',
       deliverable: 'Playbook de Customer Success e Matriz RACI da equipe.'
+    },
+    {
+      title: 'Capacitação contínua e Retenção de talentos',
+      action: 'Estabelecer plano de desenvolvimento individual (PDI) e política de retenção de talentos chave.',
+      tools: 'Notion PDI, 15Five, quadros de 1-on-1 e orçamentos de treinamentos.',
+      metrics: 'Taxa de turnover do time técnico e nível de satisfação em pesquisas internas.',
+      deliverable: 'Plano de Cargos & Salários simplificado e matriz de PDI.'
     }
   ],
   estrutura: [
@@ -285,6 +299,13 @@ const MULTI_TOPIC_RECOMMENDATIONS = {
       tools: 'Amplitude, Google Analytics 4, contratos padrão de piloto e reuniões de validação.',
       metrics: 'Taxa de retenção W4 (Semana 4), engajamento semanal e conversão de PoC em contrato.',
       deliverable: 'Relatório de métricas de uso e contrato padrão de PoC testado.'
+    },
+    {
+      title: 'Validação jurídica do modelo comercial',
+      action: 'Adequar os termos de uso, políticas de privacidade e contratos de adesão comercial.',
+      tools: 'Assessoria jurídica especializada, DocuSign e geradores de termos LGPD.',
+      metrics: '% de contratos assinados sem pendências jurídicas ou objeções de cláusula.',
+      deliverable: 'Minuta contratual B2B/B2G padronizada e homologada por advogados.'
     }
   ],
   processos: [
@@ -294,6 +315,13 @@ const MULTI_TOPIC_RECOMMENDATIONS = {
       tools: 'HubSpot CRM, Pipedrive, Jira, Trello e planilha de DRE gerencial.',
       metrics: 'Taxa de conversão do funil de vendas, ciclo médio de vendas e velocity por Sprint.',
       deliverable: 'Playbook comercial de vendas e backlog do produto priorizado no Jira.'
+    },
+    {
+      title: 'SLA de Atendimento e Operações Internas',
+      action: 'Padronizar tempos de resposta para solicitações de clientes e fluxos de atendimento.',
+      tools: 'Freshdesk, Zendesk, WhatsApp API Business e Notion SOPs.',
+      metrics: 'SLA de primeira resposta e tempo médio de resolução de chamados técnicos.',
+      deliverable: 'Procedimento Operacional Padrão (POP) para a área de Suporte.'
     }
   ],
   recursos: [
@@ -303,6 +331,13 @@ const MULTI_TOPIC_RECOMMENDATIONS = {
       tools: 'Planilha de projeção de caixa, FINEP, Sebrae Tec, CNPq e Portal da Transparência.',
       metrics: 'Meses de sobrevida financeira (Runway > 12 meses) e valor captado via editais.',
       deliverable: 'Planilha financeira de 18 meses com Burn Rate controlado e propostas de fomento enviadas.'
+    },
+    {
+      title: 'Precificação e Margem de Contribuição',
+      action: 'Revisar a estrutura de precificação do SaaS/serviço para assegurar margens saudáveis.',
+      tools: 'Planilhas de precificação baseada em valor e pesquisas de Benchmarking.',
+      metrics: 'Margem bruta por produto/cliente e LTV/CAC superior a 3x.',
+      deliverable: 'Matriz de pacotes de preços (Pricing Table) revisada e aprovada.'
     }
   ]
 };
@@ -409,6 +444,13 @@ export default function App() {
   const [activeAdminTab, setActiveAdminTab] = useState('dashboard');
   const [selectedPlanStartupId, setSelectedPlanStartupId] = useState('');
   const [selectedBenchStartups, setSelectedBenchStartups] = useState([]);
+
+  // Estado para controlar expansão/recolhimento no Plano de Ação
+  const [expandedDimensions, setExpandedDimensions] = useState({});
+
+  const toggleDimension = (dimId) => {
+    setExpandedDimensions(prev => ({ ...prev, [dimId]: !prev[dimId] }));
+  };
 
   const fetchStartups = async () => {
     try {
@@ -577,7 +619,6 @@ export default function App() {
     Score: Number(val) || 0
   }));
 
-  // DADOS DOS GRÁFICOS DE DISTRIBUIÇÃO
   const stageDistributionData = STAGE_LIST.map(st => ({
     name: st,
     Startups: safeSubmissions.filter(s => s.stage === st).length
@@ -1199,7 +1240,6 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* GRÁFICOS DE DISTRIBUIÇÃO SOLICITADOS */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
                         <div className="flex justify-between items-center">
@@ -1246,7 +1286,7 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* TABELA DE STARTUPS CADASTRADAS */}
+                    {/* TABELA DE STARTUPS CADASTRADAS (COM COLUNA DE SEGMENTO E AÇÕES ENQUADRADAS) */}
                     <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm space-y-4 p-5">
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                         <h3 className="font-bold text-sm text-slate-900">Startups cadastradas</h3>
@@ -1274,10 +1314,11 @@ export default function App() {
                       </div>
 
                       <div className="overflow-x-auto border border-slate-100 rounded-xl">
-                        <table className="w-full text-left text-xs min-w-[700px]">
+                        <table className="w-full text-left text-xs min-w-[800px]">
                           <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
                             <tr>
                               <th className="p-3">STARTUP</th>
+                              <th className="p-3">SEGMENTO</th>
                               <th className="p-3">FUNDADOR E CONTATO</th>
                               <th className="p-3">ESTÁGIO</th>
                               <th className="p-3">SCORE TOTAL</th>
@@ -1286,13 +1327,15 @@ export default function App() {
                           </thead>
                           <tbody className="divide-y divide-slate-100">
                             {tableFilteredSubmissions.length === 0 ? (
-                              <tr><td colSpan={5} className="p-5 text-center text-slate-400">Nenhuma startup encontrada.</td></tr>
+                              <tr><td colSpan={6} className="p-5 text-center text-slate-400">Nenhuma startup encontrada.</td></tr>
                             ) : (
                               tableFilteredSubmissions.map(s => (
                                 <tr key={s.id} className="hover:bg-slate-50/80 transition">
-                                  <td className="p-3">
-                                    <span className="font-bold text-slate-900 block text-xs">{s.startupName}</span>
-                                    <span className="text-[10px] text-slate-500 font-medium">{s.segment}</span>
+                                  <td className="p-3 font-bold text-slate-900 text-xs">
+                                    {s.startupName}
+                                  </td>
+                                  <td className="p-3 text-slate-600 font-medium text-xs">
+                                    {s.segment}
                                   </td>
                                   <td className="p-3">
                                     <span className="font-medium text-slate-800 block text-xs">{s.founder}</span>
@@ -1307,33 +1350,37 @@ export default function App() {
                                     <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${getStageBadge(s.stage)}`}>{s.stage}</span>
                                   </td>
                                   <td className="p-3 font-black text-slate-900 text-sm">{s.score} / 200</td>
-                                  <td className="p-3 text-right space-x-3">
-                                    <button
-                                      onClick={() => {
-                                        setSelectedPlanStartupId(s.id);
-                                        setActiveAdminTab('plano');
-                                      }}
-                                      className="text-xs font-bold text-teal-700 hover:underline inline-flex items-center gap-1"
-                                    >
-                                      Ver plano &gt;
-                                    </button>
-                                    <button
-                                      onClick={() => {
-                                        navigator.clipboard.writeText(window.location.href);
-                                        alert('Link do diagnóstico copiado!');
-                                      }}
-                                      className="text-slate-400 hover:text-slate-700"
-                                      title="Copiar link do diagnóstico"
-                                    >
-                                      <Copy className="h-3.5 w-3.5 inline" />
-                                    </button>
-                                    <button
-                                      onClick={() => handleDeleteStartup(s.id)}
-                                      className="text-rose-500 hover:text-rose-700"
-                                      title="Excluir startup"
-                                    >
-                                      <Trash2 className="h-3.5 w-3.5 inline" />
-                                    </button>
+                                  <td className="p-3 text-right">
+                                    <div className="inline-flex items-center gap-3">
+                                      <button
+                                        onClick={() => {
+                                          setSelectedPlanStartupId(s.id);
+                                          setActiveAdminTab('plano');
+                                        }}
+                                        className="text-xs font-bold text-teal-700 hover:underline"
+                                      >
+                                        Ver plano &gt;
+                                      </button>
+                                      
+                                      <button
+                                        onClick={() => {
+                                          navigator.clipboard.writeText(window.location.href);
+                                          alert('Link do diagnóstico copiado com sucesso!');
+                                        }}
+                                        className="text-slate-500 hover:text-slate-800 flex items-center gap-1 text-[11px] bg-slate-100 px-2 py-1 rounded-lg border border-slate-200 transition"
+                                        title="Copiar link do diagnóstico"
+                                      >
+                                        <Copy className="h-3 w-3" /> Diagnóstico
+                                      </button>
+
+                                      <button
+                                        onClick={() => handleDeleteStartup(s.id)}
+                                        className="text-rose-500 hover:text-rose-700 p-1"
+                                        title="Excluir startup"
+                                      >
+                                        <Trash2 className="h-3.5 w-3.5" />
+                                      </button>
+                                    </div>
                                   </td>
                                 </tr>
                               ))
@@ -1345,7 +1392,7 @@ export default function App() {
                   </div>
                 )}
 
-                {/* 2. PLANO POR STARTUP (MÚLTIPLOS TÓPICOS) */}
+                {/* 2. PLANO POR STARTUP (TÓPICOS RECOLHÍVEIS E MULTI-OPÇÕES EM TODAS AS DIMENSÕES) */}
                 {activeAdminTab === 'plano' && (
                   <div className="space-y-6">
                     <div className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -1413,52 +1460,70 @@ export default function App() {
                             const score = currentPlanStartup.dimensions?.[dim.name] || 0;
                             const percent = Math.round((score / 25) * 100);
                             const topics = MULTI_TOPIC_RECOMMENDATIONS[dim.id] || [];
+                            const isExpanded = expandedDimensions[dim.id] ?? true;
 
                             return (
-                              <div key={dim.id} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-5">
-                                <div className="flex justify-between items-start border-b border-slate-100 pb-3">
-                                  <div>
-                                    <h3 className="font-bold text-sm text-slate-900">{dim.name}</h3>
-                                    <span className="text-xs font-bold text-teal-700">{score} / 25 pts · {percent}% · nível {percent >= 70 ? 'Avançado' : 'Intermediário'}</span>
-                                  </div>
-                                  <span className="text-[10px] bg-slate-100 border border-slate-200 text-slate-600 px-2.5 py-1 rounded-lg font-medium text-right max-w-[150px]">
-                                    Meta: sustentar a referência e replicar boas práticas
-                                  </span>
-                                </div>
-
-                                <div className="space-y-6">
-                                  {topics.map((topic, tIdx) => (
-                                    <div key={tIdx} className="space-y-3">
-                                      <div className="space-y-1">
-                                        <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                                          <CheckCircle2 className="h-4 w-4 text-teal-600 shrink-0" /> {topic.title}
-                                        </h4>
-                                        <p className="text-xs text-slate-600 leading-relaxed pl-5">{topic.action}</p>
-                                      </div>
-
-                                      <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
-                                        <span className="font-bold text-[10px] text-slate-400 uppercase block flex items-center gap-1">
-                                          <Wrench className="h-3 w-3" /> FERRAMENTAS SUGERIDAS
-                                        </span>
-                                        <p className="text-xs text-slate-700">{topic.tools}</p>
-                                      </div>
-
-                                      <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
-                                        <span className="font-bold text-[10px] text-slate-400 uppercase block flex items-center gap-1">
-                                          <Gauge className="h-3 w-3" /> MÉTRICAS A ACOMPANHAR
-                                        </span>
-                                        <p className="text-xs text-slate-700">{topic.metrics}</p>
-                                      </div>
-
-                                      <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
-                                        <span className="font-bold text-[10px] text-slate-400 uppercase block flex items-center gap-1">
-                                          <Package className="h-3 w-3" /> ENTREGÁVEL ESPERADO
-                                        </span>
-                                        <p className="text-xs text-slate-700">{topic.deliverable}</p>
-                                      </div>
+                              <div key={dim.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+                                <div className="p-5 space-y-3">
+                                  <div 
+                                    onClick={() => toggleDimension(dim.id)}
+                                    className="flex justify-between items-center cursor-pointer border-b border-slate-100 pb-3 select-none"
+                                  >
+                                    <div>
+                                      <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                                        {dim.name}
+                                        {isExpanded ? <ChevronUp className="h-4 w-4 text-slate-400" /> : <ChevronDown className="h-4 w-4 text-slate-400" />}
+                                      </h3>
+                                      <span className="text-xs font-bold text-teal-700">{score} / 25 pts · {percent}% · nível {percent >= 70 ? 'Avançado' : 'Intermediário'}</span>
                                     </div>
-                                  ))}
+                                    <span className="text-[10px] bg-slate-100 border border-slate-200 text-slate-600 px-2.5 py-1 rounded-lg font-medium text-right max-w-[130px]">
+                                      {topics.length} tópicos recomendados
+                                    </span>
+                                  </div>
+
+                                  {isExpanded && (
+                                    <div className="space-y-6 pt-2">
+                                      {topics.map((topic, tIdx) => (
+                                        <div key={tIdx} className="space-y-3 border-b border-slate-100/80 pb-4 last:border-0 last:pb-0">
+                                          <div className="space-y-1">
+                                            <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                                              <CheckCircle2 className="h-4 w-4 text-teal-600 shrink-0" /> {topic.title}
+                                            </h4>
+                                            <p className="text-xs text-slate-600 leading-relaxed pl-5">{topic.action}</p>
+                                          </div>
+
+                                          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
+                                            <span className="font-bold text-[10px] text-slate-400 uppercase block flex items-center gap-1">
+                                              <Wrench className="h-3 w-3" /> FERRAMENTAS SUGERIDAS
+                                            </span>
+                                            <p className="text-xs text-slate-700">{topic.tools}</p>
+                                          </div>
+
+                                          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
+                                            <span className="font-bold text-[10px] text-slate-400 uppercase block flex items-center gap-1">
+                                              <Gauge className="h-3 w-3" /> MÉTRICAS A ACOMPANHAR
+                                            </span>
+                                            <p className="text-xs text-slate-700">{topic.metrics}</p>
+                                          </div>
+
+                                          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
+                                            <span className="font-bold text-[10px] text-slate-400 uppercase block flex items-center gap-1">
+                                              <Package className="h-3 w-3" /> ENTREGÁVEL ESPERADO
+                                            </span>
+                                            <p className="text-xs text-slate-700">{topic.deliverable}</p>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
                                 </div>
+
+                                <button
+                                  onClick={() => toggleDimension(dim.id)}
+                                  className="w-full py-2 bg-slate-50 hover:bg-slate-100 text-[11px] font-bold text-slate-500 border-t border-slate-200/80 transition flex items-center justify-center gap-1"
+                                >
+                                  {isExpanded ? 'Recolher tópicos' : 'Expandir tópicos'}
+                                </button>
                               </div>
                             );
                           })}
@@ -1592,12 +1657,12 @@ export default function App() {
                   </div>
                 )}
 
-                {/* 4. BENCHMARKING (SEM LIMITE DE EMPRESAS) */}
+                {/* 4. BENCHMARKING */}
                 {activeAdminTab === 'benchmarking' && (
                   <div className="space-y-6">
                     <div>
                       <h1 className="text-xl font-bold text-slate-900">Benchmarking entre startups</h1>
-                      <p className="text-xs text-slate-500">Selecione quantas startups forem necessárias para comparar os resultados do diagnóstico lado a lado.</p>
+                      <p className="text-xs text-slate-500">Selecione quantas startups foram necessárias para comparar os resultados do diagnóstico lado a lado.</p>
                     </div>
 
                     <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">

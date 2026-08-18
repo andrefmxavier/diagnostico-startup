@@ -210,63 +210,101 @@ const DETAILED_TRACKS = [
   }
 ];
 
-const PLAN_RECOMMENDATIONS = {
-  estrategia: {
-    title: 'Validação da dor e da tese de valor',
-    action: 'Converter a tese validada em plano de expansão para novas praças e verticais, com hipóteses de entrada documentadas.',
-    tools: 'Roteiro de entrevista no formato The Mom Test, quadro de dores no Miro e registro padronizado no Notion ou Google Forms.',
-    metrics: 'Número de entrevistas concluídas, percentual que confirma a dor como prioritária e valor declarado de disposição a pagar.',
-    deliverable: 'Relatório de descoberta de uma página com as cinco dores mais citadas e a proposta de valor revisada.'
-  },
-  lideranca: {
-    title: 'Governança societária e alinhamento',
-    action: 'Preparar a governança para due diligence: atas organizadas, contratos assinados e societário sem passivos.',
-    tools: 'Acordo de sócios revisado, plataforma de vesting/cap table (ex: Carta ou Excel) e rituais de OKR.',
-    metrics: '% de dedicação exclusiva dos fundadores, NPS do time interno e cumprimento das metas trimestrais.',
-    deliverable: 'Cap table atualizado e matriz de responsabilidades executivas aprovada pelos sócios.'
-  },
-  tecnologia: {
-    title: 'Arquitetura limpa, IA e segurança de IP',
-    action: 'Evoluir o código para microsserviços seguros com documentação aberta e modelos de automação/IA.',
-    tools: 'AWS / Google Cloud, repositórios GitHub protegidos, APIs Swagger e auditoria LGPD.',
-    metrics: 'Uptime da aplicação (>99.5%), tempo de resposta de API e cobertura de testes automatizados.',
-    deliverable: 'Documentação técnica da arquitetura de software e registro formal de marca/código.'
-  },
-  cultura: {
-    title: 'Cultura de experimentação e aprendizado',
-    action: 'Estabelecer rotina semanal de testes A/B e reuniões de pós-mortem sem culpabilização.',
-    tools: 'Quadro de hipóteses no Notion/Jira, Google Analytics, Hotjar e Mixpanel.',
-    metrics: 'Quantidade de experimentos realizados por mês e taxa de conversão aprendida.',
-    deliverable: 'Backlog de experimentos validados e repositório central de aprendizados com usuários.'
-  },
-  pessoas: {
-    title: 'Capacidade de execução e Customer Success',
-    action: 'Mapear papéis técnicos essenciais e estruturar atendimento dedicado com SLA claro.',
-    tools: 'Zendesk/Intercom para suporte, matriz de competências CSD e treinamentos semanais.',
-    metrics: 'Tempo médio de primeira resposta (FRT), CSAT de atendimento e eNPS do time.',
-    deliverable: 'Manual de onboarding do cliente e playbook de suporte operacional.'
-  },
-  estrutura: {
-    title: 'Validação contínua do MVP e uso ativo',
-    action: 'Acompanhar métricas de retenção diária/semanal e conduzir testes piloto estruturados.',
-    tools: 'Amplitude, Mixpanel, Hotjar e formulários de feedback pós-uso.',
-    metrics: 'Usuários ativos diários/mensais (DAU/MAU) e taxa de retenção na semana 4 (W4).',
-    deliverable: 'Relatório de engajamento do produto e lista de melhorias prioritárias para o backlog.'
-  },
-  processos: {
-    title: 'Processos ágeis e funil de vendas',
-    action: 'Estruturar máquina de vendas inbound/outbound com etapas bem definidas e rotina de DRE mensal.',
-    tools: 'HubSpot/Pipedrive para CRM, Jira/Trello para Sprints e Conta Azul para financeiro.',
-    metrics: 'Taxa de conversão do funil de vendas, ciclo médio de vendas (dias) e margem DRE.',
-    deliverable: 'Playbook comercial de vendas e DRE gerencial atualizada dos últimos 12 meses.'
-  },
-  recursos: {
-    title: 'Saúde financeira, Runway e captação B2G/Editais',
-    action: 'Garantir sobrevida financeira superior a 12 meses e mapear editais de fomento e contratos públicos.',
-    tools: 'Planilha de projeção de fluxo de caixa, plataforma de editais FINEP/Sebrae e Portal da Transparência.',
-    metrics: 'Meses de Runway restante, Burn Rate mensal e margem de contribuição por cliente.',
-    deliverable: 'Plano de alocação de capital para 18 meses e proposta comercial B2G padronizada.'
-  }
+// PLANO DE AÇÃO MULTI-TÓPICOS COMPLETO
+const MULTI_TOPIC_RECOMMENDATIONS = {
+  estrategia: [
+    {
+      title: 'Validação da dor e da tese de valor',
+      action: 'Converter a tese validada em plano de expansão para novas praças e verticais, com hipóteses de entrada documentadas.',
+      tools: 'Roteiro de entrevista no formato The Mom Test, quadro de dores no Miro e registro padronizado no Notion ou Google Forms.',
+      metrics: 'Número de entrevistas concluídas, percentual que confirma a dor como prioritária e valor declarado de disposição a pagar.',
+      deliverable: 'Relatório de descoberta de uma página com as cinco dores mais citadas e a proposta de valor revisada.'
+    },
+    {
+      title: 'Dimensionamento de mercado (TAM/SAM/SOM)',
+      action: 'Modelar cenários de captura de mercado por região e vertical, com metas trimestrais de participação.',
+      tools: 'IBGE, Abstartups, relatórios setoriais, Google Trends e planilha de modelagem no Google Sheets ou Excel.',
+      metrics: 'Percentual de penetração no SOM estimado e variação do TAM atingível por trimestre.',
+      deliverable: 'Planilha de TAM/SAM/SOM atualizada com fontes primárias e secundárias anexadas.'
+    }
+  ],
+  lideranca: [
+    {
+      title: 'Governança societária',
+      action: 'Preparar a governança para due diligence: atas organizadas, contratos assinados e societário sem passivos.',
+      tools: 'Planilha de cap table, assessoria jurídica societária e modelos de acordo de sócios e de vesting.',
+      metrics: 'Percentual do capital formalizado, existência de cláusulas de saída e prazo de cliff definido.',
+      deliverable: 'Acordo de sócios assinado e cap table atualizado com cenários de diluição.'
+    },
+    {
+      title: 'Ritmo de gestão orientado a dados',
+      action: 'Operar por OKRs trimestrais com revisão mensal e prestação de contas ao conselho consultivo.',
+      tools: 'Google Looker Studio, Metabase, planilha de indicadores semanais e quadro de OKRs no Notion.',
+      metrics: '% de atingimento das metas dos OKRs do trimestre e pontualidade na emissão do report executivo.',
+      deliverable: 'Dashboard de OKRs ativo e modelo de report executivo mensal aprovado.'
+    }
+  ],
+  tecnologia: [
+    {
+      title: 'Arquitetura de software e controle de IP',
+      action: 'Documentar a arquitetura em nuvem e formalizar registros de código e marca própria.',
+      tools: 'GitHub, AWS Architecture Diagrammer, INPI e licenças de software livre revisadas.',
+      metrics: 'Taxa de cobertura de testes técnicos e uptime do ambiente de produção (>99.5%).',
+      deliverable: 'Manual de arquitetura técnica e protocolo de registro no INPI.'
+    },
+    {
+      title: 'Automação e uso de IA Generativa',
+      action: 'Integrar modelos de linguagem ou automações para otimizar processos operacionais internos.',
+      tools: 'OpenAI API, Make, n8n, LangChain e conectores REST API.',
+      metrics: 'Redução percentual de tempo no atendimento ao cliente ou processamento de dados.',
+      deliverable: 'Fluxo automatizado em produção com logs de consumo monitorados.'
+    }
+  ],
+  cultura: [
+    {
+      title: 'Cultura de testes e aprendizado rápido',
+      action: 'Implementar rituais semanais de experimentos para validar funcionalidades antes de codificar.',
+      tools: 'Hotjar, Mixpanel, Maze para testes de usabilidade e formulários de feedback.',
+      metrics: 'Número de hipóteses testadas por mês e taxa de conversão em aprendizados aplicados.',
+      deliverable: 'Repositório público de aprendizados de produtos e testes A/B.'
+    }
+  ],
+  pessoas: [
+    {
+      title: 'Complementaridade e Customer Success',
+      action: 'Mapear lacunas técnicas na equipe e formalizar canal de onboarding e suporte ao cliente.',
+      tools: 'Zendesk, Intercom, Notion Wiki interna e matriz de competências CSD.',
+      metrics: 'CSAT de suporte (>90%), First Response Time (FRT) e eNPS do time.',
+      deliverable: 'Playbook de Customer Success e Matriz RACI da equipe.'
+    }
+  ],
+  estrutura: [
+    {
+      title: 'Qualidade do MVP e provas de conceito (PoC)',
+      action: 'Acompanhar métricas de retenção real e estruturar roteiro padrão de execução de PoCs.',
+      tools: 'Amplitude, Google Analytics 4, contratos padrão de piloto e reuniões de validação.',
+      metrics: 'Taxa de retenção W4 (Semana 4), engajamento semanal e conversão de PoC em contrato.',
+      deliverable: 'Relatório de métricas de uso e contrato padrão de PoC testado.'
+    }
+  ],
+  processos: [
+    {
+      title: 'Máquina de vendas B2B/B2G e processos ágeis',
+      action: 'Implantar funil comercial estruturado no CRM e rotinas ágeis de desenvolvimento (Sprints).',
+      tools: 'HubSpot CRM, Pipedrive, Jira, Trello e planilha de DRE gerencial.',
+      metrics: 'Taxa de conversão do funil de vendas, ciclo médio de vendas e velocity por Sprint.',
+      deliverable: 'Playbook comercial de vendas e backlog do produto priorizado no Jira.'
+    }
+  ],
+  recursos: [
+    {
+      title: 'Planejamento de Runway e Editais de Fomento',
+      action: 'Elaborar modelo de projeção financeira para 18 meses e cadastrar a startup em editais de subvenção.',
+      tools: 'Planilha de projeção de caixa, FINEP, Sebrae Tec, CNPq e Portal da Transparência.',
+      metrics: 'Meses de sobrevida financeira (Runway > 12 meses) e valor captado via editais.',
+      deliverable: 'Planilha financeira de 18 meses com Burn Rate controlado e propostas de fomento enviadas.'
+    }
+  ]
 };
 
 const SHORT_LABELS = GOVTECH_DIMENSIONS.reduce((acc, d) => { acc[d.name] = d.short; return acc; }, {});
@@ -396,7 +434,7 @@ export default function App() {
         setSubmissions(formatted);
         if (formatted.length > 0 && !selectedPlanStartupId) {
           setSelectedPlanStartupId(formatted[0].id);
-          setSelectedBenchStartups([formatted[0].id, formatted[1]?.id].filter(Boolean));
+          setSelectedBenchStartups(formatted.map(s => s.id));
         }
       }
     } catch (err) {
@@ -501,7 +539,6 @@ export default function App() {
 
   const safeSubmissions = Array.isArray(submissions) ? submissions : [];
 
-  // FILTRAGEM DO DASHBOARD POR STARTUP ESPECÍFICA
   const selectedDashboardStartupObj = safeSubmissions.find(s => s.id === dashboardStartupFilter);
   const activeDashboardList = selectedDashboardStartupObj ? [selectedDashboardStartupObj] : safeSubmissions;
 
@@ -540,10 +577,26 @@ export default function App() {
     Score: Number(val) || 0
   }));
 
+  // DADOS DOS GRÁFICOS DE DISTRIBUIÇÃO
+  const stageDistributionData = STAGE_LIST.map(st => ({
+    name: st,
+    Startups: safeSubmissions.filter(s => s.stage === st).length
+  }));
+
+  const segmentCounts = safeSubmissions.reduce((acc, s) => {
+    const key = s.segment || 'Outro';
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
+
+  const segmentDistributionData = Object.entries(segmentCounts).map(([name, count]) => ({
+    name,
+    Startups: count
+  }));
+
   const currentPlanStartup = safeSubmissions.find(s => s.id === selectedPlanStartupId) || safeSubmissions[0];
   const answeredCount = ALL_QUESTIONS.filter(q => formData.responses?.[q.id] > 0).length;
 
-  // DADOS DE BENCHMARKING
   const benchSelectedObjects = selectedBenchStartups.map(id => safeSubmissions.find(s => s.id === id)).filter(Boolean);
   const benchChartData = GOVTECH_DIMENSIONS.map(dim => {
     const entry = { name: dim.short };
@@ -553,7 +606,7 @@ export default function App() {
     return entry;
   });
 
-  const BENCH_COLORS = ['#0d9488', '#2563eb', '#9333ea'];
+  const BENCH_COLORS = ['#0d9488', '#2563eb', '#9333ea', '#e11d48', '#d97706', '#059669', '#0284c7'];
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
@@ -1002,7 +1055,7 @@ export default function App() {
 
               <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
 
-                {/* MATRIZ DE PERGUNTAS COMO PÁGINA SELECIONADA NO MENU */}
+                {/* MATRIZ DE PERGUNTAS */}
                 {activeAdminTab === 'matriz' && (
                   <div className="space-y-6 bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm">
                     <div>
@@ -1040,7 +1093,6 @@ export default function App() {
                         <p className="text-xs text-slate-500">Métricas consolidadas, análise individual e distribuição do portfólio.</p>
                       </div>
 
-                      {/* FILTRO AO LADO DO BOTÃO ATUALIZAR DADOS */}
                       <div className="flex items-center gap-2 w-full sm:w-auto">
                         <div className="flex items-center gap-1.5 bg-white border border-slate-300 px-3 py-1.5 rounded-xl text-xs font-semibold shadow-sm">
                           <Filter className="h-3.5 w-3.5 text-slate-400" />
@@ -1079,13 +1131,13 @@ export default function App() {
                       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Destaque Principal</span>
                         <p className="text-sm font-bold text-teal-700 mt-1 truncate">{highlightTop}</p>
-                        <span className="text-[11px] text-slate-500 block mt-1">Maior pontuação</span>
+                        <span className="text-[11px] text-slate-500 block mt-1">Maior pontuação do portfólio</span>
                       </div>
 
                       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Maior Oportunidade</span>
                         <p className="text-sm font-bold text-amber-700 mt-1 truncate">{highlightLow}</p>
-                        <span className="text-[11px] text-slate-500 block mt-1">Gargalo prioritário</span>
+                        <span className="text-[11px] text-slate-500 block mt-1">Gargalo prioritário do lote</span>
                       </div>
 
                       {selectedDashboardStartupObj ? (
@@ -1147,7 +1199,54 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* TABELA COM NOME, SEGMENTO, REDIRECIONAMENTO E AÇÕES */}
+                    {/* GRÁFICOS DE DISTRIBUIÇÃO SOLICITADOS */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                        <div className="flex justify-between items-center">
+                          <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">DISTRIBUIÇÃO POR ESTÁGIO DE MATURIDADE</h3>
+                          <span className="text-xs font-semibold text-slate-400">{safeSubmissions.length} startups</span>
+                        </div>
+                        <div className="h-60 w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={stageDistributionData} margin={{ top: 10, right: 10, left: -20, bottom: 20 }}>
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                              <XAxis dataKey="name" stroke="#64748b" fontSize={11} />
+                              <YAxis allowDecimals={false} stroke="#64748b" fontSize={11} />
+                              <Tooltip />
+                              <Bar dataKey="Startups" fill="#2563eb" radius={[6, 6, 0, 0]}>
+                                {stageDistributionData.map((entry, index) => (
+                                  <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#2563eb' : '#0d9488'} />
+                                ))}
+                              </Bar>
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+
+                      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                        <div className="flex justify-between items-center">
+                          <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">DISTRIBUIÇÃO POR SETOR DE ATUAÇÃO</h3>
+                          <span className="text-xs font-semibold text-slate-400">{segmentDistributionData.length} setores</span>
+                        </div>
+                        <div className="h-60 w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={segmentDistributionData} margin={{ top: 10, right: 10, left: -20, bottom: 60 }}>
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                              <XAxis dataKey="name" stroke="#64748b" fontSize={10} interval={0} angle={-35} textAnchor="end" />
+                              <YAxis allowDecimals={false} stroke="#64748b" fontSize={11} />
+                              <Tooltip />
+                              <Bar dataKey="Startups" fill="#0d9488" radius={[6, 6, 0, 0]}>
+                                {segmentDistributionData.map((entry, index) => (
+                                  <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#0d9488' : '#2563eb'} />
+                                ))}
+                              </Bar>
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* TABELA DE STARTUPS CADASTRADAS */}
                     <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm space-y-4 p-5">
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                         <h3 className="font-bold text-sm text-slate-900">Startups cadastradas</h3>
@@ -1221,7 +1320,7 @@ export default function App() {
                                     <button
                                       onClick={() => {
                                         navigator.clipboard.writeText(window.location.href);
-                                        alert('Link do diagnóstico copiado com sucesso!');
+                                        alert('Link do diagnóstico copiado!');
                                       }}
                                       className="text-slate-400 hover:text-slate-700"
                                       title="Copiar link do diagnóstico"
@@ -1246,7 +1345,7 @@ export default function App() {
                   </div>
                 )}
 
-                {/* 2. PLANO POR STARTUP */}
+                {/* 2. PLANO POR STARTUP (MÚLTIPLOS TÓPICOS) */}
                 {activeAdminTab === 'plano' && (
                   <div className="space-y-6">
                     <div className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -1313,48 +1412,52 @@ export default function App() {
                           {GOVTECH_DIMENSIONS.map(dim => {
                             const score = currentPlanStartup.dimensions?.[dim.name] || 0;
                             const percent = Math.round((score / 25) * 100);
-                            const rec = PLAN_RECOMMENDATIONS[dim.id] || {};
+                            const topics = MULTI_TOPIC_RECOMMENDATIONS[dim.id] || [];
 
                             return (
-                              <div key={dim.id} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                              <div key={dim.id} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-5">
                                 <div className="flex justify-between items-start border-b border-slate-100 pb-3">
                                   <div>
                                     <h3 className="font-bold text-sm text-slate-900">{dim.name}</h3>
                                     <span className="text-xs font-bold text-teal-700">{score} / 25 pts · {percent}% · nível {percent >= 70 ? 'Avançado' : 'Intermediário'}</span>
                                   </div>
-                                  <span className="text-[10px] bg-slate-100 border border-slate-200 text-slate-600 px-2.5 py-1 rounded-lg font-medium">
+                                  <span className="text-[10px] bg-slate-100 border border-slate-200 text-slate-600 px-2.5 py-1 rounded-lg font-medium text-right max-w-[150px]">
                                     Meta: sustentar a referência e replicar boas práticas
                                   </span>
                                 </div>
 
-                                <div className="space-y-3">
-                                  <div className="space-y-1">
-                                    <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                                      <CheckCircle2 className="h-4 w-4 text-teal-600 shrink-0" /> {rec.title}
-                                    </h4>
-                                    <p className="text-xs text-slate-600 leading-relaxed pl-5">{rec.action}</p>
-                                  </div>
+                                <div className="space-y-6">
+                                  {topics.map((topic, tIdx) => (
+                                    <div key={tIdx} className="space-y-3">
+                                      <div className="space-y-1">
+                                        <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                                          <CheckCircle2 className="h-4 w-4 text-teal-600 shrink-0" /> {topic.title}
+                                        </h4>
+                                        <p className="text-xs text-slate-600 leading-relaxed pl-5">{topic.action}</p>
+                                      </div>
 
-                                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
-                                    <span className="font-bold text-[10px] text-slate-400 uppercase block flex items-center gap-1">
-                                      <Wrench className="h-3 w-3" /> FERRAMENTAS SUGERIDAS
-                                    </span>
-                                    <p className="text-xs text-slate-700">{rec.tools}</p>
-                                  </div>
+                                      <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
+                                        <span className="font-bold text-[10px] text-slate-400 uppercase block flex items-center gap-1">
+                                          <Wrench className="h-3 w-3" /> FERRAMENTAS SUGERIDAS
+                                        </span>
+                                        <p className="text-xs text-slate-700">{topic.tools}</p>
+                                      </div>
 
-                                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
-                                    <span className="font-bold text-[10px] text-slate-400 uppercase block flex items-center gap-1">
-                                      <Gauge className="h-3 w-3" /> MÉTRICAS A ACOMPANHAR
-                                    </span>
-                                    <p className="text-xs text-slate-700">{rec.metrics}</p>
-                                  </div>
+                                      <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
+                                        <span className="font-bold text-[10px] text-slate-400 uppercase block flex items-center gap-1">
+                                          <Gauge className="h-3 w-3" /> MÉTRICAS A ACOMPANHAR
+                                        </span>
+                                        <p className="text-xs text-slate-700">{topic.metrics}</p>
+                                      </div>
 
-                                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
-                                    <span className="font-bold text-[10px] text-slate-400 uppercase block flex items-center gap-1">
-                                      <Package className="h-3 w-3" /> ENTREGÁVEL ESPERADO
-                                    </span>
-                                    <p className="text-xs text-slate-700">{rec.deliverable}</p>
-                                  </div>
+                                      <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
+                                        <span className="font-bold text-[10px] text-slate-400 uppercase block flex items-center gap-1">
+                                          <Package className="h-3 w-3" /> ENTREGÁVEL ESPERADO
+                                        </span>
+                                        <p className="text-xs text-slate-700">{topic.deliverable}</p>
+                                      </div>
+                                    </div>
+                                  ))}
                                 </div>
                               </div>
                             );
@@ -1369,7 +1472,7 @@ export default function App() {
                   </div>
                 )}
 
-                {/* 3. TRILHAS DE CONHECIMENTO (COM ALTA, MÉDIA E BAIXA PRIORIDADE) */}
+                {/* 3. TRILHAS DE CONHECIMENTO */}
                 {activeAdminTab === 'trilhas' && (
                   <div className="space-y-6">
                     <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
@@ -1421,7 +1524,6 @@ export default function App() {
                             ))}
                           </div>
 
-                          {/* PRIORIDADE ALTA */}
                           {track.modulesHigh?.length > 0 && (
                             <div className="space-y-3 pt-2">
                               <span className="text-[11px] font-bold px-3 py-1 bg-rose-100 text-rose-800 border border-rose-200 rounded-full inline-block">
@@ -1443,7 +1545,6 @@ export default function App() {
                             </div>
                           )}
 
-                          {/* PRIORIDADE MÉDIA */}
                           {track.modulesMedium?.length > 0 && (
                             <div className="space-y-3 pt-2">
                               <span className="text-[11px] font-bold px-3 py-1 bg-amber-100 text-amber-800 border border-amber-200 rounded-full inline-block">
@@ -1465,7 +1566,6 @@ export default function App() {
                             </div>
                           )}
 
-                          {/* PRIORIDADE BAIXA */}
                           {track.modulesLow?.length > 0 && (
                             <div className="space-y-3 pt-2">
                               <span className="text-[11px] font-bold px-3 py-1 bg-blue-100 text-blue-800 border border-blue-200 rounded-full inline-block">
@@ -1492,16 +1592,34 @@ export default function App() {
                   </div>
                 )}
 
-                {/* 4. BENCHMARKING */}
+                {/* 4. BENCHMARKING (SEM LIMITE DE EMPRESAS) */}
                 {activeAdminTab === 'benchmarking' && (
                   <div className="space-y-6">
                     <div>
                       <h1 className="text-xl font-bold text-slate-900">Benchmarking entre startups</h1>
-                      <p className="text-xs text-slate-500">Selecione até 3 startups para comparar os resultados do diagnóstico lado a lado.</p>
+                      <p className="text-xs text-slate-500">Selecione quantas startups forem necessárias para comparar os resultados do diagnóstico lado a lado.</p>
                     </div>
 
                     <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">STARTUPS SELECIONADAS</span>
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">STARTUPS SELECIONADAS ({selectedBenchStartups.length})</span>
+                        <div className="space-x-2">
+                          <button
+                            onClick={() => setSelectedBenchStartups(safeSubmissions.map(s => s.id))}
+                            className="text-xs font-bold text-teal-700 hover:underline"
+                          >
+                            Selecionar todas
+                          </button>
+                          <span className="text-slate-300">|</span>
+                          <button
+                            onClick={() => setSelectedBenchStartups([])}
+                            className="text-xs font-bold text-slate-500 hover:underline"
+                          >
+                            Limpar
+                          </button>
+                        </div>
+                      </div>
+
                       <div className="flex flex-wrap gap-2">
                         {safeSubmissions.map(s => {
                           const isSel = selectedBenchStartups.includes(s.id);
@@ -1510,7 +1628,7 @@ export default function App() {
                               key={s.id}
                               onClick={() => {
                                 if (isSel) setSelectedBenchStartups(selectedBenchStartups.filter(id => id !== s.id));
-                                else if (selectedBenchStartups.length < 3) setSelectedBenchStartups([...selectedBenchStartups, s.id]);
+                                else setSelectedBenchStartups([...selectedBenchStartups, s.id]);
                               }}
                               className={`px-3.5 py-1.5 rounded-xl text-xs font-bold border transition ${
                                 isSel ? 'bg-teal-500 text-slate-950 border-teal-400 shadow-sm' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'

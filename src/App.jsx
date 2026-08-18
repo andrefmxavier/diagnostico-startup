@@ -4,7 +4,7 @@ import {
   ChevronRight, ChevronDown, ChevronUp, RefreshCw, LogOut, ArrowRight, ChevronLeft,
   Zap, Phone, Mail, Printer, Scale, Target, Key, Trash2, Copy, Check, X,
   ListChecks, Wrench, Gauge, Package, MessageSquare, Info,
-  Link as LinkIcon, GraduationCap, Building2, Sparkles, Menu, Eye
+  Link as LinkIcon, GraduationCap, Building2, Sparkles, Menu, Eye, Sliders
 } from 'lucide-react';
 import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
@@ -123,91 +123,43 @@ const GOVTECH_DIMENSIONS = [
   }
 ];
 
-const DETAILED_TRACKS = [
-  {
-    id: 'trilha1',
-    title: 'Trilha 1 — Fundação e Validação',
-    subtitle: 'Confirmar a dor, estruturar o básico societário e financeiro e colocar de pé um MVP validado.',
-    badge: 'Ideação & Operação',
-    dimensionsSummary: [
-      { name: 'Estratégia & Tese', count: 2 },
-      { name: 'Liderança & Time', count: 1 },
-      { name: 'Tecnologia & IA', count: 1 },
-      { name: 'Cultura de Inovação', count: 1 },
-      { name: 'Pessoas & Competências', count: 2 },
-      { name: 'Produto & Validação', count: 2 },
-      { name: 'Processos & Agilidade', count: 1 },
-      { name: 'Recursos & Runway', count: 2 }
-    ],
-    modulesHigh: [
-      { id: 1, title: 'Tese de valor e dor prioritária do cliente', category: 'Estratégia & Tese de Mercado' },
-      { id: 2, title: 'Entrevistas de descoberta e construção de MVP enxuto', category: 'Estrutura, Produto & Validação' },
-      { id: 3, title: 'Acordo de sócios, vesting e cap table', category: 'Liderança & Time' },
-      { id: 4, title: 'DRE gerencial e controle de queima de caixa', category: 'Recursos, Runway & B2G' },
-      { id: 5, title: 'Arquitetura inicial de software e conformidade com a LGPD', category: 'Tecnologia, IA & Propriedade Intelectual' }
-    ],
-    modulesMedium: [
-      { id: 6, title: 'Rotina ágil de entrega com Scrum e Kanban', category: 'Processos & Agilidade' },
-      { id: 7, title: 'UX/UI e simplicidade para o usuário final', category: 'Pessoas & Competências' },
-      { id: 8, title: 'Testes rápidos e registro sistemático de aprendizados', category: 'Cultura de Inovação' },
-      { id: 9, title: 'PoC piloto com cliente âncora: escopo e critérios de aceite', category: 'Estrutura, Produto & Validação' },
-      { id: 10, title: 'Desenvolvimento de Pitch e Narrativa de Vendas', category: 'Pessoas & Competências' }
-    ],
-    modulesLow: [
-      { id: 11, title: 'Mapeamento inicial de Editais de Fomento', category: 'Recursos, Runway & B2G' },
-      { id: 12, title: 'Formulação de hipóteses de modelo de negócios', category: 'Estratégia & Tese de Mercado' }
-    ]
-  },
-  {
-    id: 'trilha2',
-    title: 'Trilha 2 — Tração Comercial e Produto',
-    subtitle: 'Acelerar vendas B2B/B2G, escalar a arquitetura técnica e estruturar rotinas de Customer Success.',
-    badge: 'Operação & Tração',
-    dimensionsSummary: [
-      { name: 'Estratégia & Tese', count: 1 },
-      { name: 'Liderança & Time', count: 2 },
-      { name: 'Tecnologia & IA', count: 2 },
-      { name: 'Processos & Agilidade', count: 3 },
-      { name: 'Recursos & Runway', count: 2 }
-    ],
-    modulesHigh: [
-      { id: 1, title: 'Outbound Sales e Máquina de Vendas B2B', category: 'Processos & Agilidade' },
-      { id: 2, title: 'Arquitetura Nuvem Escalável e APIs Abertas', category: 'Tecnologia, IA & Propriedade Intelectual' },
-      { id: 3, title: 'Onboarding de Clientes e Redução de Churn', category: 'Processos & Agilidade' },
-      { id: 4, title: 'Conformidade com LGPD e Segurança Cibernética', category: 'Tecnologia, IA & Propriedade Intelectual' }
-    ],
-    modulesMedium: [
-      { id: 5, title: 'Introdução a Contratos Públicos e B2G', category: 'Recursos, Runway & B2G' },
-      { id: 6, title: 'Integração de Inteligência Artificial Operacional', category: 'Tecnologia, IA & Propriedade Intelectual' },
-      { id: 7, title: 'Gestão por OKRs Trimestrais para Alinhamento', category: 'Liderança & Time' }
-    ],
-    modulesLow: [
-      { id: 8, title: 'Otimização do Ciclo Médio de Vendas', category: 'Processos & Agilidade' }
-    ]
-  },
-  {
-    id: 'trilha3',
-    title: 'Trilha 3 — Governança, Capital e Escala',
-    subtitle: 'Preparar para rodadas de investimento, expansão nacional/B2G e conselho consultivo.',
-    badge: 'Tração & Escala',
-    dimensionsSummary: [
-      { name: 'Liderança & Time', count: 3 },
-      { name: 'Tecnologia & IA', count: 2 },
-      { name: 'Recursos & Runway', count: 4 }
-    ],
-    modulesHigh: [
-      { id: 1, title: 'Captação de Investimento Venture Capital', category: 'Recursos, Runway & B2G' },
-      { id: 2, title: 'Estruturação de Conselho Consultivo e Governança', category: 'Liderança & Time' },
-      { id: 3, title: 'Contratualização B2G e Licitações Públicas', category: 'Recursos, Runway & B2G' }
-    ],
-    modulesMedium: [
-      { id: 4, title: 'M&A e Estratégia de Saída de Sócios', category: 'Liderança & Time' },
-      { id: 5, title: 'Internacionalização e Expansão para Novos Mercados', category: 'Estratégia & Tese de Mercado' }
-    ],
-    modulesLow: [
-      { id: 6, title: 'Gestão de Crises e Continuidade dos Serviços', category: 'Processos & Agilidade' }
-    ]
-  }
+// REPOSITÓRIO GERAL DE MÓDULOS DE CONHECIMENTO VINCULADOS A DIMENSÕES
+const ALL_KNOWLEDGE_MODULES = [
+  { id: 101, dimName: 'Estratégia & Tese de Mercado', title: 'Tese de valor e dor prioritária do cliente', level: 'Fundação' },
+  { id: 102, dimName: 'Estratégia & Tese de Mercado', title: 'Formulação de hipóteses de modelo de negócios', level: 'Fundação' },
+  { id: 103, dimName: 'Estratégia & Tese de Mercado', title: 'Dimensionamento de mercado (TAM/SAM/SOM)', level: 'Tração' },
+  { id: 104, dimName: 'Estratégia & Tese de Mercado', title: 'Internacionalização e Expansão para Novos Mercados', level: 'Escala' },
+  
+  { id: 201, dimName: 'Liderança & Time', title: 'Acordo de sócios, vesting e cap table', level: 'Fundação' },
+  { id: 202, dimName: 'Liderança & Time', title: 'Gestão por OKRs Trimestrais para Alinhamento', level: 'Tração' },
+  { id: 203, dimName: 'Liderança & Time', title: 'Estruturação de Conselho Consultivo e Governança', level: 'Escala' },
+  { id: 204, dimName: 'Liderança & Time', title: 'M&A e Estratégia de Saída de Sócios', level: 'Escala' },
+
+  { id: 301, dimName: 'Tecnologia, IA & Propriedade Intelectual', title: 'Arquitetura inicial de software e conformidade LGPD', level: 'Fundação' },
+  { id: 302, dimName: 'Tecnologia, IA & Propriedade Intelectual', title: 'Arquitetura Nuvem Escalável e APIs Abertas', level: 'Tração' },
+  { id: 303, dimName: 'Tecnologia, IA & Propriedade Intelectual', title: 'Conformidade com LGPD e Segurança Cibernética', level: 'Tração' },
+  { id: 304, dimName: 'Tecnologia, IA & Propriedade Intelectual', title: 'Integração de Inteligência Artificial Operacional', level: 'Escala' },
+
+  { id: 401, dimName: 'Cultura de Inovação', title: 'Testes rápidos e registro sistemático de aprendizados', level: 'Fundação' },
+  { id: 402, dimName: 'Cultura de Inovação', title: 'Rituais de Experimentação contínua de produto', level: 'Tração' },
+  
+  { id: 501, dimName: 'Pessoas & Competências', title: 'UX/UI e simplicidade para o usuário final', level: 'Fundação' },
+  { id: 502, dimName: 'Pessoas & Competências', title: 'Desenvolvimento de Pitch e Narrativa de Vendas', level: 'Fundação' },
+  { id: 503, dimName: 'Pessoas & Competências', title: 'Matriz de competências e retenção de talentos', level: 'Escala' },
+
+  { id: 601, dimName: 'Estrutura, Produto & Validação', title: 'Entrevistas de descoberta e construção de MVP enxuto', level: 'Fundação' },
+  { id: 602, dimName: 'Estrutura, Produto & Validação', title: 'PoC piloto com cliente âncora: escopo e aceite', level: 'Fundação' },
+  { id: 603, dimName: 'Estrutura, Produto & Validação', title: 'Contratualização B2G e Licitações Públicas', level: 'Escala' },
+
+  { id: 701, dimName: 'Processos & Agilidade', title: 'Rotina ágil de entrega com Scrum e Kanban', level: 'Fundação' },
+  { id: 702, dimName: 'Processos & Agilidade', title: 'Outbound Sales e Máquina de Vendas B2B', level: 'Tração' },
+  { id: 703, dimName: 'Processos & Agilidade', title: 'Onboarding de Clientes e Redução de Churn', level: 'Tração' },
+  { id: 704, dimName: 'Processos & Agilidade', title: 'Gestão de Crises e Continuidade dos Serviços', level: 'Escala' },
+
+  { id: 801, dimName: 'Recursos, Runway & B2G', title: 'DRE gerencial e controle de queima de caixa', level: 'Fundação' },
+  { id: 802, dimName: 'Recursos, Runway & B2G', title: 'Mapeamento de Editais de Fomento (FINEP, Sebrae)', level: 'Fundação' },
+  { id: 803, dimName: 'Recursos, Runway & B2G', title: 'Introdução a Contratos Públicos e B2G', level: 'Tração' },
+  { id: 804, dimName: 'Recursos, Runway & B2G', title: 'Captação de Investimento Venture Capital', level: 'Escala' }
 ];
 
 const MULTI_TOPIC_RECOMMENDATIONS = {
@@ -216,7 +168,7 @@ const MULTI_TOPIC_RECOMMENDATIONS = {
       title: 'Validação da dor e da tese de valor',
       action: 'Converter a tese validada em plano de expansão para novas praças e verticais, com hipóteses de entrada documentadas.',
       tools: 'Roteiro de entrevista no formato The Mom Test, quadro de dores no Miro e registro padronizado no Notion ou Google Forms.',
-      metrics: 'Número de entrevistas concluídas, percentual que confirma a dor como prioritária e valor declaredo de disposição a pagar.',
+      metrics: 'Número de entrevistas concluídas, percentual que confirma a dor como prioritária e valor declarado de disposição a pagar.',
       deliverable: 'Relatório de descoberta de uma página com as cinco dores mais citadas e a proposta de valor revisada.'
     },
     {
@@ -432,7 +384,7 @@ export default function App() {
   // Filtros de Tabela
   const [tableStageFilter, setTableStageFilter] = useState('Todos');
   const [tableSearchTerm, setTableSearchTerm] = useState('');
-  const [activeTrackId, setActiveTrackId] = useState('trilha1');
+  const [activeTrackLevel, setActiveTrackLevel] = useState('Fundação');
 
   // Filtros Cruzados para Trilhas de Conhecimento
   const [selectedTrackStartups, setSelectedTrackStartups] = useState([]);
@@ -484,6 +436,7 @@ export default function App() {
           if (!selectedPlanStartupId) setSelectedPlanStartupId(formatted[0].id);
           if (selectedBenchStartups.length === 0) setSelectedBenchStartups(formatted.map(s => s.id));
           if (selectedTrackStartups.length === 0) setSelectedTrackStartups(formatted.map(s => s.id));
+          if (selectedTrackSegments.length === 0) setSelectedTrackSegments([...new Set(formatted.map(s => s.segment))]);
         }
 
         // Verificação de URL para carregar diagnóstico compartilhado por link
@@ -668,12 +621,50 @@ export default function App() {
 
   const BENCH_COLORS = ['#0d9488', '#2563eb', '#9333ea', '#e11d48', '#d97706', '#059669', '#0284c7'];
 
-  // RECÁLCULO DINÂMICO DE TRILHAS PARA FILTROS SELECIONADOS
+  // ============================================================================
+  // MOTOR DE RECOMENDAÇÃO DE TRILHAS DINÂMICAS E ADAPTÁVEIS
+  // ============================================================================
   const filteredTrackStartups = safeSubmissions.filter(s => {
     const matchStartup = selectedTrackStartups.length === 0 || selectedTrackStartups.includes(s.id);
     const matchSegment = selectedTrackSegments.length === 0 || selectedTrackSegments.includes(s.segment);
     return matchStartup && matchSegment;
   });
+
+  // Calculando as piores dimensões (gargalos) do grupo filtrado para jogar na prioridade alta
+  const dimAveragesForTracks = {};
+  GOVTECH_DIMENSIONS.forEach(d => {
+    if (filteredTrackStartups.length > 0) {
+      const sum = filteredTrackStartups.reduce((acc, curr) => acc + (curr.dimensions?.[d.name] || 0), 0);
+      dimAveragesForTracks[d.name] = sum / filteredTrackStartups.length;
+    } else {
+      dimAveragesForTracks[d.name] = 12.5; // Média padrão se nenhum selecionado
+    }
+  });
+
+  // Filtra e classifica os módulos de conhecimento dinamicamente
+  const getDynamicTrackModules = (level) => {
+    const modules = ALL_KNOWLEDGE_MODULES.filter(m => m.level === level || activeTrackLevel === 'Geral');
+    
+    // Módulos cujas dimensões estão com pontuação baixa sobem para Prioridade Alta
+    const high = [];
+    const medium = [];
+    const low = [];
+
+    modules.forEach(m => {
+      const avg = dimAveragesForTracks[m.dimName] ?? 25;
+      if (avg < 14) {
+        high.push({ ...m, avgScore: avg.toFixed(1) });
+      } else if (avg < 19) {
+        medium.push({ ...m, avgScore: avg.toFixed(1) });
+      } else {
+        low.push({ ...m, avgScore: avg.toFixed(1) });
+      }
+    });
+
+    return { high, medium, low };
+  };
+
+  const dynamicModules = getDynamicTrackModules(activeTrackLevel);
 
   const getShareableDiagnosticUrl = (startupId) => {
     const baseUrl = window.location.origin + window.location.pathname;
@@ -913,7 +904,6 @@ export default function App() {
                 )}
               </div>
             ) : (
-              /* FORMULÁRIO RESPONDIDO (PÁGINA FINAL COMPARTILHÁVEL) */
               <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-6">
                   <div>
@@ -1657,17 +1647,19 @@ export default function App() {
                   </div>
                 )}
 
-                {/* 3. TRILHAS DE CONHECIMENTO (COM FILTROS CRUZADOS E MULTI-SELEÇÃO) */}
+                {/* 3. TRILHAS DE CONHECIMENTO (ADAPTÁVEIS E DINÂMICAS) */}
                 {activeAdminTab === 'trilhas' && (
                   <div className="space-y-6">
                     <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-slate-100 pb-3">
                         <div>
-                          <h1 className="text-xl font-bold text-slate-900">Trilhas de conhecimento dinâmicas</h1>
-                          <p className="text-xs text-slate-500">Filtragem cruzada por startups e segmentos. A cada nova submissão, a trilha reordena automaticamente.</p>
+                          <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                            Trilhas de conhecimento adaptáveis <Sparkles className="h-4 w-4 text-purple-600" />
+                          </h1>
+                          <p className="text-xs text-slate-500">O conteúdo das trilhas e sua priorização são recalculados dinamicamente com base nos filtros selecionados abaixo.</p>
                         </div>
-                        <span className="px-3 py-1 bg-teal-50 border border-teal-200 rounded-full text-xs font-bold text-teal-800">
-                          3 trilhas · 36 módulos
+                        <span className="px-3 py-1 bg-purple-50 border border-purple-200 rounded-full text-xs font-bold text-purple-800">
+                          Recálculo em Tempo Real
                         </span>
                       </div>
 
@@ -1737,115 +1729,99 @@ export default function App() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {DETAILED_TRACKS.map(t => {
-                        const isActive = activeTrackId === t.id;
-                        return (
-                          <button
-                            key={t.id}
-                            onClick={() => setActiveTrackId(t.id)}
-                            className={`p-4 rounded-2xl border text-left transition ${
-                              isActive
-                                ? 'bg-white border-teal-500 shadow-md ring-2 ring-teal-500/20'
-                                : 'bg-slate-50 border-slate-200 hover:bg-white'
-                            }`}
-                          >
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-teal-700 block mb-1">12 TEMÁTICAS</span>
-                            <h3 className="font-bold text-sm text-slate-900">{t.title}</h3>
-                            <p className="text-xs text-slate-500 mt-1">{t.subtitle}</p>
-                          </button>
-                        );
-                      })}
+                    <div className="flex gap-2 border-b border-slate-200 pb-2 overflow-x-auto">
+                      {['Fundação', 'Tração', 'Escala', 'Geral'].map(lvl => (
+                        <button
+                          key={lvl}
+                          onClick={() => setActiveTrackLevel(lvl)}
+                          className={`px-4 py-2 rounded-xl text-xs font-bold transition border shrink-0 ${
+                            activeTrackLevel === lvl ? 'bg-teal-500 text-slate-950 border-teal-400 shadow-sm' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                          }`}
+                        >
+                          Nível: {lvl}
+                        </button>
+                      ))}
                     </div>
 
-                    {(() => {
-                      const track = DETAILED_TRACKS.find(t => t.id === activeTrackId);
-                      if (!track) return null;
-                      return (
-                        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-                          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
-                            <div>
-                              <h2 className="text-xl font-black text-slate-900">{track.title}</h2>
-                              <p className="text-xs text-slate-500 mt-1">{track.subtitle}</p>
-                            </div>
-                            <span className="text-xs font-semibold px-3 py-1 bg-slate-100 border border-slate-200 rounded-lg text-slate-700">
-                              Avaliando {filteredTrackStartups.length} startup(s) selecionada(s)
-                            </span>
-                          </div>
+                    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                        <div>
+                          <h2 className="text-xl font-black text-slate-900">Módulos adaptados para o grupo selecionado</h2>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            Exibindo necessidades identificadas em <b>{filteredTrackStartups.length} startup(s)</b> cruzadas com os segmentos ativos.
+                          </p>
+                        </div>
+                        <span className="text-xs font-semibold px-3 py-1.5 bg-slate-100 border border-slate-200 rounded-xl text-slate-700">
+                          Foco Atual: {activeTrackLevel}
+                        </span>
+                      </div>
 
-                          <div className="flex flex-wrap gap-2">
-                            {track.dimensionsSummary.map((d, i) => (
-                              <span key={i} className="px-3 py-1 bg-teal-50 text-teal-800 border border-teal-200 rounded-full text-[11px] font-semibold">
-                                {d.name} · {d.count}
-                              </span>
+                      {/* PRIORIDADE ALTA */}
+                      {dynamicModules.high.length > 0 && (
+                        <div className="space-y-3 pt-2">
+                          <span className="text-[11px] font-bold px-3 py-1 bg-rose-100 text-rose-800 border border-rose-200 rounded-full inline-block">
+                            Prioridade Alta (Gargalos Urgentes) · {dynamicModules.high.length} módulos
+                          </span>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {dynamicModules.high.map(mod => (
+                              <div key={mod.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200/80 flex items-start justify-between gap-3">
+                                <div className="space-y-1">
+                                  <h4 className="font-bold text-xs text-slate-900">{mod.title}</h4>
+                                  <span className="text-[10px] text-slate-500 block">{mod.dimName}</span>
+                                </div>
+                                <span className="text-[10px] font-bold px-2 py-0.5 bg-rose-100 text-rose-700 rounded-md shrink-0">
+                                  Média {mod.avgScore} pts
+                                </span>
+                              </div>
                             ))}
                           </div>
-
-                          {track.modulesHigh?.length > 0 && (
-                            <div className="space-y-3 pt-2">
-                              <span className="text-[11px] font-bold px-3 py-1 bg-rose-100 text-rose-800 border border-rose-200 rounded-full inline-block">
-                                Prioridade Alta · {track.modulesHigh.length} módulos
-                              </span>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {track.modulesHigh.map(mod => (
-                                  <div key={mod.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200/80 flex items-start gap-3">
-                                    <div className="w-7 h-7 bg-teal-700 text-white rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
-                                      {mod.id}
-                                    </div>
-                                    <div>
-                                      <h4 className="font-bold text-xs text-slate-900">{mod.title}</h4>
-                                      <span className="text-[10px] text-slate-500 block mt-0.5">{mod.category}</span>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {track.modulesMedium?.length > 0 && (
-                            <div className="space-y-3 pt-2">
-                              <span className="text-[11px] font-bold px-3 py-1 bg-amber-100 text-amber-800 border border-amber-200 rounded-full inline-block">
-                                Prioridade Média · {track.modulesMedium.length} módulos
-                              </span>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {track.modulesMedium.map(mod => (
-                                  <div key={mod.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200/80 flex items-start gap-3">
-                                    <div className="w-7 h-7 bg-teal-700 text-white rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
-                                      {mod.id}
-                                    </div>
-                                    <div>
-                                      <h4 className="font-bold text-xs text-slate-900">{mod.title}</h4>
-                                      <span className="text-[10px] text-slate-500 block mt-0.5">{mod.category}</span>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {track.modulesLow?.length > 0 && (
-                            <div className="space-y-3 pt-2">
-                              <span className="text-[11px] font-bold px-3 py-1 bg-blue-100 text-blue-800 border border-blue-200 rounded-full inline-block">
-                                Prioridade Baixa · {track.modulesLow.length} módulos
-                              </span>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {track.modulesLow.map(mod => (
-                                  <div key={mod.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200/80 flex items-start gap-3">
-                                    <div className="w-7 h-7 bg-teal-700 text-white rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
-                                      {mod.id}
-                                    </div>
-                                    <div>
-                                      <h4 className="font-bold text-xs text-slate-900">{mod.title}</h4>
-                                      <span className="text-[10px] text-slate-500 block mt-0.5">{mod.category}</span>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
                         </div>
-                      );
-                    })()}
+                      )}
+
+                      {/* PRIORIDADE MÉDIA */}
+                      {dynamicModules.medium.length > 0 && (
+                        <div className="space-y-3 pt-2">
+                          <span className="text-[11px] font-bold px-3 py-1 bg-amber-100 text-amber-800 border border-amber-200 rounded-full inline-block">
+                            Prioridade Média (Aprimoramento) · {dynamicModules.medium.length} módulos
+                          </span>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {dynamicModules.medium.map(mod => (
+                              <div key={mod.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200/80 flex items-start justify-between gap-3">
+                                <div className="space-y-1">
+                                  <h4 className="font-bold text-xs text-slate-900">{mod.title}</h4>
+                                  <span className="text-[10px] text-slate-500 block">{mod.dimName}</span>
+                                </div>
+                                <span className="text-[10px] font-bold px-2 py-0.5 bg-amber-100 text-amber-700 rounded-md shrink-0">
+                                  Média {mod.avgScore} pts
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* PRIORIDADE BAIXA */}
+                      {dynamicModules.low.length > 0 && (
+                        <div className="space-y-3 pt-2">
+                          <span className="text-[11px] font-bold px-3 py-1 bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-full inline-block">
+                            Prioridade Normal / Avançada · {dynamicModules.low.length} módulos
+                          </span>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {dynamicModules.low.map(mod => (
+                              <div key={mod.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200/80 flex items-start justify-between gap-3">
+                                <div className="space-y-1">
+                                  <h4 className="font-bold text-xs text-slate-900">{mod.title}</h4>
+                                  <span className="text-[10px] text-slate-500 block">{mod.dimName}</span>
+                                </div>
+                                <span className="text-[10px] font-bold px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-md shrink-0">
+                                  Média {mod.avgScore} pts
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
 

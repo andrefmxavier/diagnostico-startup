@@ -4,7 +4,7 @@ import {
   ChevronRight, ChevronDown, ChevronUp, RefreshCw, LogOut, ArrowRight, ChevronLeft,
   Zap, Phone, Mail, Printer, Scale, Target, Key, Trash2, Copy, Check, X,
   ListChecks, Wrench, Gauge, Package, MessageSquare, Info,
-  Link as LinkIcon, GraduationCap, Building2, Sparkles, Menu
+  Link as LinkIcon, GraduationCap, Building2, Sparkles, Menu, Eye
 } from 'lucide-react';
 import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
@@ -149,7 +149,7 @@ const DETAILED_TRACKS = [
     modulesMedium: [
       { id: 6, title: 'Rotina ágil de entrega com Scrum e Kanban', category: 'Processos & Agilidade' },
       { id: 7, title: 'UX/UI e simplicidade para o usuário final', category: 'Pessoas & Competências' },
-      { id: 8, title: 'Testes rápidos e registro systematico de aprendizados', category: 'Cultura de Inovação' },
+      { id: 8, title: 'Testes rápidos e registro sistemático de aprendizados', category: 'Cultura de Inovação' },
       { id: 9, title: 'PoC piloto com cliente âncora: escopo e critérios de aceite', category: 'Estrutura, Produto & Validação' },
       { id: 10, title: 'Desenvolvimento de Pitch e Narrativa de Vendas', category: 'Pessoas & Competências' }
     ],
@@ -210,14 +210,13 @@ const DETAILED_TRACKS = [
   }
 ];
 
-// PLANO DE AÇÃO MULTI-TÓPICOS COMPLETO PARA TODAS AS DIMENSÕES
 const MULTI_TOPIC_RECOMMENDATIONS = {
   estrategia: [
     {
       title: 'Validação da dor e da tese de valor',
       action: 'Converter a tese validada em plano de expansão para novas praças e verticais, com hipóteses de entrada documentadas.',
       tools: 'Roteiro de entrevista no formato The Mom Test, quadro de dores no Miro e registro padronizado no Notion ou Google Forms.',
-      metrics: 'Número de entrevistas concluídas, percentual que confirma a dor como prioritária e valor declarado de disposição a pagar.',
+      metrics: 'Número de entrevistas concluídas, percentual que confirma a dor como prioritária e valor declaredo de disposição a pagar.',
       deliverable: 'Relatório de descoberta de uma página com as cinco dores mais citadas e a proposta de valor revisada.'
     },
     {
@@ -435,17 +434,24 @@ export default function App() {
   const [tableSearchTerm, setTableSearchTerm] = useState('');
   const [activeTrackId, setActiveTrackId] = useState('trilha1');
 
+  // Filtros Cruzados para Trilhas de Conhecimento
+  const [selectedTrackStartups, setSelectedTrackStartups] = useState([]);
+  const [selectedTrackSegments, setSelectedTrackSegments] = useState([]);
+
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState(EMPTY_FORM);
   const [submitted, setSubmitted] = useState(false);
   const [lastSubmission, setLastSubmission] = useState(null);
   const [copiedLink, setCopiedLink] = useState(false);
 
+  // Modal para ver Diagnóstico Preenchido no Admin
+  const [viewDiagnosticStartup, setViewDiagnosticStartup] = useState(null);
+
   const [activeAdminTab, setActiveAdminTab] = useState('dashboard');
   const [selectedPlanStartupId, setSelectedPlanStartupId] = useState('');
   const [selectedBenchStartups, setSelectedBenchStartups] = useState([]);
 
-  // Estado para controlar expansão/recolhimento no Plano de Ação
+  // Estado dos tópicos expandidos no Plano de Ação
   const [expandedDimensions, setExpandedDimensions] = useState({});
 
   const toggleDimension = (dimId) => {
@@ -474,9 +480,22 @@ export default function App() {
           notes: item.notes
         }));
         setSubmissions(formatted);
-        if (formatted.length > 0 && !selectedPlanStartupId) {
-          setSelectedPlanStartupId(formatted[0].id);
-          setSelectedBenchStartups(formatted.map(s => s.id));
+        if (formatted.length > 0) {
+          if (!selectedPlanStartupId) setSelectedPlanStartupId(formatted[0].id);
+          if (selectedBenchStartups.length === 0) setSelectedBenchStartups(formatted.map(s => s.id));
+          if (selectedTrackStartups.length === 0) setSelectedTrackStartups(formatted.map(s => s.id));
+        }
+
+        // Verificação de URL para carregar diagnóstico compartilhado por link
+        const urlParams = new URLSearchParams(window.location.search);
+        const sharedStartupId = urlParams.get('startupId');
+        if (sharedStartupId) {
+          const found = formatted.find(s => String(s.id) === String(sharedStartupId));
+          if (found) {
+            setLastSubmission(found);
+            setSubmitted(true);
+            setRole('startup');
+          }
         }
       }
     } catch (err) {
@@ -649,6 +668,18 @@ export default function App() {
 
   const BENCH_COLORS = ['#0d9488', '#2563eb', '#9333ea', '#e11d48', '#d97706', '#059669', '#0284c7'];
 
+  // RECÁLCULO DINÂMICO DE TRILHAS PARA FILTROS SELECIONADOS
+  const filteredTrackStartups = safeSubmissions.filter(s => {
+    const matchStartup = selectedTrackStartups.length === 0 || selectedTrackStartups.includes(s.id);
+    const matchSegment = selectedTrackSegments.length === 0 || selectedTrackSegments.includes(s.segment);
+    return matchStartup && matchSegment;
+  });
+
+  const getShareableDiagnosticUrl = (startupId) => {
+    const baseUrl = window.location.origin + window.location.pathname;
+    return `${baseUrl}?startupId=${startupId}`;
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
 
@@ -722,7 +753,7 @@ export default function App() {
             <LogoHeader size="normal" />
             <div className="flex gap-2">
               <button
-                onClick={() => { setRole(null); setSubmitted(false); setFormData(EMPTY_FORM); }}
+                onClick={() => { setRole(null); setSubmitted(false); setFormData(EMPTY_FORM); window.history.pushState({}, document.title, window.location.pathname); }}
                 className="text-xs font-medium text-slate-200 hover:text-white bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700 flex items-center gap-1.5"
               >
                 <LogOut className="h-3.5 w-3.5" /> Voltar ao início
@@ -882,6 +913,7 @@ export default function App() {
                 )}
               </div>
             ) : (
+              /* FORMULÁRIO RESPONDIDO (PÁGINA FINAL COMPARTILHÁVEL) */
               <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-6">
                   <div>
@@ -950,14 +982,15 @@ export default function App() {
                   <div className="flex gap-2 w-full sm:w-auto">
                     <button
                       onClick={() => {
-                        navigator.clipboard.writeText(window.location.href);
+                        const shareUrl = getShareableDiagnosticUrl(lastSubmission?.id);
+                        navigator.clipboard.writeText(shareUrl);
                         setCopiedLink(true);
                         setTimeout(() => setCopiedLink(false), 2000);
                       }}
                       className="w-full sm:w-auto px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-xs border border-slate-700 flex items-center justify-center gap-2"
                     >
                       {copiedLink ? <Check className="h-4 w-4 text-teal-400" /> : <Copy className="h-4 w-4" />}
-                      {copiedLink ? 'Link copiado!' : 'Copiar link do resultado'}
+                      {copiedLink ? 'Link do resultado copiado!' : 'Copiar link do resultado'}
                     </button>
                     <button
                       onClick={() => window.print()}
@@ -972,6 +1005,7 @@ export default function App() {
                       setSubmitted(false);
                       setCurrentStep(0);
                       setFormData(EMPTY_FORM);
+                      window.history.pushState({}, document.title, window.location.pathname);
                     }}
                     className="w-full sm:w-auto px-5 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs transition"
                   >
@@ -1095,6 +1129,103 @@ export default function App() {
               </aside>
 
               <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
+
+                {/* MODAL DE DIAGNÓSTICO DO FORMULÁRIO PREENCHIDO */}
+                {viewDiagnosticStartup && (
+                  <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+                    <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-4xl w-full my-8 text-white space-y-6 shadow-2xl relative">
+                      <button
+                        onClick={() => setViewDiagnosticStartup(null)}
+                        className="absolute top-5 right-5 p-2 text-slate-400 hover:text-white bg-slate-800 rounded-full border border-slate-700"
+                      >
+                        <X className="h-5 w-5" />
+                      </button>
+
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-4">
+                        <div>
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-teal-500/10 border border-teal-500/25 rounded-full text-teal-300 font-bold text-[11px]">
+                            <CheckCircle2 className="h-3.5 w-3.5" /> Diagnóstico da Startup
+                          </span>
+                          <h2 className="text-2xl font-black text-white mt-1">{viewDiagnosticStartup.startupName}</h2>
+                          <p className="text-xs text-slate-400 mt-1">
+                            Fundador: <b className="text-slate-200">{viewDiagnosticStartup.founder}</b> · Segmento: <b className="text-slate-200">{viewDiagnosticStartup.segment}</b>
+                          </p>
+                        </div>
+
+                        <div className="flex gap-3">
+                          <div className="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-center min-w-[100px]">
+                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">SCORE TOTAL</span>
+                            <p className="text-2xl font-black text-teal-400 mt-0.5">{viewDiagnosticStartup.score} <span className="text-xs text-slate-500 font-normal">/200</span></p>
+                          </div>
+                          <div className="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-center min-w-[100px] flex flex-col justify-center">
+                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">ESTÁGIO</span>
+                            <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${getStageBadge(viewDiagnosticStartup.stage)}`}>
+                              {viewDiagnosticStartup.stage}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-3">
+                          <h3 className="text-xs font-bold text-white uppercase tracking-wider text-center">RADAR DE MATURIDADE</h3>
+                          <div className="h-64 w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <RadarChart cx="50%" cy="50%" outerRadius="70%" data={
+                                GOVTECH_DIMENSIONS.map(d => ({
+                                  subject: getShortLabel(d.name),
+                                  A: viewDiagnosticStartup.dimensions?.[d.name] || 0
+                                }))
+                              }>
+                                <PolarGrid stroke="#334155" />
+                                <PolarAngleAxis dataKey="subject" tick={<RadarTick />} />
+                                <PolarRadiusAxis angle={30} domain={[0, 25]} stroke="#475569" fontSize={10} />
+                                <Radar name="Startup" dataKey="A" stroke="#0d9488" fill="#0d9488" fillOpacity={0.4} />
+                              </RadarChart>
+                            </ResponsiveContainer>
+                          </div>
+                        </div>
+
+                        <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-3">
+                          <h3 className="text-xs font-bold text-white uppercase tracking-wider">PONTUAÇÃO POR DIMENSÃO</h3>
+                          <div className="space-y-2">
+                            {GOVTECH_DIMENSIONS.map(d => {
+                              const score = viewDiagnosticStartup.dimensions?.[d.name] || 0;
+                              return (
+                                <div key={d.id} className="p-2.5 bg-slate-900 rounded-xl border border-slate-800 flex justify-between items-center">
+                                  <span className="text-xs font-semibold text-slate-200">{d.name}</span>
+                                  <span className="text-xs font-bold text-teal-300 bg-teal-500/10 px-2.5 py-0.5 rounded-lg border border-teal-500/20">
+                                    {score} / 25
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-between items-center pt-4 border-t border-slate-800">
+                        <button
+                          onClick={() => {
+                            const shareUrl = getShareableDiagnosticUrl(viewDiagnosticStartup.id);
+                            navigator.clipboard.writeText(shareUrl);
+                            alert('Link direto do diagnóstico copiado!');
+                          }}
+                          className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-teal-300 font-bold rounded-xl text-xs border border-slate-700 flex items-center gap-2"
+                        >
+                          <Copy className="h-4 w-4" /> Copiar link compartilhável
+                        </button>
+
+                        <button
+                          onClick={() => setViewDiagnosticStartup(null)}
+                          className="px-5 py-2 bg-teal-500 text-slate-950 font-bold rounded-xl text-xs"
+                        >
+                          Fechar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* MATRIZ DE PERGUNTAS */}
                 {activeAdminTab === 'matriz' && (
@@ -1286,7 +1417,7 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* TABELA DE STARTUPS CADASTRADAS (COM COLUNA DE SEGMENTO E AÇÕES ENQUADRADAS) */}
+                    {/* TABELA AJUSTADA COM COLUNAS "PLANO DE AÇÃO" E "DIAGNÓSTICO" */}
                     <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm space-y-4 p-5">
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                         <h3 className="font-bold text-sm text-slate-900">Startups cadastradas</h3>
@@ -1314,7 +1445,7 @@ export default function App() {
                       </div>
 
                       <div className="overflow-x-auto border border-slate-100 rounded-xl">
-                        <table className="w-full text-left text-xs min-w-[800px]">
+                        <table className="w-full text-left text-xs min-w-[850px]">
                           <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
                             <tr>
                               <th className="p-3">STARTUP</th>
@@ -1322,12 +1453,14 @@ export default function App() {
                               <th className="p-3">FUNDADOR E CONTATO</th>
                               <th className="p-3">ESTÁGIO</th>
                               <th className="p-3">SCORE TOTAL</th>
-                              <th className="p-3 text-right">AÇÕES</th>
+                              <th className="p-3 text-center">PLANO DE AÇÃO</th>
+                              <th className="p-3 text-center">DIAGNÓSTICO</th>
+                              <th className="p-3 text-right">EXCLUIR</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-slate-100">
                             {tableFilteredSubmissions.length === 0 ? (
-                              <tr><td colSpan={6} className="p-5 text-center text-slate-400">Nenhuma startup encontrada.</td></tr>
+                              <tr><td colSpan={8} className="p-5 text-center text-slate-400">Nenhuma startup encontrada.</td></tr>
                             ) : (
                               tableFilteredSubmissions.map(s => (
                                 <tr key={s.id} className="hover:bg-slate-50/80 transition">
@@ -1350,37 +1483,33 @@ export default function App() {
                                     <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${getStageBadge(s.stage)}`}>{s.stage}</span>
                                   </td>
                                   <td className="p-3 font-black text-slate-900 text-sm">{s.score} / 200</td>
+                                  <td className="p-3 text-center">
+                                    <button
+                                      onClick={() => {
+                                        setSelectedPlanStartupId(s.id);
+                                        setActiveAdminTab('plano');
+                                      }}
+                                      className="text-xs font-bold text-teal-700 hover:underline inline-flex items-center gap-1"
+                                    >
+                                      Ver Plano
+                                    </button>
+                                  </td>
+                                  <td className="p-3 text-center">
+                                    <button
+                                      onClick={() => setViewDiagnosticStartup(s)}
+                                      className="text-slate-600 hover:text-teal-700 inline-flex items-center gap-1 text-[11px] bg-slate-100 hover:bg-teal-50 px-2.5 py-1 rounded-lg border border-slate-200 transition font-medium"
+                                    >
+                                      <Eye className="h-3.5 w-3.5 text-teal-600" /> Diagnóstico
+                                    </button>
+                                  </td>
                                   <td className="p-3 text-right">
-                                    <div className="inline-flex items-center gap-3">
-                                      <button
-                                        onClick={() => {
-                                          setSelectedPlanStartupId(s.id);
-                                          setActiveAdminTab('plano');
-                                        }}
-                                        className="text-xs font-bold text-teal-700 hover:underline"
-                                      >
-                                        Ver plano &gt;
-                                      </button>
-                                      
-                                      <button
-                                        onClick={() => {
-                                          navigator.clipboard.writeText(window.location.href);
-                                          alert('Link do diagnóstico copiado com sucesso!');
-                                        }}
-                                        className="text-slate-500 hover:text-slate-800 flex items-center gap-1 text-[11px] bg-slate-100 px-2 py-1 rounded-lg border border-slate-200 transition"
-                                        title="Copiar link do diagnóstico"
-                                      >
-                                        <Copy className="h-3 w-3" /> Diagnóstico
-                                      </button>
-
-                                      <button
-                                        onClick={() => handleDeleteStartup(s.id)}
-                                        className="text-rose-500 hover:text-rose-700 p-1"
-                                        title="Excluir startup"
-                                      >
-                                        <Trash2 className="h-3.5 w-3.5" />
-                                      </button>
-                                    </div>
+                                    <button
+                                      onClick={() => handleDeleteStartup(s.id)}
+                                      className="text-rose-500 hover:text-rose-700 p-1"
+                                      title="Excluir startup"
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </button>
                                   </td>
                                 </tr>
                               ))
@@ -1392,7 +1521,7 @@ export default function App() {
                   </div>
                 )}
 
-                {/* 2. PLANO POR STARTUP (TÓPICOS RECOLHÍVEIS E MULTI-OPÇÕES EM TODAS AS DIMENSÕES) */}
+                {/* 2. PLANO POR STARTUP (FLUIDO E SANFONA) */}
                 {activeAdminTab === 'plano' && (
                   <div className="space-y-6">
                     <div className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -1455,7 +1584,7 @@ export default function App() {
                           </div>
                         )}
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                           {GOVTECH_DIMENSIONS.map(dim => {
                             const score = currentPlanStartup.dimensions?.[dim.name] || 0;
                             const percent = Math.round((score / 25) * 100);
@@ -1463,67 +1592,58 @@ export default function App() {
                             const isExpanded = expandedDimensions[dim.id] ?? true;
 
                             return (
-                              <div key={dim.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
-                                <div className="p-5 space-y-3">
-                                  <div 
-                                    onClick={() => toggleDimension(dim.id)}
-                                    className="flex justify-between items-center cursor-pointer border-b border-slate-100 pb-3 select-none"
-                                  >
-                                    <div>
-                                      <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
-                                        {dim.name}
-                                        {isExpanded ? <ChevronUp className="h-4 w-4 text-slate-400" /> : <ChevronDown className="h-4 w-4 text-slate-400" />}
-                                      </h3>
-                                      <span className="text-xs font-bold text-teal-700">{score} / 25 pts · {percent}% · nível {percent >= 70 ? 'Avançado' : 'Intermediário'}</span>
-                                    </div>
-                                    <span className="text-[10px] bg-slate-100 border border-slate-200 text-slate-600 px-2.5 py-1 rounded-lg font-medium text-right max-w-[130px]">
-                                      {topics.length} tópicos recomendados
-                                    </span>
+                              <div key={dim.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all duration-300">
+                                <div 
+                                  onClick={() => toggleDimension(dim.id)}
+                                  className="p-5 flex justify-between items-center cursor-pointer select-none bg-white hover:bg-slate-50/80"
+                                >
+                                  <div>
+                                    <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                                      {dim.name}
+                                      {isExpanded ? <ChevronUp className="h-4 w-4 text-teal-600" /> : <ChevronDown className="h-4 w-4 text-slate-400" />}
+                                    </h3>
+                                    <span className="text-xs font-bold text-teal-700">{score} / 25 pts · {percent}% · nível {percent >= 70 ? 'Avançado' : 'Intermediário'}</span>
                                   </div>
-
-                                  {isExpanded && (
-                                    <div className="space-y-6 pt-2">
-                                      {topics.map((topic, tIdx) => (
-                                        <div key={tIdx} className="space-y-3 border-b border-slate-100/80 pb-4 last:border-0 last:pb-0">
-                                          <div className="space-y-1">
-                                            <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                                              <CheckCircle2 className="h-4 w-4 text-teal-600 shrink-0" /> {topic.title}
-                                            </h4>
-                                            <p className="text-xs text-slate-600 leading-relaxed pl-5">{topic.action}</p>
-                                          </div>
-
-                                          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
-                                            <span className="font-bold text-[10px] text-slate-400 uppercase block flex items-center gap-1">
-                                              <Wrench className="h-3 w-3" /> FERRAMENTAS SUGERIDAS
-                                            </span>
-                                            <p className="text-xs text-slate-700">{topic.tools}</p>
-                                          </div>
-
-                                          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
-                                            <span className="font-bold text-[10px] text-slate-400 uppercase block flex items-center gap-1">
-                                              <Gauge className="h-3 w-3" /> MÉTRICAS A ACOMPANHAR
-                                            </span>
-                                            <p className="text-xs text-slate-700">{topic.metrics}</p>
-                                          </div>
-
-                                          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
-                                            <span className="font-bold text-[10px] text-slate-400 uppercase block flex items-center gap-1">
-                                              <Package className="h-3 w-3" /> ENTREGÁVEL ESPERADO
-                                            </span>
-                                            <p className="text-xs text-slate-700">{topic.deliverable}</p>
-                                          </div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  )}
+                                  <span className="text-[10px] bg-slate-100 border border-slate-200 text-slate-600 px-2.5 py-1 rounded-lg font-medium">
+                                    {topics.length} tópicos
+                                  </span>
                                 </div>
 
-                                <button
-                                  onClick={() => toggleDimension(dim.id)}
-                                  className="w-full py-2 bg-slate-50 hover:bg-slate-100 text-[11px] font-bold text-slate-500 border-t border-slate-200/80 transition flex items-center justify-center gap-1"
-                                >
-                                  {isExpanded ? 'Recolher tópicos' : 'Expandir tópicos'}
-                                </button>
+                                {isExpanded && (
+                                  <div className="p-5 pt-0 border-t border-slate-100 space-y-6">
+                                    {topics.map((topic, tIdx) => (
+                                      <div key={tIdx} className="space-y-3 pt-4 border-b border-slate-100/80 pb-4 last:border-0 last:pb-0">
+                                        <div className="space-y-1">
+                                          <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                                            <CheckCircle2 className="h-4 w-4 text-teal-600 shrink-0" /> {topic.title}
+                                          </h4>
+                                          <p className="text-xs text-slate-600 leading-relaxed pl-5">{topic.action}</p>
+                                        </div>
+
+                                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
+                                          <span className="font-bold text-[10px] text-slate-400 uppercase block flex items-center gap-1">
+                                            <Wrench className="h-3 w-3" /> FERRAMENTAS SUGERIDAS
+                                          </span>
+                                          <p className="text-xs text-slate-700">{topic.tools}</p>
+                                        </div>
+
+                                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
+                                          <span className="font-bold text-[10px] text-slate-400 uppercase block flex items-center gap-1">
+                                            <Gauge className="h-3 w-3" /> MÉTRICAS A ACOMPANHAR
+                                          </span>
+                                          <p className="text-xs text-slate-700">{topic.metrics}</p>
+                                        </div>
+
+                                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
+                                          <span className="font-bold text-[10px] text-slate-400 uppercase block flex items-center gap-1">
+                                            <Package className="h-3 w-3" /> ENTREGÁVEL ESPERADO
+                                          </span>
+                                          <p className="text-xs text-slate-700">{topic.deliverable}</p>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
                               </div>
                             );
                           })}
@@ -1537,17 +1657,84 @@ export default function App() {
                   </div>
                 )}
 
-                {/* 3. TRILHAS DE CONHECIMENTO */}
+                {/* 3. TRILHAS DE CONHECIMENTO (COM FILTROS CRUZADOS E MULTI-SELEÇÃO) */}
                 {activeAdminTab === 'trilhas' && (
                   <div className="space-y-6">
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
-                      <div>
-                        <h1 className="text-xl font-bold text-slate-900">Trilhas de conhecimento</h1>
-                        <p className="text-xs text-slate-500">Três pacotes de capacitação com 12 temáticas cada, ordenados por prioridade e cobrindo as 8 dimensões.</p>
+                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-slate-100 pb-3">
+                        <div>
+                          <h1 className="text-xl font-bold text-slate-900">Trilhas de conhecimento dinâmicas</h1>
+                          <p className="text-xs text-slate-500">Filtragem cruzada por startups e segmentos. A cada nova submissão, a trilha reordena automaticamente.</p>
+                        </div>
+                        <span className="px-3 py-1 bg-teal-50 border border-teal-200 rounded-full text-xs font-bold text-teal-800">
+                          3 trilhas · 36 módulos
+                        </span>
                       </div>
-                      <span className="px-3 py-1 bg-teal-50 border border-teal-200 rounded-full text-xs font-bold text-teal-800">
-                        3 trilhas · 36 módulos
-                      </span>
+
+                      {/* PAINEL DE MULTI-SELEÇÃO E FILTROS CRUZADOS */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">FILTRAR POR STARTUPS ({selectedTrackStartups.length})</span>
+                            <button
+                              onClick={() => setSelectedTrackStartups(selectedTrackStartups.length === safeSubmissions.length ? [] : safeSubmissions.map(s => s.id))}
+                              className="text-[11px] font-bold text-teal-700 hover:underline"
+                            >
+                              {selectedTrackStartups.length === safeSubmissions.length ? 'Desmarcar todas' : 'Selecionar todas'}
+                            </button>
+                          </div>
+                          <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-2 bg-slate-50 rounded-xl border border-slate-200">
+                            {safeSubmissions.map(s => {
+                              const isSel = selectedTrackStartups.includes(s.id);
+                              return (
+                                <button
+                                  key={s.id}
+                                  onClick={() => {
+                                    if (isSel) setSelectedTrackStartups(selectedTrackStartups.filter(id => id !== s.id));
+                                    else setSelectedTrackStartups([...selectedTrackStartups, s.id]);
+                                  }}
+                                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition ${
+                                    isSel ? 'bg-teal-500 text-slate-950 border-teal-400' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'
+                                  }`}
+                                >
+                                  {s.startupName}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">FILTRAR POR SEGMENTOS ({selectedTrackSegments.length})</span>
+                            <button
+                              onClick={() => setSelectedTrackSegments(selectedTrackSegments.length === SEGMENT_OPTIONS.length ? [] : SEGMENT_OPTIONS)}
+                              className="text-[11px] font-bold text-teal-700 hover:underline"
+                            >
+                              {selectedTrackSegments.length === SEGMENT_OPTIONS.length ? 'Desmarcar todos' : 'Selecionar todos'}
+                            </button>
+                          </div>
+                          <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-2 bg-slate-50 rounded-xl border border-slate-200">
+                            {SEGMENT_OPTIONS.map(seg => {
+                              const isSel = selectedTrackSegments.includes(seg);
+                              return (
+                                <button
+                                  key={seg}
+                                  onClick={() => {
+                                    if (isSel) setSelectedTrackSegments(selectedTrackSegments.filter(s => s !== seg));
+                                    else setSelectedTrackSegments([...selectedTrackSegments, seg]);
+                                  }}
+                                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition ${
+                                    isSel ? 'bg-purple-600 text-white border-purple-500' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'
+                                  }`}
+                                >
+                                  {seg}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1576,9 +1763,14 @@ export default function App() {
                       if (!track) return null;
                       return (
                         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-                          <div>
-                            <h2 className="text-xl font-black text-slate-900">{track.title}</h2>
-                            <p className="text-xs text-slate-500 mt-1">{track.subtitle}</p>
+                          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                            <div>
+                              <h2 className="text-xl font-black text-slate-900">{track.title}</h2>
+                              <p className="text-xs text-slate-500 mt-1">{track.subtitle}</p>
+                            </div>
+                            <span className="text-xs font-semibold px-3 py-1 bg-slate-100 border border-slate-200 rounded-lg text-slate-700">
+                              Avaliando {filteredTrackStartups.length} startup(s) selecionada(s)
+                            </span>
                           </div>
 
                           <div className="flex flex-wrap gap-2">
@@ -1662,7 +1854,7 @@ export default function App() {
                   <div className="space-y-6">
                     <div>
                       <h1 className="text-xl font-bold text-slate-900">Benchmarking entre startups</h1>
-                      <p className="text-xs text-slate-500">Selecione quantas startups foram necessárias para comparar os resultados do diagnóstico lado a lado.</p>
+                      <p className="text-xs text-slate-500">Selecione quantas startups forem necessárias para comparar os resultados do diagnóstico lado a lado.</p>
                     </div>
 
                     <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">

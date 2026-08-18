@@ -14,7 +14,7 @@ import {
 import { supabase } from './supabaseClient';
 
 // ============================================================================
-// ESTRUTURA DAS 8 DIMENSÕES E 40 INDICADORES
+// 1. ESTRUTURA DAS 8 DIMENSÕES E INDICADORES
 // ============================================================================
 const GOVTECH_DIMENSIONS = [
   {
@@ -123,101 +123,123 @@ const GOVTECH_DIMENSIONS = [
   }
 ];
 
-const TRACKS_DATA = [
+const DETAILED_TRACKS = [
   {
     id: 'trilha1',
     title: 'Trilha 1 — Fundação e Validação',
-    desc: 'Indicada para startups em Ideação e início de Operação',
-    count: '12 Temáticas',
-    topics: [
-      '1. Validação de Dores e Entrevistas com Clientes',
-      '2. Mapeamento de TAM, SAM e SOM Realista',
-      '3. Definição do MVP Mínimo Viável e Teste Pilotado',
-      '4. Modelagem Financeira Inicial e Precificação Básica',
-      '5. Governança Inicial, Vesting e Acordo de Sócios',
-      '6. Registro de Marca e Proteção Inicial de IP',
-      '7. Construção de Pitch e Narrativa para Investidores',
-      '8. Design de Experiência do Usuário (UX/UI)',
-      '9. Introdução a Vendas B2B e Inbound Marketing',
-      '10. Mapeamento de Editais de Fomento (Sebrae/FINEP)',
-      '11. Rotinas Financeiras Básicas e Controle de Caixa',
-      '12. Métricas Iniciais de Retenção e Engajamento'
+    subtitle: 'Confirmar a dor, estruturar o básico societário e financeiro e colocar de pé um MVP validado.',
+    badge: 'Ideação & Operação',
+    dimensionsSummary: [
+      { name: 'Estratégia & Tese', count: 2 },
+      { name: 'Liderança & Time', count: 1 },
+      { name: 'Tecnologia & IA', count: 1 },
+      { name: 'Cultura de Inovação', count: 1 },
+      { name: 'Pessoas & Competências', count: 2 },
+      { name: 'Produto & Validação', count: 2 },
+      { name: 'Processos & Agilidade', count: 1 },
+      { name: 'Recursos & Runway', count: 2 }
+    ],
+    modules: [
+      { id: 1, title: 'Tese de valor e dor prioritária do cliente', category: 'Estratégia & Tese de Mercado', priority: 'Alta' },
+      { id: 2, title: 'Entrevistas de descoberta e construção de MVP enxuto', category: 'Estrutura, Produto & Validação', priority: 'Alta' },
+      { id: 3, title: 'Acordo de sócios, vesting e cap table', category: 'Liderança & Time', priority: 'Alta' },
+      { id: 4, title: 'DRE gerencial e controle de queima de caixa', category: 'Recursos, Runway & B2G', priority: 'Alta' },
+      { id: 5, title: 'Desenvolvimento de Pitch e Narrativa de Vendas', category: 'Pessoas & Competências', priority: 'Média' }
     ]
   },
   {
     id: 'trilha2',
     title: 'Trilha 2 — Tração Comercial e Produto',
-    desc: 'Indicada para startups em Operação e Tração',
-    count: '12 Temáticas',
-    topics: [
-      '1. Estruturação de Funil Outbound e Máquina de Vendas',
-      '2. Arquitetura em Nuvem, Escalabilidade e APIs',
-      '3. Integração de Inteligência Artificial Operacional',
-      '4. Gestão Ágil de Produto (Scrum/Kanban)',
-      '5. Estruturação de Onboarding e Customer Success',
-      '6. Gestão Financeira Avançada (DRE e CAC/LTV)',
-      '7. Estratégias de Contratação e Atração de Talentos',
-      '8. Adaptação do Produto para Compras Públicas (B2G)',
-      '9. Conformidade com a LGPD e Segurança Cibernética',
-      '10. Otimização do Tempo de Vendas (Sales Cycle)',
-      '11. Testes A/B e Cultura de Experimentos Rápido',
-      '12. Gestão por OKRs para Alinhamento do Time'
+    subtitle: 'Acelerar vendas B2B/B2G, escalar a arquitetura técnica e estruturar rotinas de Customer Success.',
+    badge: 'Operação & Tração',
+    dimensionsSummary: [
+      { name: 'Estratégia & Tese', count: 1 },
+      { name: 'Liderança & Time', count: 2 },
+      { name: 'Tecnologia & IA', count: 2 },
+      { name: 'Processos & Agilidade', count: 3 },
+      { name: 'Recursos & Runway', count: 2 }
+    ],
+    modules: [
+      { id: 1, title: 'Outbound Sales e Maquina de Vendas B2B', category: 'Processos & Agilidade', priority: 'Alta' },
+      { id: 2, title: 'Arquitetura Nuvem Escalável e APIs Abertas', category: 'Tecnologia, IA & Propriedade Intelectual', priority: 'Alta' },
+      { id: 3, title: 'Onboarding de Clientes e Redução de Churn', category: 'Processos & Agilidade', priority: 'Alta' },
+      { id: 4, title: 'Conformidade com LGPD e Segurança Cibernética', category: 'Tecnologia, IA & Propriedade Intelectual', priority: 'Média' }
     ]
   },
   {
     id: 'trilha3',
     title: 'Trilha 3 — Governança, Capital e Escala',
-    desc: 'Indicada para startups em Tração e Escala',
-    count: '12 Temáticas',
-    topics: [
-      '1. Captação de Recursos (Venture Capital e Seed)',
-      '2. Internacionalização e Expansão de Mercados',
-      '3. Estruturação de Conselho Consultivo/Administração',
-      '4. Modelos de Contratualização B2G e Licitações',
-      '5. M&A, Estratégias de Saída e Fusões',
-      '6. Liderança Executiva e Escala da Cultura',
-      '7. Automação Avançada e Escala do Produto',
-      '8. Gestão da Saúde do Cliente e Redução de Churn',
-      '9. Planejamento Tributário e Societário para Escala',
-      '10. Auditoria Interna e Preparação para Due Diligence',
-      '11. Parcerias Estratégicas e Canais de Distribuição',
-      '12. Gestão de Crises e Continuidaded do Negócio'
+    subtitle: 'Preparar para rodadas de investimento, expansão nacional/B2G e conselho consultivo.',
+    badge: 'Tração & Escala',
+    dimensionsSummary: [
+      { name: 'Liderança & Time', count: 3 },
+      { name: 'Tecnologia & IA', count: 2 },
+      { name: 'Recursos & Runway', count: 4 }
+    ],
+    modules: [
+      { id: 1, title: 'Captação de Investimento Venture Capital', category: 'Recursos, Runway & B2G', priority: 'Alta' },
+      { id: 2, title: 'Estruturação de Conselho Consultivo e Governança', category: 'Liderança & Time', priority: 'Alta' },
+      { id: 3, title: 'Contratualização B2G e Licitações Públicas', category: 'Recursos, Runway & B2G', priority: 'Alta' }
     ]
   }
 ];
 
 const PLAN_RECOMMENDATIONS = {
   estrategia: {
-    low: { meta: 'Estruturar Validação de Mercado', tools: 'Miro, Notion, Formulários Typeform', metrics: 'Número de entrevistas, ICP mapeado' },
-    high: { meta: 'Sustentar & Evoluir Tese', tools: 'Gartner, OKR Boards, Salesforce', metrics: 'Market Share, LTV/CAC' }
+    title: 'Validação da dor e da tese de valor',
+    action: 'Converter a tese validada em plano de expansão para novas praças e verticais, com hipóteses de entrada documentadas.',
+    tools: 'Roteiro de entrevista no formato The Mom Test, quadro de dores no Miro e registro padronizado no Notion ou Google Forms.',
+    metrics: 'Número de entrevistas concluídas, percentual que confirma a dor como prioritária e valor declarado de disposição a pagar.',
+    deliverable: 'Relatório de descoberta de uma página com as cinco dores mais citadas e a proposta de valor revisada.'
   },
   lideranca: {
-    low: { meta: 'Formalizar Alinhamento dos Sócios', tools: 'Acordo de Sócios, Vesting, Trello', metrics: '% Dedicação exclusiva, Rituais semanais' },
-    high: { meta: 'Escalar Liderança Executiva', tools: '15Five, Lattice, Boards de Governança', metrics: 'eNPS, Retenção do time chave' }
+    title: 'Governança societária e alinhamento',
+    action: 'Preparar a governança para due diligence: atas organizadas, contratos assinados e societário sem passivos.',
+    tools: 'Acordo de sócios revisado, plataforma de vesting/cap table (ex: Carta ou Excel) e rituais de OKR.',
+    metrics: '% de dedicação exclusiva dos fundadores, NPS do time interno e cumprimento das metas trimestrais.',
+    deliverable: 'Cap table atualizado e matriz de responsabilidades executivas aprovada pelos sócios.'
   },
   tecnologia: {
-    low: { meta: 'Proteger IP e Estruturar Nuvem', tools: 'AWS/GCP, GitHub, Registro INPI', metrics: 'Uptime da aplicação, Cobertura de testes' },
-    high: { meta: 'Expandir IA Generativa e APIs', tools: 'OpenAI API, Datadog, Docker', metrics: 'Custo de nuvem/usuário, SLA de API' }
+    title: 'Arquitetura limpa, IA e segurança de IP',
+    action: 'Evoluir o código para microsserviços seguros com documentação aberta e modelos de automação/IA.',
+    tools: 'AWS / Google Cloud, repositórios GitHub protegidos, APIs Swagger e auditoria LGPD.',
+    metrics: 'Uptime da aplicação (>99.5%), tempo de resposta de API e cobertura de testes automatizados.',
+    deliverable: 'Documentação técnica da arquitetura de software e registro formal de marca/código.'
   },
   cultura: {
-    low: { meta: 'Implantar Cultura de Testes', tools: 'Post-it, Figma, Mixpanel', metrics: 'Experimentos executados/mês' },
-    high: { meta: 'Disseminar Inovação Contínua', tools: 'Notion Wiki, Hackathons Internos', metrics: 'Taxa de implementação de ideias' }
+    title: 'Cultura de experimentação e aprendizado',
+    action: 'Estabelecer rotina semanal de testes A/B e reuniões de pós-mortem sem culpabilização.',
+    tools: 'Quadro de hipóteses no Notion/Jira, Google Analytics, Hotjar e Mixpanel.',
+    metrics: 'Quantidade de experimentos realizados por mês e taxa de conversão aprendida.',
+    deliverable: 'Backlog de experimentos validados e repositório central de aprendizados com usuários.'
   },
   pessoas: {
-    low: { meta: 'Desenvolver Competências Internas', tools: 'Alura, Udemy, Matriz CSD', metrics: 'Horas de treinamento/mês' },
-    high: { meta: 'Desenvolver Plano de Carreira', tools: 'Gupy, LinkedIn Recruiter', metrics: 'Tempo médio de contratação' }
+    title: 'Capacidade de execução e Customer Success',
+    action: 'Mapear papéis técnicos essenciais e estruturar atendimento dedicado com SLA claro.',
+    tools: 'Zendesk/Intercom para suporte, matriz de competências CSD e treinamentos semanais.',
+    metrics: 'Tempo médio de primeira resposta (FRT), CSAT de atendimento e eNPS do time.',
+    deliverable: 'Manual de onboarding do cliente e playbook de suporte operacional.'
   },
   estrutura: {
-    low: { meta: 'Lançar MVP e Medir Uso', tools: 'Bubble, Webflow, Hotjar', metrics: 'Usuários ativos diários (DAU)' },
-    high: { meta: 'Expandir Provas de Conceito (PoC)', tools: 'Amplitude, Zendesk', metrics: 'NPS, Taxa de renovação' }
+    title: 'Validação contínua do MVP e uso ativo',
+    action: 'Acompanhar métricas de retenção diária/semanal e conduzir testes piloto estruturados.',
+    tools: 'Amplitude, Mixpanel, Hotjar e formulários de feedback pós-uso.',
+    metrics: 'Usuários ativos diários/mensais (DAU/MAU) e taxa de retenção na semana 4 (W4).',
+    deliverable: 'Relatório de engajamento do produto e lista de melhorias prioritárias para o backlog.'
   },
   processos: {
-    low: { meta: 'Implantar Metodologia Ágil', tools: 'Jira, Asana, Conta Azul', metrics: 'Velocity das Sprints, Margem DRE' },
-    high: { meta: 'Otimizar Funil e SLA de Suporte', tools: 'HubSpot, Intercom, PowerBI', metrics: 'Tempo de resposta de ticket, Conversion Rate' }
+    title: 'Processos ágeis e funil de vendas',
+    action: 'Estruturar máquina de vendas inbound/outbound com etapas bem definidas e rotina de DRE mensal.',
+    tools: 'HubSpot/Pipedrive para CRM, Jira/Trello para Sprints e Conta Azul para financeiro.',
+    metrics: 'Taxa de conversão do funil de vendas, ciclo médio de vendas (dias) e margem DRE.',
+    deliverable: 'Playbook comercial de vendas e DRE gerencial atualizada dos últimos 12 meses.'
   },
   recursos: {
-    low: { meta: 'Ampliar Runway e Editais', tools: 'Planilhas de Runway, Plataforma Brasil', metrics: 'Meses de Runway, Margem de contribuição' },
-    high: { meta: 'Captação e Expansão B2G', tools: 'Pitch Deck, Portal da Transparência', metrics: 'Contratos vigentes, EBITDA' }
+    title: 'Saúde financeira, Runway e captação B2G/Editais',
+    action: 'Garantir sobrevida financeira superior a 12 meses e mapear editais de fomento e contratos públicos.',
+    tools: 'Planilha de projeção de fluxo de caixa, plataforma de editais FINEP/Sebrae e Portal da Transparência.',
+    metrics: 'Meses de Runway restante, Burn Rate mensal e margem de contribuição por cliente.',
+    deliverable: 'Plano de alocação de capital para 18 meses e proposta comercial B2G padronizada.'
   }
 };
 
@@ -307,9 +329,10 @@ export default function App() {
   const [showMatrixModal, setShowMatrixModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Filtros do Dashboard Admin
-  const [filterStage, setFilterStage] = useState('Todos');
-  const [filterSegment, setFilterSegment] = useState('Todos');
+  // Filtros
+  const [tableStageFilter, setTableStageFilter] = useState('Todos');
+  const [tableSearchTerm, setTableSearchTerm] = useState('');
+  const [activeTrackId, setActiveTrackId] = useState('trilha1');
 
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState(EMPTY_FORM);
@@ -449,23 +472,26 @@ export default function App() {
     }
   };
 
-  // Aplicação dos Filtros no Painel
   const safeSubmissions = Array.isArray(submissions) ? submissions : [];
-  const filteredSubmissions = safeSubmissions.filter(s => {
-    const matchStage = filterStage === 'Todos' || s.stage === filterStage;
-    const matchSegment = filterSegment === 'Todos' || s.segment === filterSegment;
-    return matchStage && matchSegment;
+
+  const tableFilteredSubmissions = safeSubmissions.filter(s => {
+    const matchStage = tableStageFilter === 'Todos' || s.stage === tableStageFilter;
+    const matchText = !tableSearchTerm || 
+      s.startupName?.toLowerCase().includes(tableSearchTerm.toLowerCase()) ||
+      s.founder?.toLowerCase().includes(tableSearchTerm.toLowerCase()) ||
+      s.email?.toLowerCase().includes(tableSearchTerm.toLowerCase());
+    return matchStage && matchText;
   });
 
-  const avgOverallScore = filteredSubmissions.length > 0
-    ? (filteredSubmissions.reduce((acc, curr) => acc + (curr?.score || 0), 0) / filteredSubmissions.length)
+  const avgOverallScore = safeSubmissions.length > 0
+    ? (safeSubmissions.reduce((acc, curr) => acc + (curr?.score || 0), 0) / safeSubmissions.length)
     : 0;
 
   const activeDimValues = {};
   GOVTECH_DIMENSIONS.forEach(dim => {
-    const totalDimScore = filteredSubmissions.reduce((acc, curr) => acc + (curr?.dimensions?.[dim.name] || 0), 0);
-    activeDimValues[dim.name] = filteredSubmissions.length > 0
-      ? Number((totalDimScore / filteredSubmissions.length).toFixed(1))
+    const totalDimScore = safeSubmissions.reduce((acc, curr) => acc + (curr?.dimensions?.[dim.name] || 0), 0);
+    activeDimValues[dim.name] = safeSubmissions.length > 0
+      ? Number((totalDimScore / safeSubmissions.length).toFixed(1))
       : 0;
   });
 
@@ -498,6 +524,18 @@ export default function App() {
 
   const currentPlanStartup = safeSubmissions.find(s => s.id === selectedPlanStartupId) || safeSubmissions[0];
   const answeredCount = ALL_QUESTIONS.filter(q => formData.responses?.[q.id] > 0).length;
+
+  // Montagem dos Dados de Benchmarking para o Gráfico Agrupado
+  const benchSelectedObjects = selectedBenchStartups.map(id => safeSubmissions.find(s => s.id === id)).filter(Boolean);
+  const benchChartData = GOVTECH_DIMENSIONS.map(dim => {
+    const entry = { name: dim.short };
+    benchSelectedObjects.forEach(s => {
+      entry[s.startupName] = s.dimensions?.[dim.name] || 0;
+    });
+    return entry;
+  });
+
+  const BENCH_COLORS = ['#0d9488', '#2563eb', '#9333ea'];
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
@@ -587,7 +625,7 @@ export default function App() {
                   </div>
                   <div>
                     <h2 className="text-base md:text-lg font-bold text-white">Painel do administrador</h2>
-                    <p className="text-xs text-slate-300 mt-1">Análise do portfólio, filtros por estágio, planos e trilhas.</p>
+                    <p className="text-xs text-slate-300 mt-1">Análise do portfólio, benchmarking, planos e trilhas.</p>
                   </div>
                 </div>
                 <div className="mt-6 flex items-center text-xs font-bold text-purple-300 gap-2">
@@ -993,7 +1031,7 @@ export default function App() {
 
               <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
 
-                {/* 1. VISÃO GERAL DE DASHBOARD */}
+                {/* 1. VISÃO GERAL */}
                 {activeAdminTab === 'dashboard' && (
                   <div className="space-y-6">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
@@ -1001,38 +1039,12 @@ export default function App() {
                         <h1 className="text-xl font-bold text-slate-900">Dashboard de maturidade das startups</h1>
                         <p className="text-xs text-slate-500">Métricas consolidadas, análise individual e distribuição do portfólio.</p>
                       </div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        {/* FILTROS ADICIONADOS AO DASHBOARD */}
-                        <div className="flex items-center gap-1.5 bg-white border border-slate-300 px-2.5 py-1.5 rounded-xl text-xs">
-                          <Filter className="h-3.5 w-3.5 text-slate-500" />
-                          <select
-                            value={filterStage}
-                            onChange={e => setFilterStage(e.target.value)}
-                            className="bg-transparent font-bold text-slate-700 outline-none text-xs"
-                          >
-                            <option value="Todos">Estágio: Todos</option>
-                            {STAGE_LIST.map(st => <option key={st} value={st}>{st}</option>)}
-                          </select>
-                        </div>
-
-                        <div className="flex items-center gap-1.5 bg-white border border-slate-300 px-2.5 py-1.5 rounded-xl text-xs">
-                          <select
-                            value={filterSegment}
-                            onChange={e => setFilterSegment(e.target.value)}
-                            className="bg-transparent font-bold text-slate-700 outline-none text-xs"
-                          >
-                            <option value="Todos">Setor: Todos</option>
-                            {SEGMENT_OPTIONS.map(sg => <option key={sg} value={sg}>{sg}</option>)}
-                          </select>
-                        </div>
-
-                        <button
-                          onClick={fetchStartups}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 shadow-sm transition"
-                        >
-                          <RefreshCw className="h-3.5 w-3.5" /> Atualizar dados
-                        </button>
-                      </div>
+                      <button
+                        onClick={fetchStartups}
+                        className="flex items-center gap-1.5 px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-sm transition"
+                      >
+                        <RefreshCw className="h-3.5 w-3.5" /> Atualizar dados
+                      </button>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1045,7 +1057,7 @@ export default function App() {
                       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Destaque Principal</span>
                         <p className="text-sm font-bold text-teal-700 mt-1 truncate">{highlightTop}</p>
-                        <span className="text-[11px] text-slate-500 block mt-1">Maior pontuação do grupo</span>
+                        <span className="text-[11px] text-slate-500 block mt-1">Maior pontuação do portfólio</span>
                       </div>
 
                       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
@@ -1056,8 +1068,8 @@ export default function App() {
 
                       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Startups Analisadas</span>
-                        <p className="text-2xl font-black text-purple-700 mt-1">{filteredSubmissions.length}</p>
-                        <span className="text-[11px] text-slate-500 block mt-1">Total filtrado no programa</span>
+                        <p className="text-2xl font-black text-purple-700 mt-1">{safeSubmissions.length}</p>
+                        <span className="text-[11px] text-slate-500 block mt-1">Total cadastrado no programa</span>
                       </div>
                     </div>
 
@@ -1076,7 +1088,6 @@ export default function App() {
                         </div>
                       </div>
 
-                      {/* CORREÇÃO VISUAL DOS RÓTULOS NO GRÁFICO DE BARRAS */}
                       <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
                         <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Pontuação por Dimensão (0 a 25 pts)</h3>
                         <div className="h-72 w-full">
@@ -1100,125 +1111,90 @@ export default function App() {
                       </div>
                     </div>
 
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
-                        <div>
-                          <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                            <MessageSquare className="h-4 w-4 text-teal-600" /> Observações da Startup por Dimensão
-                          </h3>
-                          <p className="text-xs text-slate-500">Selecione uma dimensão para ver os comentários adicionais.</p>
-                        </div>
-                        <select
-                          value={selectedObsDimension}
-                          onChange={e => setSelectedObsDimension(e.target.value)}
-                          className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800"
-                        >
-                          {GOVTECH_DIMENSIONS.map(d => (
-                            <option key={d.id} value={d.id}>{d.name}</option>
-                          ))}
-                        </select>
-                      </div>
+                    {/* TABELA COM FILTRO POR ESTÁGIO, BUSCA E ÍCONES COMPLETOS */}
+                    <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm space-y-4 p-5">
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <h3 className="font-bold text-sm text-slate-900">Startups cadastradas</h3>
+                        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                          <select
+                            value={tableStageFilter}
+                            onChange={e => setTableStageFilter(e.target.value)}
+                            className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-700 outline-none"
+                          >
+                            <option value="Todos">Todos os estágios</option>
+                            {STAGE_LIST.map(st => <option key={st} value={st}>{st}</option>)}
+                          </select>
 
-                      <div className="space-y-3">
-                        {filteredSubmissions.filter(s => s.notes?.[selectedObsDimension]).length === 0 ? (
-                          <div className="p-4 bg-slate-50 rounded-xl text-xs text-slate-500 text-center">
-                            Nenhuma observação registrada para esta dimensão.
+                          <div className="relative flex-1 sm:w-64">
+                            <Search className="h-3.5 w-3.5 absolute left-3 top-2.5 text-slate-400" />
+                            <input
+                              type="text"
+                              placeholder="Buscar por startup, fundador ou e-mail..."
+                              value={tableSearchTerm}
+                              onChange={e => setTableSearchTerm(e.target.value)}
+                              className="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 outline-none focus:border-teal-500"
+                            />
                           </div>
-                        ) : (
-                          filteredSubmissions.map(s => {
-                            if (!s.notes?.[selectedObsDimension]) return null;
-                            return (
-                              <div key={s.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
-                                <div className="flex justify-between items-center">
-                                  <span className="font-bold text-xs text-slate-900">{s.startupName}</span>
-                                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${getStageBadge(s.stage)}`}>{s.stage}</span>
-                                </div>
-                                <p className="text-xs text-slate-600 italic">"{s.notes[selectedObsDimension]}"</p>
-                              </div>
-                            );
-                          })
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-                        <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Distribuição por Estágio de Maturidade</h3>
-                        <div className="h-56 w-full">
-                          <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={stageDistribution}>
-                              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                              <XAxis dataKey="name" stroke="#64748b" fontSize={11} />
-                              <YAxis allowDecimals={false} stroke="#64748b" fontSize={11} />
-                              <Tooltip />
-                              <Bar dataKey="Startups" fill="#2563eb" radius={[6, 6, 0, 0]} />
-                            </BarChart>
-                          </ResponsiveContainer>
                         </div>
                       </div>
 
-                      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-                        <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Distribuição por Setor de Atuação</h3>
-                        <div className="h-56 w-full">
-                          <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={segmentDistribution}>
-                              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                              <XAxis dataKey="name" stroke="#64748b" fontSize={10} />
-                              <YAxis allowDecimals={false} stroke="#64748b" fontSize={11} />
-                              <Tooltip />
-                              <Bar dataKey="Startups" fill="#0d9488" radius={[6, 6, 0, 0]} />
-                            </BarChart>
-                          </ResponsiveContainer>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-                      <div className="p-4 border-b border-slate-200 bg-slate-50 font-bold text-xs text-slate-800 flex justify-between items-center">
-                        <span>Startups Cadastradas ({filteredSubmissions.length})</span>
-                      </div>
-                      <div className="overflow-x-auto">
+                      <div className="overflow-x-auto border border-slate-100 rounded-xl">
                         <table className="w-full text-left text-xs min-w-[700px]">
-                          <thead className="bg-slate-100 text-slate-600 font-bold">
+                          <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
                             <tr>
-                              <th className="p-3">Startup</th>
-                              <th className="p-3">Fundador e Contato</th>
-                              <th className="p-3">Estágio</th>
-                              <th className="p-3">Score Total</th>
-                              <th className="p-3 text-right">Ações</th>
+                              <th className="p-3">STARTUP</th>
+                              <th className="p-3">FUNDADOR E CONTATO</th>
+                              <th className="p-3">ESTÁGIO</th>
+                              <th className="p-3">SCORE TOTAL</th>
+                              <th className="p-3 text-right">AÇÕES</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-slate-100">
-                            {filteredSubmissions.length === 0 ? (
-                              <tr><td colSpan={5} className="p-5 text-center text-slate-400">Nenhuma startup encontrada com estes filtros.</td></tr>
+                            {tableFilteredSubmissions.length === 0 ? (
+                              <tr><td colSpan={5} className="p-5 text-center text-slate-400">Nenhuma startup encontrada.</td></tr>
                             ) : (
-                              filteredSubmissions.map(s => (
-                                <tr key={s.id}>
+                              tableFilteredSubmissions.map(s => (
+                                <tr key={s.id} className="hover:bg-slate-50/80 transition">
                                   <td className="p-3">
-                                    <span className="font-bold text-slate-900 block">{s.startupName}</span>
+                                    <span className="font-bold text-slate-900 block text-xs">{s.startupName}</span>
                                     <span className="text-[10px] text-slate-500">{s.segment}</span>
                                   </td>
                                   <td className="p-3">
-                                    <span className="font-medium text-slate-800 block">{s.founder}</span>
-                                    <span className="text-[10px] text-slate-500 block">{s.whatsapp} · {s.email}</span>
+                                    <span className="font-medium text-slate-800 block text-xs">{s.founder}</span>
+                                    <span className="text-[10px] text-slate-500 block flex items-center gap-1 mt-0.5">
+                                      📞 {s.whatsapp}
+                                    </span>
+                                    <span className="text-[10px] text-slate-500 block flex items-center gap-1">
+                                      ✉️ {s.email}
+                                    </span>
                                   </td>
                                   <td className="p-3">
-                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${getStageBadge(s.stage)}`}>{s.stage}</span>
+                                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${getStageBadge(s.stage)}`}>{s.stage}</span>
                                   </td>
-                                  <td className="p-3 font-extrabold text-teal-700">{s.score} / 200</td>
-                                  <td className="p-3 text-right space-x-2">
+                                  <td className="p-3 font-black text-slate-900 text-sm">{s.score} / 200</td>
+                                  <td className="p-3 text-right space-x-3">
                                     <button
                                       onClick={() => {
                                         setSelectedPlanStartupId(s.id);
                                         setActiveAdminTab('plano');
                                       }}
-                                      className="text-xs font-bold text-teal-700 hover:underline"
+                                      className="text-xs font-bold text-teal-700 hover:underline inline-flex items-center gap-1"
                                     >
                                       Ver plano &gt;
                                     </button>
                                     <button
+                                      onClick={() => {
+                                        navigator.clipboard.writeText(window.location.href);
+                                        alert('Link da startup copiado!');
+                                      }}
+                                      className="text-slate-500 hover:text-slate-800"
+                                      title="Copiar link"
+                                    >
+                                      <Copy className="h-3.5 w-3.5 inline" />
+                                    </button>
+                                    <button
                                       onClick={() => handleDeleteStartup(s.id)}
-                                      className="text-rose-600 hover:text-rose-800 p-1"
+                                      className="text-rose-600 hover:text-rose-800"
                                       title="Excluir"
                                     >
                                       <Trash2 className="h-3.5 w-3.5 inline" />
@@ -1234,19 +1210,19 @@ export default function App() {
                   </div>
                 )}
 
-                {/* 2. PLANO DINÂMICO POR STARTUP */}
+                {/* 2. PLANO POR STARTUP (Restaurado ao modelo AchaBuraco) */}
                 {activeAdminTab === 'plano' && (
                   <div className="space-y-6">
                     <div className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                       <div>
                         <h1 className="text-xl font-bold text-slate-900">Plano de ação por startup</h1>
-                        <p className="text-xs text-slate-500">Recomendações automáticas baseadas no desempenho das 8 dimensões.</p>
+                        <p className="text-xs text-slate-500">Ações por dimensão, com ferramentas sugeridas, métricas a acompanhar e entregáveis esperados.</p>
                       </div>
-                      <div className="w-full md:w-72">
+                      <div className="w-full md:w-80">
                         <select
                           value={selectedPlanStartupId}
                           onChange={e => setSelectedPlanStartupId(e.target.value)}
-                          className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 outline-none"
+                          className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 outline-none"
                         >
                           {safeSubmissions.map(s => (
                             <option key={s.id} value={s.id}>{s.startupName} ({s.stage})</option>
@@ -1256,52 +1232,95 @@ export default function App() {
                     </div>
 
                     {currentPlanStartup ? (
-                      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-                        <div className="border-b border-slate-100 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                      <div className="space-y-6">
+                        {/* CABEÇALHO DO PLANO COM BOTÃO PDF */}
+                        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                           <div>
                             <span className="text-[10px] font-bold text-teal-600 uppercase tracking-wider block">PLANO PERSONALIZADO</span>
-                            <h2 className="text-xl font-extrabold text-slate-900">{currentPlanStartup.startupName}</h2>
-                            <p className="text-xs text-slate-500 mt-0.5">
-                              Fundador: {currentPlanStartup.founder} · {currentPlanStartup.segment} · Score: {currentPlanStartup.score} / 200 pts
+                            <h2 className="text-2xl font-black text-slate-900 mt-0.5">{currentPlanStartup.startupName}</h2>
+                            <p className="text-xs text-slate-500 mt-1">
+                              Fundador: <b className="text-slate-800">{currentPlanStartup.founder}</b> · {currentPlanStartup.segment} · Score: <b className="text-slate-800">{currentPlanStartup.score} / 200 pts</b>
+                            </p>
+                            <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-3">
+                              <span>📞 {currentPlanStartup.whatsapp}</span>
+                              <span>✉️ {currentPlanStartup.email}</span>
                             </p>
                           </div>
-                          <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getStageBadge(currentPlanStartup.stage)}`}>
-                            {currentPlanStartup.stage}
-                          </span>
+
+                          <div className="flex gap-2 w-full md:w-auto">
+                            <button
+                              onClick={() => window.print()}
+                              className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs shadow-md transition flex items-center justify-center gap-2 w-full md:w-auto"
+                            >
+                              <Printer className="h-4 w-4" /> Exportar relatório em PDF
+                            </button>
+                          </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* OBSERVAÇÕES ENVIADAS PELA STARTUP */}
+                        {Object.keys(currentPlanStartup.notes || {}).length > 0 && (
+                          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">OBSERVAÇÕES ENVIADAS PELA STARTUP</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              {Object.entries(currentPlanStartup.notes || {}).map(([dimId, noteText]) => {
+                                const dimObj = GOVTECH_DIMENSIONS.find(d => d.id === dimId);
+                                return (
+                                  <div key={dimId} className="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
+                                    <span className="font-bold text-xs text-teal-800 block">{dimObj?.name || dimId}</span>
+                                    <p className="text-xs text-slate-600 italic">"{noteText}"</p>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* LISTA DAS 8 DIMENSÕES COM ENTREGÁVEIS */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {GOVTECH_DIMENSIONS.map(dim => {
                             const score = currentPlanStartup.dimensions?.[dim.name] || 0;
                             const percent = Math.round((score / 25) * 100);
-                            const isLow = score < 15;
-                            const rec = PLAN_RECOMMENDATIONS[dim.id]?.[isLow ? 'low' : 'high'] || {
-                              meta: 'Sustentar & Evoluir',
-                              tools: 'Miro, Notion, OKRs',
-                              metrics: 'Taxa de conversão, Engajamento'
-                            };
+                            const rec = PLAN_RECOMMENDATIONS[dim.id] || {};
 
                             return (
-                              <div key={dim.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
-                                <div className="flex justify-between items-start">
+                              <div key={dim.id} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                                <div className="flex justify-between items-start border-b border-slate-100 pb-3">
                                   <div>
-                                    <h4 className="font-bold text-xs text-slate-900">{dim.name}</h4>
-                                    <span className="text-[11px] font-semibold text-teal-700">{score} / 25 pts · {percent}%</span>
+                                    <h3 className="font-bold text-sm text-slate-900">{dim.name}</h3>
+                                    <span className="text-xs font-bold text-teal-700">{score} / 25 pts · {percent}% · nível {percent >= 70 ? 'Avançado' : 'Intermediário'}</span>
                                   </div>
-                                  <span className={`text-[10px] border px-2 py-0.5 rounded font-bold ${
-                                    isLow ? 'bg-amber-50 text-amber-800 border-amber-200' : 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                                  }`}>
-                                    Meta: {rec.meta}
+                                  <span className="text-[10px] bg-slate-100 border border-slate-200 text-slate-600 px-2.5 py-1 rounded-lg font-medium">
+                                    Meta: sustentar a referência e replicar boas práticas
                                   </span>
                                 </div>
-                                <div className="space-y-2 text-xs text-slate-700">
-                                  <div className="p-2.5 bg-white rounded-lg border border-slate-200">
-                                    <span className="font-bold text-[10px] text-slate-400 uppercase block">Ferramentas Sugeridas</span>
-                                    <p className="text-[11px] text-slate-600 mt-0.5">{rec.tools}</p>
+
+                                <div className="space-y-3">
+                                  <div className="space-y-1">
+                                    <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                                      <CheckCircle2 className="h-4 w-4 text-teal-600 shrink-0" /> {rec.title}
+                                    </h4>
+                                    <p className="text-xs text-slate-600 leading-relaxed pl-5">{rec.action}</p>
                                   </div>
-                                  <div className="p-2.5 bg-white rounded-lg border border-slate-200">
-                                    <span className="font-bold text-[10px] text-slate-400 uppercase block">Métricas a Acompanhar</span>
-                                    <p className="text-[11px] text-slate-600 mt-0.5">{rec.metrics}</p>
+
+                                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
+                                    <span className="font-bold text-[10px] text-slate-400 uppercase block flex items-center gap-1">
+                                      <Wrench className="h-3 w-3" /> FERRAMENTAS SUGERIDAS
+                                    </span>
+                                    <p className="text-xs text-slate-700">{rec.tools}</p>
+                                  </div>
+
+                                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
+                                    <span className="font-bold text-[10px] text-slate-400 uppercase block flex items-center gap-1">
+                                      <Gauge className="h-3 w-3" /> MÉTRICAS A ACOMPANHAR
+                                    </span>
+                                    <p className="text-xs text-slate-700">{rec.metrics}</p>
+                                  </div>
+
+                                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
+                                    <span className="font-bold text-[10px] text-slate-400 uppercase block flex items-center gap-1">
+                                      <Package className="h-3 w-3" /> ENTREGÁVEL ESPERADO
+                                    </span>
+                                    <p className="text-xs text-slate-700">{rec.deliverable}</p>
                                   </div>
                                 </div>
                               </div>
@@ -1317,38 +1336,87 @@ export default function App() {
                   </div>
                 )}
 
-                {/* 3. TRILHAS DE CONHECIMENTO EXPANSÍVEIS */}
+                {/* 3. TRILHAS DE CONHECIMENTO (Restaurado ao modelo com abas e badges) */}
                 {activeAdminTab === 'trilhas' && (
                   <div className="space-y-6">
-                    <div>
-                      <h1 className="text-xl font-bold text-slate-900">Trilhas de conhecimento</h1>
-                      <p className="text-xs text-slate-500">Três pacotes de capacitação com 12 temáticas cada, cobrindo as 8 dimensões do diagnóstico.</p>
+                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
+                      <div>
+                        <h1 className="text-xl font-bold text-slate-900">Trilhas de conhecimento</h1>
+                        <p className="text-xs text-slate-500">Três pacotes de capacitação com 12 temáticas cada, ordenados por prioridade e cobrindo as 8 dimensões.</p>
+                      </div>
+                      <span className="px-3 py-1 bg-teal-50 border border-teal-200 rounded-full text-xs font-bold text-teal-800">
+                        3 trilhas · 36 módulos
+                      </span>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      {TRACKS_DATA.map((t) => (
-                        <div key={t.id} className="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
-                          <div className="space-y-2">
-                            <span className="text-[10px] font-bold text-teal-800 bg-teal-100 px-2.5 py-0.5 rounded-full inline-block">{t.count}</span>
+                    {/* ABAS SUPERIORES DAS TRILHAS */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {DETAILED_TRACKS.map(t => {
+                        const isActive = activeTrackId === t.id;
+                        return (
+                          <button
+                            key={t.id}
+                            onClick={() => setActiveTrackId(t.id)}
+                            className={`p-4 rounded-2xl border text-left transition ${
+                              isActive
+                                ? 'bg-white border-teal-500 shadow-md ring-2 ring-teal-500/20'
+                                : 'bg-slate-50 border-slate-200 hover:bg-white'
+                            }`}
+                          >
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-teal-700 block mb-1">12 TEMÁTICAS</span>
                             <h3 className="font-bold text-sm text-slate-900">{t.title}</h3>
-                            <p className="text-xs text-slate-500">{t.desc}</p>
+                            <p className="text-xs text-slate-500 mt-1">{t.subtitle}</p>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* DETALHAMENTO DA TRILHA SELEÇÃO */}
+                    {(() => {
+                      const track = DETAILED_TRACKS.find(t => t.id === activeTrackId);
+                      if (!track) return null;
+                      return (
+                        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                          <div>
+                            <h2 className="text-xl font-black text-slate-900">{track.title}</h2>
+                            <p className="text-xs text-slate-500 mt-1">{track.subtitle}</p>
                           </div>
-                          
-                          <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5 max-h-60 overflow-y-auto">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Módulos de Capacitação:</span>
-                            {t.topics.map((topic, i) => (
-                              <div key={i} className="text-[11px] text-slate-700 bg-white p-1.5 rounded border border-slate-200/60 leading-tight">
-                                {topic}
-                              </div>
+
+                          {/* RESUMO DAS DIMENSÕES NA TRILHA */}
+                          <div className="flex flex-wrap gap-2">
+                            {track.dimensionsSummary.map((d, i) => (
+                              <span key={i} className="px-3 py-1 bg-teal-50 text-teal-800 border border-teal-200 rounded-full text-[11px] font-semibold">
+                                {d.name} · {d.count}
+                              </span>
                             ))}
                           </div>
+
+                          <div className="pt-2 space-y-3">
+                            <span className="text-[11px] font-bold px-2.5 py-1 bg-rose-100 text-rose-800 rounded-full inline-block">
+                              Prioridade Alta · {track.modules.length} módulos
+                            </span>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {track.modules.map(mod => (
+                                <div key={mod.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200/80 flex items-start gap-3">
+                                  <div className="w-7 h-7 bg-teal-700 text-white rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                                    {mod.id}
+                                  </div>
+                                  <div>
+                                    <h4 className="font-bold text-xs text-slate-900">{mod.title}</h4>
+                                    <span className="text-[10px] text-slate-500 block mt-0.5">{mod.category}</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
                         </div>
-                      ))}
-                    </div>
+                      );
+                    })()}
                   </div>
                 )}
 
-                {/* 4. BENCHMARKING */}
+                {/* 4. BENCHMARKING (Restaurado ao modelo de comparação com gráfico agrupado) */}
                 {activeAdminTab === 'benchmarking' && (
                   <div className="space-y-6">
                     <div>
@@ -1368,8 +1436,8 @@ export default function App() {
                                 if (isSel) setSelectedBenchStartups(selectedBenchStartups.filter(id => id !== s.id));
                                 else if (selectedBenchStartups.length < 3) setSelectedBenchStartups([...selectedBenchStartups, s.id]);
                               }}
-                              className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition ${
-                                isSel ? 'bg-teal-500 text-slate-950 border-teal-400' : 'bg-slate-50 text-slate-600 border-slate-200'
+                              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold border transition ${
+                                isSel ? 'bg-teal-500 text-slate-950 border-teal-400 shadow-sm' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
                               }`}
                             >
                               {s.startupName}
@@ -1378,20 +1446,46 @@ export default function App() {
                         })}
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
+                      {/* CARDS COMPARATIVOS */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
                         {selectedBenchStartups.map(id => {
                           const s = safeSubmissions.find(sub => sub.id === id);
                           if (!s) return null;
                           return (
-                            <div key={s.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                              <h3 className="font-bold text-sm text-slate-900">{s.startupName}</h3>
-                              <p className="text-xl font-black text-teal-700">{s.score} <span className="text-xs font-normal text-slate-400">/ 200</span></p>
-                              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border inline-block ${getStageBadge(s.stage)}`}>{s.stage}</span>
+                            <div key={s.id} className="p-5 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+                              <h3 className="font-bold text-base text-slate-900">{s.startupName}</h3>
+                              <p className="text-2xl font-black text-teal-700">{s.score} <span className="text-xs font-normal text-slate-400">/ 200</span></p>
+                              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border inline-block ${getStageBadge(s.stage)}`}>{s.stage}</span>
+                              <div className="pt-2 text-xs text-slate-500 space-y-1 border-t border-slate-200/60 mt-2">
+                                <p className="flex items-center gap-1.5"><Building2 className="h-3.5 w-3.5 text-slate-400" /> {s.segment}</p>
+                                <p className="flex items-center gap-1.5">✉️ {s.email}</p>
+                              </div>
                             </div>
                           );
                         })}
                       </div>
                     </div>
+
+                    {/* GRÁFICO DE BARRAS AGRUPADAS DE 8 DIMENSÕES */}
+                    {benchSelectedObjects.length > 0 && (
+                      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">COMPARATIVO PELAS 8 DIMENSÕES</h3>
+                        <div className="h-80 w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={benchChartData} margin={{ top: 10, right: 10, left: -20, bottom: 60 }}>
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                              <XAxis dataKey="name" stroke="#475569" fontSize={10} interval={0} angle={-35} textAnchor="end" />
+                              <YAxis domain={[0, 25]} stroke="#64748b" fontSize={10} />
+                              <Tooltip />
+                              <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: '10px' }} />
+                              {benchSelectedObjects.map((obj, idx) => (
+                                <Bar key={obj.id} dataKey={obj.startupName} fill={BENCH_COLORS[idx % BENCH_COLORS.length]} radius={[4, 4, 0, 0]} />
+                              ))}
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 

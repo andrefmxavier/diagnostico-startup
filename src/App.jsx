@@ -14,7 +14,7 @@ import {
 import { supabase } from './supabaseClient';
 
 // ============================================================================
-// 1. ESTRUTURA COMPLETA DAS 8 DIMENSÕES E 40 INDICADORES
+// ESTRUTURA DAS 8 DIMENSÕES E 40 INDICADORES
 // ============================================================================
 const GOVTECH_DIMENSIONS = [
   {
@@ -123,6 +123,104 @@ const GOVTECH_DIMENSIONS = [
   }
 ];
 
+const TRACKS_DATA = [
+  {
+    id: 'trilha1',
+    title: 'Trilha 1 — Fundação e Validação',
+    desc: 'Indicada para startups em Ideação e início de Operação',
+    count: '12 Temáticas',
+    topics: [
+      '1. Validação de Dores e Entrevistas com Clientes',
+      '2. Mapeamento de TAM, SAM e SOM Realista',
+      '3. Definição do MVP Mínimo Viável e Teste Pilotado',
+      '4. Modelagem Financeira Inicial e Precificação Básica',
+      '5. Governança Inicial, Vesting e Acordo de Sócios',
+      '6. Registro de Marca e Proteção Inicial de IP',
+      '7. Construção de Pitch e Narrativa para Investidores',
+      '8. Design de Experiência do Usuário (UX/UI)',
+      '9. Introdução a Vendas B2B e Inbound Marketing',
+      '10. Mapeamento de Editais de Fomento (Sebrae/FINEP)',
+      '11. Rotinas Financeiras Básicas e Controle de Caixa',
+      '12. Métricas Iniciais de Retenção e Engajamento'
+    ]
+  },
+  {
+    id: 'trilha2',
+    title: 'Trilha 2 — Tração Comercial e Produto',
+    desc: 'Indicada para startups em Operação e Tração',
+    count: '12 Temáticas',
+    topics: [
+      '1. Estruturação de Funil Outbound e Máquina de Vendas',
+      '2. Arquitetura em Nuvem, Escalabilidade e APIs',
+      '3. Integração de Inteligência Artificial Operacional',
+      '4. Gestão Ágil de Produto (Scrum/Kanban)',
+      '5. Estruturação de Onboarding e Customer Success',
+      '6. Gestão Financeira Avançada (DRE e CAC/LTV)',
+      '7. Estratégias de Contratação e Atração de Talentos',
+      '8. Adaptação do Produto para Compras Públicas (B2G)',
+      '9. Conformidade com a LGPD e Segurança Cibernética',
+      '10. Otimização do Tempo de Vendas (Sales Cycle)',
+      '11. Testes A/B e Cultura de Experimentos Rápido',
+      '12. Gestão por OKRs para Alinhamento do Time'
+    ]
+  },
+  {
+    id: 'trilha3',
+    title: 'Trilha 3 — Governança, Capital e Escala',
+    desc: 'Indicada para startups em Tração e Escala',
+    count: '12 Temáticas',
+    topics: [
+      '1. Captação de Recursos (Venture Capital e Seed)',
+      '2. Internacionalização e Expansão de Mercados',
+      '3. Estruturação de Conselho Consultivo/Administração',
+      '4. Modelos de Contratualização B2G e Licitações',
+      '5. M&A, Estratégias de Saída e Fusões',
+      '6. Liderança Executiva e Escala da Cultura',
+      '7. Automação Avançada e Escala do Produto',
+      '8. Gestão da Saúde do Cliente e Redução de Churn',
+      '9. Planejamento Tributário e Societário para Escala',
+      '10. Auditoria Interna e Preparação para Due Diligence',
+      '11. Parcerias Estratégicas e Canais de Distribuição',
+      '12. Gestão de Crises e Continuidaded do Negócio'
+    ]
+  }
+];
+
+const PLAN_RECOMMENDATIONS = {
+  estrategia: {
+    low: { meta: 'Estruturar Validação de Mercado', tools: 'Miro, Notion, Formulários Typeform', metrics: 'Número de entrevistas, ICP mapeado' },
+    high: { meta: 'Sustentar & Evoluir Tese', tools: 'Gartner, OKR Boards, Salesforce', metrics: 'Market Share, LTV/CAC' }
+  },
+  lideranca: {
+    low: { meta: 'Formalizar Alinhamento dos Sócios', tools: 'Acordo de Sócios, Vesting, Trello', metrics: '% Dedicação exclusiva, Rituais semanais' },
+    high: { meta: 'Escalar Liderança Executiva', tools: '15Five, Lattice, Boards de Governança', metrics: 'eNPS, Retenção do time chave' }
+  },
+  tecnologia: {
+    low: { meta: 'Proteger IP e Estruturar Nuvem', tools: 'AWS/GCP, GitHub, Registro INPI', metrics: 'Uptime da aplicação, Cobertura de testes' },
+    high: { meta: 'Expandir IA Generativa e APIs', tools: 'OpenAI API, Datadog, Docker', metrics: 'Custo de nuvem/usuário, SLA de API' }
+  },
+  cultura: {
+    low: { meta: 'Implantar Cultura de Testes', tools: 'Post-it, Figma, Mixpanel', metrics: 'Experimentos executados/mês' },
+    high: { meta: 'Disseminar Inovação Contínua', tools: 'Notion Wiki, Hackathons Internos', metrics: 'Taxa de implementação de ideias' }
+  },
+  pessoas: {
+    low: { meta: 'Desenvolver Competências Internas', tools: 'Alura, Udemy, Matriz CSD', metrics: 'Horas de treinamento/mês' },
+    high: { meta: 'Desenvolver Plano de Carreira', tools: 'Gupy, LinkedIn Recruiter', metrics: 'Tempo médio de contratação' }
+  },
+  estrutura: {
+    low: { meta: 'Lançar MVP e Medir Uso', tools: 'Bubble, Webflow, Hotjar', metrics: 'Usuários ativos diários (DAU)' },
+    high: { meta: 'Expandir Provas de Conceito (PoC)', tools: 'Amplitude, Zendesk', metrics: 'NPS, Taxa de renovação' }
+  },
+  processos: {
+    low: { meta: 'Implantar Metodologia Ágil', tools: 'Jira, Asana, Conta Azul', metrics: 'Velocity das Sprints, Margem DRE' },
+    high: { meta: 'Otimizar Funil e SLA de Suporte', tools: 'HubSpot, Intercom, PowerBI', metrics: 'Tempo de resposta de ticket, Conversion Rate' }
+  },
+  recursos: {
+    low: { meta: 'Ampliar Runway e Editais', tools: 'Planilhas de Runway, Plataforma Brasil', metrics: 'Meses de Runway, Margem de contribuição' },
+    high: { meta: 'Captação e Expansão B2G', tools: 'Pitch Deck, Portal da Transparência', metrics: 'Contratos vigentes, EBITDA' }
+  }
+};
+
 const SHORT_LABELS = GOVTECH_DIMENSIONS.reduce((acc, d) => { acc[d.name] = d.short; return acc; }, {});
 const getShortLabel = (fullName) => SHORT_LABELS?.[fullName] || fullName || '';
 const ALL_QUESTIONS = GOVTECH_DIMENSIONS.flatMap(d => d.questions);
@@ -208,6 +306,10 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showMatrixModal, setShowMatrixModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Filtros do Dashboard Admin
+  const [filterStage, setFilterStage] = useState('Todos');
+  const [filterSegment, setFilterSegment] = useState('Todos');
 
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState(EMPTY_FORM);
@@ -306,10 +408,8 @@ export default function App() {
     };
 
     try {
-      const { data, error } = await supabase.from('startups').insert([newEntry]).select();
-      
+      const { error } = await supabase.from('startups').insert([newEntry]);
       if (error) {
-        console.error("Erro no Supabase ao inserir:", error);
         alert(`Erro ao salvar no banco de dados: ${error.message}`);
         setIsSubmitting(false);
         return;
@@ -322,8 +422,7 @@ export default function App() {
       setSubmitted(true);
       await fetchStartups();
     } catch (err) {
-      console.error("Exceção grave no salvamento:", err);
-      alert("Ocorreu um erro inesperado de conexão. Tente novamente.");
+      alert("Ocorreu um erro inesperado de conexão.");
     } finally {
       setIsSubmitting(false);
     }
@@ -350,17 +449,23 @@ export default function App() {
     }
   };
 
+  // Aplicação dos Filtros no Painel
   const safeSubmissions = Array.isArray(submissions) ? submissions : [];
+  const filteredSubmissions = safeSubmissions.filter(s => {
+    const matchStage = filterStage === 'Todos' || s.stage === filterStage;
+    const matchSegment = filterSegment === 'Todos' || s.segment === filterSegment;
+    return matchStage && matchSegment;
+  });
 
-  const avgOverallScore = safeSubmissions.length > 0
-    ? (safeSubmissions.reduce((acc, curr) => acc + (curr?.score || 0), 0) / safeSubmissions.length)
+  const avgOverallScore = filteredSubmissions.length > 0
+    ? (filteredSubmissions.reduce((acc, curr) => acc + (curr?.score || 0), 0) / filteredSubmissions.length)
     : 0;
 
   const activeDimValues = {};
   GOVTECH_DIMENSIONS.forEach(dim => {
-    const totalDimScore = safeSubmissions.reduce((acc, curr) => acc + (curr?.dimensions?.[dim.name] || 0), 0);
-    activeDimValues[dim.name] = safeSubmissions.length > 0
-      ? Number((totalDimScore / safeSubmissions.length).toFixed(1))
+    const totalDimScore = filteredSubmissions.reduce((acc, curr) => acc + (curr?.dimensions?.[dim.name] || 0), 0);
+    activeDimValues[dim.name] = filteredSubmissions.length > 0
+      ? Number((totalDimScore / filteredSubmissions.length).toFixed(1))
       : 0;
   });
 
@@ -409,7 +514,7 @@ export default function App() {
             </button>
             <div>
               <h2 className="text-xl font-bold text-slate-900">Matriz de Perguntas &amp; Dimensões</h2>
-              <p className="text-xs text-slate-500 mt-1">8 dimensões · 40 indicadores · escala de 1 (discordo totalmente) a 5 (concordo totalmente)</p>
+              <p className="text-xs text-slate-500 mt-1">8 dimensões · 40 indicadores · escala de 1 a 5</p>
             </div>
             <div className="space-y-6">
               {GOVTECH_DIMENSIONS.map((dim, idx) => (
@@ -464,7 +569,7 @@ export default function App() {
                   </div>
                   <div>
                     <h2 className="text-base md:text-lg font-bold text-white">Área da startup</h2>
-                    <p className="text-xs text-slate-300 mt-1">Responda os 40 indicadores e receba o radar de maturidade, o score por dimensão e o relatório completo.</p>
+                    <p className="text-xs text-slate-300 mt-1">Responda os 40 indicadores e receba o radar de maturidade e relatório completo.</p>
                   </div>
                 </div>
                 <div className="mt-6 flex items-center text-xs font-bold text-teal-300 gap-2">
@@ -482,7 +587,7 @@ export default function App() {
                   </div>
                   <div>
                     <h2 className="text-base md:text-lg font-bold text-white">Painel do administrador</h2>
-                    <p className="text-xs text-slate-300 mt-1">Análise individual e coletiva, distribuição por estágio e setor, planos de ação e trilhas de capacitação.</p>
+                    <p className="text-xs text-slate-300 mt-1">Análise do portfólio, filtros por estágio, planos e trilhas.</p>
                   </div>
                 </div>
                 <div className="mt-6 flex items-center text-xs font-bold text-purple-300 gap-2">
@@ -525,7 +630,7 @@ export default function App() {
                   <div className="space-y-5">
                     <div>
                       <h2 className="text-lg md:text-xl font-bold text-white">Identificação da startup</h2>
-                      <p className="text-xs text-slate-400 mt-0.5">Dados de contato do fundador para registro no programa.</p>
+                      <p className="text-xs text-slate-400 mt-0.5">Dados do fundador para registro no programa.</p>
                     </div>
                     <div className="space-y-4">
                       <div>
@@ -589,7 +694,6 @@ export default function App() {
                   </div>
                 ) : (
                   <div className="space-y-6 md:space-y-8">
-                    {/* BARRA FIXA DE PROGRESSO E LEGENDA */}
                     <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2 sticky top-16 z-20 shadow-xl">
                       <div className="flex justify-between items-center">
                         <span className="text-xs font-bold text-slate-300">Progresso de respostas:</span>
@@ -645,7 +749,7 @@ export default function App() {
 
                         <div className="pt-2">
                           <label className="block text-[11px] font-bold text-slate-400 mb-1">
-                            Observações ou contexto adicional para {dim.name} (opcional):
+                            Observações para {dim.name} (opcional):
                           </label>
                           <textarea
                             rows={2}
@@ -654,7 +758,7 @@ export default function App() {
                               ...formData,
                               notes: { ...(formData.notes || {}), [dim.id]: e.target.value }
                             })}
-                            placeholder="Descreva detalhes práticos, dados adicionais ou justificativas..."
+                            placeholder="Descreva detalhes práticos ou justificativas..."
                             className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white outline-none focus:border-teal-500"
                           />
                         </div>
@@ -680,9 +784,6 @@ export default function App() {
                     <h2 className="text-2xl font-black text-white mt-2">{lastSubmission?.startupName}</h2>
                     <p className="text-xs text-slate-400 mt-1">
                       Fundador: <b className="text-slate-200">{lastSubmission?.founder}</b> · Segmento: <b className="text-slate-200">{lastSubmission?.segment}</b>
-                    </p>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      📞 {lastSubmission?.whatsapp} · ✉️ {lastSubmission?.email}
                     </p>
                   </div>
 
@@ -892,7 +993,7 @@ export default function App() {
 
               <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
 
-                {/* 1. VISÃO GERAL */}
+                {/* 1. VISÃO GERAL DE DASHBOARD */}
                 {activeAdminTab === 'dashboard' && (
                   <div className="space-y-6">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
@@ -900,10 +1001,34 @@ export default function App() {
                         <h1 className="text-xl font-bold text-slate-900">Dashboard de maturidade das startups</h1>
                         <p className="text-xs text-slate-500">Métricas consolidadas, análise individual e distribuição do portfólio.</p>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        {/* FILTROS ADICIONADOS AO DASHBOARD */}
+                        <div className="flex items-center gap-1.5 bg-white border border-slate-300 px-2.5 py-1.5 rounded-xl text-xs">
+                          <Filter className="h-3.5 w-3.5 text-slate-500" />
+                          <select
+                            value={filterStage}
+                            onChange={e => setFilterStage(e.target.value)}
+                            className="bg-transparent font-bold text-slate-700 outline-none text-xs"
+                          >
+                            <option value="Todos">Estágio: Todos</option>
+                            {STAGE_LIST.map(st => <option key={st} value={st}>{st}</option>)}
+                          </select>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 bg-white border border-slate-300 px-2.5 py-1.5 rounded-xl text-xs">
+                          <select
+                            value={filterSegment}
+                            onChange={e => setFilterSegment(e.target.value)}
+                            className="bg-transparent font-bold text-slate-700 outline-none text-xs"
+                          >
+                            <option value="Todos">Setor: Todos</option>
+                            {SEGMENT_OPTIONS.map(sg => <option key={sg} value={sg}>{sg}</option>)}
+                          </select>
+                        </div>
+
                         <button
                           onClick={fetchStartups}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-sm"
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 shadow-sm transition"
                         >
                           <RefreshCw className="h-3.5 w-3.5" /> Atualizar dados
                         </button>
@@ -920,7 +1045,7 @@ export default function App() {
                       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Destaque Principal</span>
                         <p className="text-sm font-bold text-teal-700 mt-1 truncate">{highlightTop}</p>
-                        <span className="text-[11px] text-slate-500 block mt-1">Maior pontuação do portfólio</span>
+                        <span className="text-[11px] text-slate-500 block mt-1">Maior pontuação do grupo</span>
                       </div>
 
                       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
@@ -931,15 +1056,15 @@ export default function App() {
 
                       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Startups Analisadas</span>
-                        <p className="text-2xl font-black text-purple-700 mt-1">{safeSubmissions.length}</p>
-                        <span className="text-[11px] text-slate-500 block mt-1">Total cadastrado no programa</span>
+                        <p className="text-2xl font-black text-purple-700 mt-1">{filteredSubmissions.length}</p>
+                        <span className="text-[11px] text-slate-500 block mt-1">Total filtrado no programa</span>
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
                         <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Radar de Maturidade (Média Geral)</h3>
-                        <div className="h-64 w-full">
+                        <div className="h-72 w-full">
                           <ResponsiveContainer width="100%" height="100%">
                             <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarChartData}>
                               <PolarGrid stroke="#e2e8f0" />
@@ -951,13 +1076,21 @@ export default function App() {
                         </div>
                       </div>
 
+                      {/* CORREÇÃO VISUAL DOS RÓTULOS NO GRÁFICO DE BARRAS */}
                       <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
                         <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Pontuação por Dimensão (0 a 25 pts)</h3>
-                        <div className="h-64 w-full">
+                        <div className="h-72 w-full">
                           <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={barChartData}>
+                            <BarChart data={barChartData} margin={{ top: 10, right: 10, left: -20, bottom: 65 }}>
                               <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                              <XAxis dataKey="name" stroke="#64748b" fontSize={9} interval={0} />
+                              <XAxis 
+                                dataKey="name" 
+                                stroke="#475569" 
+                                fontSize={10} 
+                                interval={0} 
+                                angle={-45} 
+                                textAnchor="end"
+                              />
                               <YAxis domain={[0, 25]} stroke="#64748b" fontSize={10} />
                               <Tooltip />
                               <Bar dataKey="Score" fill="#0d9488" radius={[4, 4, 0, 0]} />
@@ -973,7 +1106,7 @@ export default function App() {
                           <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                             <MessageSquare className="h-4 w-4 text-teal-600" /> Observações da Startup por Dimensão
                           </h3>
-                          <p className="text-xs text-slate-500">Selecione uma dimensão para ver os comentários.</p>
+                          <p className="text-xs text-slate-500">Selecione uma dimensão para ver os comentários adicionais.</p>
                         </div>
                         <select
                           value={selectedObsDimension}
@@ -987,12 +1120,12 @@ export default function App() {
                       </div>
 
                       <div className="space-y-3">
-                        {safeSubmissions.filter(s => s.notes?.[selectedObsDimension]).length === 0 ? (
+                        {filteredSubmissions.filter(s => s.notes?.[selectedObsDimension]).length === 0 ? (
                           <div className="p-4 bg-slate-50 rounded-xl text-xs text-slate-500 text-center">
                             Nenhuma observação registrada para esta dimensão.
                           </div>
                         ) : (
-                          safeSubmissions.map(s => {
+                          filteredSubmissions.map(s => {
                             if (!s.notes?.[selectedObsDimension]) return null;
                             return (
                               <div key={s.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
@@ -1042,7 +1175,7 @@ export default function App() {
 
                     <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
                       <div className="p-4 border-b border-slate-200 bg-slate-50 font-bold text-xs text-slate-800 flex justify-between items-center">
-                        <span>Startups Cadastradas ({safeSubmissions.length})</span>
+                        <span>Startups Cadastradas ({filteredSubmissions.length})</span>
                       </div>
                       <div className="overflow-x-auto">
                         <table className="w-full text-left text-xs min-w-[700px]">
@@ -1056,10 +1189,10 @@ export default function App() {
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-slate-100">
-                            {safeSubmissions.length === 0 ? (
-                              <tr><td colSpan={5} className="p-5 text-center text-slate-400">Nenhuma startup registrada.</td></tr>
+                            {filteredSubmissions.length === 0 ? (
+                              <tr><td colSpan={5} className="p-5 text-center text-slate-400">Nenhuma startup encontrada com estes filtros.</td></tr>
                             ) : (
-                              safeSubmissions.map(s => (
+                              filteredSubmissions.map(s => (
                                 <tr key={s.id}>
                                   <td className="p-3">
                                     <span className="font-bold text-slate-900 block">{s.startupName}</span>
@@ -1101,13 +1234,13 @@ export default function App() {
                   </div>
                 )}
 
-                {/* 2. PLANO POR STARTUP */}
+                {/* 2. PLANO DINÂMICO POR STARTUP */}
                 {activeAdminTab === 'plano' && (
                   <div className="space-y-6">
                     <div className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                       <div>
                         <h1 className="text-xl font-bold text-slate-900">Plano de ação por startup</h1>
-                        <p className="text-xs text-slate-500">Ações por dimensão, ferramentas sugeridas, métricas e entregáveis esperados.</p>
+                        <p className="text-xs text-slate-500">Recomendações automáticas baseadas no desempenho das 8 dimensões.</p>
                       </div>
                       <div className="w-full md:w-72">
                         <select
@@ -1141,6 +1274,13 @@ export default function App() {
                           {GOVTECH_DIMENSIONS.map(dim => {
                             const score = currentPlanStartup.dimensions?.[dim.name] || 0;
                             const percent = Math.round((score / 25) * 100);
+                            const isLow = score < 15;
+                            const rec = PLAN_RECOMMENDATIONS[dim.id]?.[isLow ? 'low' : 'high'] || {
+                              meta: 'Sustentar & Evoluir',
+                              tools: 'Miro, Notion, OKRs',
+                              metrics: 'Taxa de conversão, Engajamento'
+                            };
+
                             return (
                               <div key={dim.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
                                 <div className="flex justify-between items-start">
@@ -1148,16 +1288,20 @@ export default function App() {
                                     <h4 className="font-bold text-xs text-slate-900">{dim.name}</h4>
                                     <span className="text-[11px] font-semibold text-teal-700">{score} / 25 pts · {percent}%</span>
                                   </div>
-                                  <span className="text-[10px] bg-white border border-slate-200 px-2 py-0.5 rounded text-slate-600">Meta: Sustentar &amp; Evoluir</span>
+                                  <span className={`text-[10px] border px-2 py-0.5 rounded font-bold ${
+                                    isLow ? 'bg-amber-50 text-amber-800 border-amber-200' : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                                  }`}>
+                                    Meta: {rec.meta}
+                                  </span>
                                 </div>
                                 <div className="space-y-2 text-xs text-slate-700">
                                   <div className="p-2.5 bg-white rounded-lg border border-slate-200">
                                     <span className="font-bold text-[10px] text-slate-400 uppercase block">Ferramentas Sugeridas</span>
-                                    <p className="text-[11px] text-slate-600 mt-0.5">Miro, Notion, Formulários de validação e OKRs.</p>
+                                    <p className="text-[11px] text-slate-600 mt-0.5">{rec.tools}</p>
                                   </div>
                                   <div className="p-2.5 bg-white rounded-lg border border-slate-200">
                                     <span className="font-bold text-[10px] text-slate-400 uppercase block">Métricas a Acompanhar</span>
-                                    <p className="text-[11px] text-slate-600 mt-0.5">Taxa de conversão, engajamento semanal e runway.</p>
+                                    <p className="text-[11px] text-slate-600 mt-0.5">{rec.metrics}</p>
                                   </div>
                                 </div>
                               </div>
@@ -1173,7 +1317,7 @@ export default function App() {
                   </div>
                 )}
 
-                {/* 3. TRILHAS DE CONHECIMENTO */}
+                {/* 3. TRILHAS DE CONHECIMENTO EXPANSÍVEIS */}
                 {activeAdminTab === 'trilhas' && (
                   <div className="space-y-6">
                     <div>
@@ -1181,16 +1325,23 @@ export default function App() {
                       <p className="text-xs text-slate-500">Três pacotes de capacitação com 12 temáticas cada, cobrindo as 8 dimensões do diagnóstico.</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {[
-                        { title: 'Trilha 1 — Fundação e Validação', desc: 'Indicada para startups em Ideação e início de Operação', count: '12 Temáticas' },
-                        { title: 'Trilha 2 — Tração Comercial e Produto', desc: 'Indicada para startups em Operação e Tração', count: '12 Temáticas' },
-                        { title: 'Trilha 3 — Governança, Capital e Escala', desc: 'Indicada para startups em Tração e Escala', count: '12 Temáticas' }
-                      ].map((t, idx) => (
-                        <div key={idx} className="p-4 bg-white rounded-2xl border border-teal-500/30 shadow-sm space-y-2">
-                          <span className="text-[10px] font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full">{t.count}</span>
-                          <h3 className="font-bold text-xs text-slate-900">{t.title}</h3>
-                          <p className="text-[11px] text-slate-500">{t.desc}</p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {TRACKS_DATA.map((t) => (
+                        <div key={t.id} className="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
+                          <div className="space-y-2">
+                            <span className="text-[10px] font-bold text-teal-800 bg-teal-100 px-2.5 py-0.5 rounded-full inline-block">{t.count}</span>
+                            <h3 className="font-bold text-sm text-slate-900">{t.title}</h3>
+                            <p className="text-xs text-slate-500">{t.desc}</p>
+                          </div>
+                          
+                          <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5 max-h-60 overflow-y-auto">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Módulos de Capacitação:</span>
+                            {t.topics.map((topic, i) => (
+                              <div key={i} className="text-[11px] text-slate-700 bg-white p-1.5 rounded border border-slate-200/60 leading-tight">
+                                {topic}
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       ))}
                     </div>
